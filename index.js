@@ -49,12 +49,12 @@ const buildUI = () => {
   });
   const theme = buildTheme();
 
-  screen.append(buildConfigForm(blessed, theme));
+  screen.append(buildConfigForm(blessed, screen, theme));
 
   screen.render();
 };
 
-const buildConfigForm = (blessed, theme) => {
+const buildConfigForm = (blessed, screen, theme) => {
   const style = Object.assign({}, theme.box.normal, theme.box.focus);
   const configFormBox = blessed.box({
     border: 'line',
@@ -154,21 +154,43 @@ const buildConfigForm = (blessed, theme) => {
   form.append(password);
   form.append(connectButtonBox);
   configFormBox.append(form);
+
+  form.on('submit', data => {
+    const redis = connectToRedis({
+      port: data.port, 
+      host: data.host
+    });
+
+    screen.destroy();
+    console.log(redis);
+    process.exit(0);
+  });
+  connectButton.on('press', () => {
+    form.submit();
+  });
+
   return configFormBox;
 };
 
 buildUI();
 
-const connectToRedis = () => {
+const connectToRedis = ({
+  port = 6379,
+  host = '127.0.0.1',
+  family = 4,
+  db = 0
+} = {}) => {
   const Redis = require('ioredis'); 
 
   const redis = new Redis({
-    port: 6379,
-    host: '127.0.0.1',
-    family: 4,
+    port: port,
+    host: host,
+    family: family,
     //password: 'auth',
-    db: 0
+    db: db
   });
+
+  return redis;
 };
 
 
