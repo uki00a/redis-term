@@ -23,6 +23,14 @@ const buildTheme = () => {
       focus: {
         border: { fg: cyan }
       }
+    },
+    button: {
+      fg: black,
+      bg: lightGray,
+      focus: {
+        bg: green,
+        fg: black
+      }
     }
   };
 };
@@ -41,14 +49,13 @@ const buildUI = () => {
   });
   const theme = buildTheme();
 
-  screen.append(buildConfigForm(blessed, Object.assign({}, theme.box.normal, theme.box.focus)));
+  screen.append(buildConfigForm(blessed, theme));
 
   screen.render();
 };
 
-const buildConfigForm = (blessed, style) => {
-  // https://github.com/sqlectron/sqlectron-term/blob/master/src/widgets/server-form.js
-  // https://itunes.apple.com/app/medis-gui-for-redis/id1063631769
+const buildConfigForm = (blessed, theme) => {
+  const style = Object.assign({}, theme.box.normal, theme.box.focus);
   const configFormBox = blessed.box({
     border: 'line',
     style: style,
@@ -129,11 +136,23 @@ const buildConfigForm = (blessed, style) => {
     }),
     { position: { left: 0, top: 6, height: 2 }, style: style }
   );
+  const connectButtonBox = blessed.box({
+    position: { left: 0, top: 8, height: 2 },
+    style: style
+  });
+  const connectButton = blessed.button({
+    keys: true,
+    position: { left: 36, height: 1 },
+    style: theme.button,
+    content: " Connect "
+  });
 
+  connectButtonBox.append(connectButton);
   form.append(name);
   form.append(host);
   form.append(port);
   form.append(password);
+  form.append(connectButtonBox);
   configFormBox.append(form);
   return configFormBox;
 };
