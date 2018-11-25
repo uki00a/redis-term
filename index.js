@@ -142,6 +142,7 @@ const buildConfigForm = (blessed, screen, theme) => {
   });
   const connectButton = blessed.button({
     keys: true,
+    mouse: true,
     position: { left: 36, height: 1 },
     style: theme.button,
     content: " Connect "
