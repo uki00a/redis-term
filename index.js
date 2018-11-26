@@ -156,24 +156,13 @@ const buildConfigForm = (blessed, screen, theme) => {
   form.append(connectButtonBox);
   configFormBox.append(form);
 
-  form.on('submit', data => {
-    const redis = connectToRedis({
-      port: data.port, 
-      host: data.host
-    });
-
-    screen.destroy();
-    console.log(redis);
-    process.exit(0);
-  });
+  form.on('submit', onSubmit(screen));
   connectButton.on('press', () => {
     form.submit();
   });
 
   return configFormBox;
 };
-
-buildUI();
 
 const connectToRedis = ({
   port = 6379,
@@ -194,4 +183,49 @@ const connectToRedis = ({
   return redis;
 };
 
+const onSubmit = screen => data => { 
+  screen.destroy();
 
+  const redis = connectToRedis({
+    port: data.port, 
+    host: data.host
+  });
+
+  const scanner = createKeyScanner({ redis });
+
+  scanner()
+    .then(keys => {
+      console.log(keys); 
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error(error); 
+      process.exit(1);
+    });
+};
+
+const createKeyScanner = ({
+  redis,
+  pattern = '*',
+  count = 100
+} = {}) => {
+  async function scan(cursor, keys = []) {
+    const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);
+    const done = Number(newCursor) === 0;
+
+    if (done) {
+      return keys.concat(fetchedKeys);
+    } else {
+      return await scan(newCursor, keys.concat(fetchedKeys));
+    }
+  }
+  function scanner() {
+    return scan(0);
+  }
+  
+  return scanner;
+}
+
+const main = () => buildUI();
+
+main();
