@@ -191,9 +191,7 @@ const onSubmit = screen => data => {
     host: data.host
   });
 
-  const scanner = createKeyScanner({ redis });
-
-  scanner()
+  scan({ redis })
     .then(keys => {
       console.log(keys); 
       process.exit(0);
@@ -204,27 +202,24 @@ const onSubmit = screen => data => {
     });
 };
 
-const createKeyScanner = ({
+const scan = ({
   redis,
   pattern = '*',
   count = 100
 } = {}) => {
-  async function scan(cursor, keys = []) {
+  async function loop(cursor, keys = []) {
     const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);
     const done = Number(newCursor) === 0;
 
     if (done) {
       return keys.concat(fetchedKeys);
     } else {
-      return await scan(newCursor, keys.concat(fetchedKeys));
+      return await loop(newCursor, keys.concat(fetchedKeys));
     }
   }
-  function scanner() {
-    return scan(0);
-  }
-  
-  return scanner;
-}
+
+  return loop(0);
+};
 
 const main = () => buildUI();
 
