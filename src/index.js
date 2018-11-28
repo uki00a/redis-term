@@ -39,6 +39,10 @@ const buildTheme = () => {
 };
 
 class ConfigForm extends Component {
+  onConnectButtonClicked = () => {
+    this.refs.form.submit();
+  };
+
   render() {
     const { theme } = this.props;
     const style = Object.assign({}, theme.box.normal, theme.box.focus);
@@ -51,8 +55,10 @@ class ConfigForm extends Component {
         position={{ left: 1, right: 1, top: 0, bottom: 0 }}>
         <form
           keys
+          ref='form'
           style={style}
-          position={{ left: 1, right: 1, top: 1, bottom: 1 }}>
+          position={{ left: 1, right: 1, top: 1, bottom: 1 }}
+          onSubmit={this.props.onSubmit}>
           <box position={{ left: 0, top: 0, height: 2 }} style={style}>
             <text
               content='Name:'
@@ -119,7 +125,8 @@ class ConfigForm extends Component {
               mouse
               position={{ left: 36, height: 1, width: 16 }}
               style={theme.button}
-              content=' Connect '>
+              content=' Connect '
+              onPress={this.onConnectButtonClicked}>
             </button>
           </box>
         </form>
@@ -140,8 +147,47 @@ screen.key(['escape'], (ch, key) => {
 });
 
 const theme = buildTheme();
+const scan = ({
+  redis,
+  pattern = '*',
+  count = 100
+} = {}) => {
+  async function loop(cursor, keys = []) {
+    const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);
+    const done = Number(newCursor) === 0;
+
+    if (done) {
+      return keys.concat(fetchedKeys);
+    } else {
+      return await loop(newCursor, keys.concat(fetchedKeys));
+    }
+  }
+
+  return loop(0);
+};
+const connectToRedis = data => { 
+  screen.destroy();
+
+  const Redis = require('ioredis');
+  const redis = new Redis({
+    port: data.port, 
+    host: data.host,
+    family: 4,
+    db: 0
+  });
+
+  scan({ redis })
+    .then(keys => {
+      console.log(keys); 
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error(error); 
+      process.exit(1);
+    });
+};
 
 render(
-  <ConfigForm theme={theme}></ConfigForm>,
+  <ConfigForm theme={theme} onSubmit={connectToRedis}></ConfigForm>,
   screen
 );
