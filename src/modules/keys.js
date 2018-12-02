@@ -9,7 +9,7 @@ export const scanKeys = ({
   count = 100
 } = {}) => (dispatch, getState) => {
   const state = getState();
-  const redis = state.connection.redis;
+  const redis = state.connections.redis;
 
   async function loop(cursor) {
     const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
