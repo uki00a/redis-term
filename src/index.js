@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
+import { MemoryRouter, Route } from 'react-router';
 import { createBlessedRenderer } from 'react-blessed';
 import blessed from 'neo-blessed';
 import App from './containers/app';
 import ConfigForm from './containers/config-form';
 import configureStore from './store';
-import theme from './theme';
 
 const setupScreen = () => {
   const screen = blessed.screen({
@@ -28,10 +28,11 @@ const render = createBlessedRenderer(blessed);
 
 render(
   <Provider store={store}>
-    <App>
-      <ConfigForm theme={theme}> 
-      </ConfigForm>
-    </App>
+    <MemoryRouter initialEntries={['/connection']}>
+      <App>
+        <Route path='/connection' component={ConfigForm} />
+      </App>
+    </MemoryRouter>
   </Provider>,
   screen
 );
