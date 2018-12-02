@@ -34,7 +34,7 @@ const reducer = (state = defaultState, action = {}) => {
   case SCAN_KEYS_STARTED:
     return [];
   case SCAN_KEYS_MATCHED:
-    return state.concat();
+    return state.concat(action.payload);
   default:
     return defaultState;
   }

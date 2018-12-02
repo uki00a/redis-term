@@ -1,4 +1,4 @@
-import keysReducer from './keys';
+import keysReducer, { SCAN_KEYS_MATCHED } from './keys';
 import assert from 'assert';
 
 describe('keysReducer', () => {
@@ -11,6 +11,21 @@ describe('keysReducer', () => {
       actual,
       'should return default state'
     ); 
+  });
+
+  context('on SCAN_KEYS_MATCHED', () => {
+    it('should add payload to state', () => {
+      const expected = ['a', 'B', 'C'];
+      const actual = keysReducer(['a'], {
+        type: SCAN_KEYS_MATCHED,
+        payload: ['B', 'C']
+      });
+
+      assert.deepEqual(
+        expected,
+        actual
+      );
+    });
   });
 });
 
