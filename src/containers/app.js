@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import { Provider } from 'react-redux';
-import configureStore from '../store';
 import ConfigForm from './config-form';
-
-const store = configureStore({});
 
 const buildTheme = () => {
   const red = '#ff0000';
@@ -43,10 +39,8 @@ const theme = buildTheme();
 
 const App = ({}) => {
   return (
-    <Provider store={store}>
-      <ConfigForm theme={theme}>
-      </ConfigForm>
-    </Provider>
+    <ConfigForm theme={theme}>
+    </ConfigForm>
   );
 };
 
