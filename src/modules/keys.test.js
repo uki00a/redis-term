@@ -7,8 +7,8 @@ describe('keysReducer', () => {
     const actual = keysReducer();
 
     assert.deepEqual(
-      expected,
       actual,
+      expected,
       'should return default state'
     ); 
   });
@@ -22,8 +22,8 @@ describe('keysReducer', () => {
       });
 
       assert.deepEqual(
-        expected,
-        actual
+        actual,
+        expected
       );
     });
   });
