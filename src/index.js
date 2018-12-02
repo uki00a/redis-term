@@ -3,7 +3,9 @@ import { Provider } from 'react-redux';
 import { createBlessedRenderer } from 'react-blessed';
 import blessed from 'neo-blessed';
 import App from './containers/app';
+import ConfigForm from './containers/config-form';
 import configureStore from './store';
+import theme from './theme';
 
 const setupScreen = () => {
   const screen = blessed.screen({
@@ -26,7 +28,10 @@ const render = createBlessedRenderer(blessed);
 
 render(
   <Provider store={store}>
-    <App></App>
+    <App>
+      <ConfigForm theme={theme}> 
+      </ConfigForm>
+    </App>
   </Provider>,
   screen
 );

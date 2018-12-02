@@ -27,5 +27,7 @@ export default Object.freeze({
       bg: green,
       fg: black
     }
-  }
+  },
+  header: { fg: yellow, bg: blue, bold: true },
+  main: { bg: lightGray }
 });
