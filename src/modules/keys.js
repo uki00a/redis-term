@@ -15,10 +15,11 @@ export const scanKeys = ({
     const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
     const done = Number(newCursor) === 0;
 
+    dispatch({ type: SCAN_KEYS_MATCHED, payload: fetchedKeys }); 
+
     if (done) {
       return dispatch({ type: SCAN_KEYS_FINISHED });
     } else {
-      dispatch({ type: SCAN_KEYS_MATCHED, payload: fetchedKeys }); 
       return await loop(newCursor);
     }
   }
@@ -36,7 +37,7 @@ const reducer = (state = defaultState, action = {}) => {
   case SCAN_KEYS_MATCHED:
     return state.concat(action.payload);
   default:
-    return defaultState;
+    return state;
   }
 };
 
