@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { scanKeys } from '../modules/keys';
+import KeyList from '../components/key-list';
+import theme from '../theme';
 
 class Database extends Component {
   componentDidMount() {
@@ -10,8 +12,8 @@ class Database extends Component {
   render() {
     // FIXME
     return (
-      <box content={this.props.keys.join(',')}>
-      </box>
+      <KeyList keys={this.props.keys} theme={theme}>
+      </KeyList>
     );
   }
 }
