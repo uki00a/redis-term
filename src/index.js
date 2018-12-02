@@ -5,6 +5,7 @@ import { createBlessedRenderer } from 'react-blessed';
 import blessed from 'neo-blessed';
 import App from './containers/app';
 import ConfigForm from './containers/config-form';
+import Database from './containers/database';
 import configureStore from './store';
 
 const setupScreen = () => {
@@ -31,6 +32,7 @@ render(
     <MemoryRouter initialEntries={['/connection']}>
       <App>
         <Route path='/connection' component={ConfigForm} />
+        <Route path='/database' component={Database} />
       </App>
     </MemoryRouter>
   </Provider>,
