@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 import connections from './connections';
-import keys from './keys';
+import database from './database';
 
 export default combineReducers({
   connections,
-  keys
+  database
 });
 

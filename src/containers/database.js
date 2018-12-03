@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { scanKeys } from '../modules/keys';
+import { scanKeys } from '../modules/database';
 import KeyList from '../components/key-list';
 import KeyContent from '../components/key-content';
 import theme from '../theme';
@@ -27,7 +27,9 @@ class Database extends Component {
   }
 }
 
-const mapStateToProps = state => ({ keys: state.keys });
+const mapStateToProps = state => ({
+  keys: state.database.keys
+});
 const mapDispatchToProps = { scanKeys };
 
 export default connect(

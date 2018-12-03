@@ -28,14 +28,17 @@ export const scanKeys = ({
   return loop(INITIAL_CURSOR);
 };
 
-const defaultState = [];
+const defaultState = { keys: [], keyContent: null };
 
 const reducer = (state = defaultState, action = {}) => {
   switch (action.type) {
   case SCAN_KEYS_STARTED:
-    return [];
+    return { ...state, keys: [] };
   case SCAN_KEYS_MATCHED:
-    return state.concat(action.payload);
+    return {
+      ...state,
+      keys: state.keys.concat(action.payload)
+    };
   default:
     return state;
   }

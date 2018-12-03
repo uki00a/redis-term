@@ -1,10 +1,13 @@
-import keysReducer, { SCAN_KEYS_MATCHED } from './keys';
+import databaseReducer, { SCAN_KEYS_MATCHED } from './database';
 import assert from 'assert';
 
-describe('keysReducer', () => {
+describe('databaseReducer', () => {
   it('handles no arguments', () => {
-    const expected = [];
-    const actual = keysReducer();
+    const expected = {
+      keys: [],
+      keyContent: null
+    };
+    const actual = databaseReducer();
 
     assert.deepEqual(
       actual,
@@ -15,8 +18,9 @@ describe('keysReducer', () => {
 
   context('on SCAN_KEYS_MATCHED', () => {
     it('should add payload to state', () => {
-      const expected = ['a', 'B', 'C'];
-      const actual = keysReducer(['a'], {
+      const state = { keys: ['a'] };
+      const expected = { keys: ['a', 'B', 'C'] };
+      const actual = databaseReducer(state, {
         type: SCAN_KEYS_MATCHED,
         payload: ['B', 'C']
       });
