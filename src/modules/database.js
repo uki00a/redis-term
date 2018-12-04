@@ -1,6 +1,7 @@
 export const SCAN_KEYS_STARTED = 'SCAN_KEYS_STARTED';
 export const SCAN_KEYS_FINISHED = 'SCAN_KEYS_FINISHED';
 export const SCAN_KEYS_MATCHED = 'SCAN_KEY_MATCHED';
+export const GET_VALUE_FOR_KEY_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
 
 const INITIAL_CURSOR = 0;
 
@@ -32,6 +33,8 @@ const defaultState = { keys: [], keyContent: null };
 
 const reducer = (state = defaultState, action = {}) => {
   switch (action.type) {
+  case GET_VALUE_FOR_KEY_SUCCEEDED:
+    return { ...state, keyContent: action.payload };
   case SCAN_KEYS_STARTED:
     return { ...state, keys: [] };
   case SCAN_KEYS_MATCHED:
