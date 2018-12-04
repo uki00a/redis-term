@@ -17,7 +17,7 @@ describe('databaseReducer', () => {
   });
 
   context('on SCAN_KEYS_MATCHED', () => {
-    it('should add payload to state', () => {
+    it('should add payload to "keys"', () => {
       const state = { keys: ['a'] };
       const expected = { keys: ['a', 'B', 'C'] };
       const actual = databaseReducer(state, {
