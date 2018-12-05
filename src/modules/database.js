@@ -5,12 +5,14 @@ export const GET_VALUE_FOR_KEY_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
 
 const INITIAL_CURSOR = 0;
 
+const getRedisClient = state => state.connections.redis;
+
 export const scanKeys = ({
   pattern = '*',
   count = 100
 } = {}) => (dispatch, getState) => {
   const state = getState();
-  const redis = state.connections.redis;
+  const redis = getRedisClient(state);
 
   async function loop(cursor) {
     const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
@@ -27,6 +29,17 @@ export const scanKeys = ({
 
   dispatch({ type: SCAN_KEYS_STARTED });
   return loop(INITIAL_CURSOR);
+};
+
+export const getValueForKey = key => (dispatch, getState) => {
+  const state = getState();
+  const redis = getRedisClient(state);
+ 
+  return redis.get(key)
+    .then(value => dispatch({
+      type: GET_VALUE_FOR_KEY_SUCCEEDED,      
+      payload: value
+    }));
 };
 
 const defaultState = { keys: [], keyContent: null };

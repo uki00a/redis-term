@@ -1,20 +1,32 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-/**
- * @param {object} param0
- * @param {string[]} param0.keys
- * @param {object} param0.theme
- */
-const KeyList = ({ keys, theme }) => (
-  <list
-    keys
-    mouse
-    scrollbar
-    border='line'
-    label='Keys'
-    style={Object.assign({}, theme.box, theme.box.focus)}
-    items={keys}>
-  </list>
-);
+export default class KeyList extends Component {
+  static propTypes = {
+    keys: PropTypes.array.isRequired,
+    theme: PropTypes.object.isRequired,
+    onSelect: PropTypes.func.isRequired
+  };
 
-export default KeyList;
+  focus() {
+    this.refs.keyList.focus();
+  }
+
+  render() {
+    const { keys, theme, onSelect } = this.props;
+
+    return (
+      <list
+        ref='keyList'
+        keys
+        mouse
+        scrollbar
+        border='line'
+        label='Keys'
+        style={Object.assign({}, theme.box, theme.box.focus)}
+        items={keys}
+        onSelect={onSelect}>
+      </list>
+    );
+  }
+}
