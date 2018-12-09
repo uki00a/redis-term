@@ -23,7 +23,7 @@ export default class KeyList extends Component {
         scrollbar
         border='line'
         label='Keys'
-        style={Object.assign({}, theme.box, theme.box.focus)}
+        style={Object.assign({}, theme.list.normal, theme.list.focus)}
         items={keys}
         onSelect={onSelect}>
       </list>

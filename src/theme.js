@@ -20,6 +20,19 @@ export default Object.freeze({
       border: { fg: cyan }
     }
   },
+  list: {
+    normal: { 
+      bg: blue,
+      fg: yellow,
+      border: { fg: white, bg: blue },
+      scrollbar: { bg: green },
+      label: { fg: white, bg: blue },
+      item: { fg: yellow }
+    },
+    focus: {
+      border: { fg: cyan }
+    }
+  },
   button: {
     fg: black,
     bg: lightGray,
