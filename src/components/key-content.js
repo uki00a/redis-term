@@ -1,8 +1,8 @@
 import React from 'react';
 
-const KeyContent = ({ content, theme }) => (
+const KeyContent = ({ value, type, theme }) => (
   <box
-    content={content}
+    content={value}
     style={theme.box.normal}
     border='line'>
   </box>

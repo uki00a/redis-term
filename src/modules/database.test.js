@@ -1,6 +1,6 @@
 import databaseReducer, {
   SCAN_KEYS_MATCHED,
-  GET_VALUE_FOR_KEY_SUCCEEDED
+  GET_KEY_CONTENT_SUCCEEDED
 } from './database';
 import assert from 'assert';
 
@@ -8,7 +8,7 @@ describe('databaseReducer', () => {
   it('handles no arguments', () => {
     const expected = {
       keys: [],
-      keyContent: null
+      keyContent: {}
     };
     const actual = databaseReducer();
 
@@ -35,14 +35,14 @@ describe('databaseReducer', () => {
     });
   });
 
-  context('on GET_VALUE_FOR_KEY_SUCCEEDED', () => {
+  context('on GET_KEY_CONTENT_SUCCEEDED', () => {
     it('should set "keyContent" to payload', () => {
       const actual = databaseReducer({}, {
-        type: GET_VALUE_FOR_KEY_SUCCEEDED,
-        payload: 'valueForKey'
+        type: GET_KEY_CONTENT_SUCCEEDED,
+        payload: { value: 'valueForKey', type: 'string' }
       });
 
-      assert(actual.keyContent, 'valueForKey');
+      assert(actual.keyContent, { value: 'valueForKey', type: 'string' });
     });
   });
 });

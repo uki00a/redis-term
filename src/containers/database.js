@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { scanKeys, getValueForKey } from '../modules/database';
+import { scanKeys, getKeyContent } from '../modules/database';
 import KeyList from '../components/key-list';
 import KeyContent from '../components/key-content';
 import theme from '../theme';
@@ -9,7 +9,7 @@ class Database extends Component {
   onKeySelected = (item, keyIndex) => {
     const key = this.props.keys[keyIndex];
 
-    this.props.getValueForKey(key);
+    this.props.getKeyContent(key);
   };
 
   componentDidMount() {
@@ -30,7 +30,10 @@ class Database extends Component {
           </KeyList>
         </box>
         <box position={{ left: 30, top: 0, right: 0 }}>
-          <KeyContent content={this.props.keyContent} theme={theme}>
+          <KeyContent
+            type={this.props.keyContent.type}
+            value={this.props.keyContent.value}
+            theme={theme}>
           </KeyContent>
         </box>
       </box>
@@ -44,7 +47,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = {
   scanKeys,
-  getValueForKey
+  getKeyContent
 };
 
 export default connect(

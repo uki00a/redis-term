@@ -1,7 +1,7 @@
 export const SCAN_KEYS_STARTED = 'SCAN_KEYS_STARTED';
 export const SCAN_KEYS_FINISHED = 'SCAN_KEYS_FINISHED';
 export const SCAN_KEYS_MATCHED = 'SCAN_KEY_MATCHED';
-export const GET_VALUE_FOR_KEY_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
+export const GET_KEY_CONTENT_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
 
 const INITIAL_CURSOR = 0;
 
@@ -31,22 +31,36 @@ export const scanKeys = ({
   return loop(INITIAL_CURSOR);
 };
 
-export const getValueForKey = key => (dispatch, getState) => {
-  const state = getState();
-  const redis = getRedisClient(state);
- 
-  return redis.get(key)
-    .then(value => dispatch({
-      type: GET_VALUE_FOR_KEY_SUCCEEDED,      
-      payload: value
-    }));
+const getValueByKeyAndType = async (redis, key, type) => {
+  switch (type) {
+  case 'hash':
+    // FIXME
+    return JSON.stringify(await redis.hgetall(key));
+  case 'string':
+    return await redis.get(key);
+  default:
+    throw new Error('not implemented');
+  }
 };
 
-const defaultState = { keys: [], keyContent: null };
+export const getKeyContent = key => async (dispatch, getState) => {
+  const state = getState();
+  const redis = getRedisClient(state);
+
+  const type = await redis.type(key);
+  const value = await getValueByKeyAndType(redis, key, type);
+ 
+  dispatch({
+    type: GET_KEY_CONTENT_SUCCEEDED,      
+    payload: { value, type }
+  });
+};
+
+const defaultState = { keys: [], keyContent: {} };
 
 const reducer = (state = defaultState, action = {}) => {
   switch (action.type) {
-  case GET_VALUE_FOR_KEY_SUCCEEDED:
+  case GET_KEY_CONTENT_SUCCEEDED:
     return { ...state, keyContent: action.payload };
   case SCAN_KEYS_STARTED:
     return { ...state, keys: [] };
