@@ -38,6 +38,9 @@ const getValueByKeyAndType = async (redis, key, type) => {
     return JSON.stringify(await redis.hgetall(key));
   case 'string':
     return await redis.get(key);
+  case 'list':
+    // FIXME
+    return JSON.stringify(await redis.lrange(key, 0, -1)); 
   default:
     throw new Error('not implemented');
   }
