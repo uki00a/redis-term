@@ -43,6 +43,8 @@ const getValueByKeyAndType = async (redis, key, type) => {
     return JSON.stringify(await redis.lrange(key, 0, -1)); 
   case 'set': 
     return JSON.stringify(await redis.smembers(key));
+  case 'zset':
+    return JSON.stringify(await redis.zrange(key, 0, -1));
   default:
     throw new Error('not implemented');
   }
