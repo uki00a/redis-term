@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const KeyContent = ({ value, type, theme }) => (
   <box
@@ -7,5 +8,11 @@ const KeyContent = ({ value, type, theme }) => (
     border='line'>
   </box>
 );
+
+KeyContent.propTypes = {
+  value: PropTypes.any,
+  type: PropTypes.string,
+  theme: PropTypes.object.isRequired
+};
 
 export default KeyContent;
