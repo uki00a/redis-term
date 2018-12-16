@@ -41,6 +41,8 @@ const getValueByKeyAndType = async (redis, key, type) => {
   case 'list':
     // FIXME
     return JSON.stringify(await redis.lrange(key, 0, -1)); 
+  case 'set': 
+    return JSON.stringify(await redis.smembers(key));
   default:
     throw new Error('not implemented');
   }
