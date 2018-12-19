@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { scanKeys, getKeyContent } from '../modules/database';
+import { scanKeys, getKeyContent } from '../modules/redux/database';
 import KeyList from '../components/key-list';
 import KeyContent from '../components/key-content';
 import theme from '../theme';

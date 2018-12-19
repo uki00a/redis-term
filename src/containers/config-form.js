@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import ConfigForm from '../components/config-form';
-import { connect as connectToRedis } from '../modules/connections';
+import { connect as connectToRedis } from '../modules/redux/connections';
 import theme from '../theme';
 
 const mapStateToProps = state => state;
