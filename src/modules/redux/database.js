@@ -5,61 +5,31 @@ export const GET_KEY_CONTENT_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
 
 const INITIAL_CURSOR = 0;
 
-const getRedisClient = state => state.connections.redis;
-
 export const scanKeys = ({
   pattern = '*',
   count = 100
-} = {}) => (dispatch, getState) => {
-  const state = getState();
-  const redis = getRedisClient(state);
-
-  async function loop(cursor) {
-    const [newCursor, fetchedKeys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
-    const done = Number(newCursor) === 0;
-
-    dispatch({ type: SCAN_KEYS_MATCHED, payload: fetchedKeys }); 
-
-    if (done) {
-      return dispatch({ type: SCAN_KEYS_FINISHED });
-    } else {
-      return await loop(newCursor);
-    }
-  }
-
+} = {}) => async (dispatch, getState, { redis }) => {
   dispatch({ type: SCAN_KEYS_STARTED });
-  return loop(INITIAL_CURSOR);
+
+  // FIXME
+  const [newCursor, fetchedKeys] = await redis.scanKeys();
+
+
+  dispatch({ type: SCAN_KEYS_MATCHED, payload: fetchedKeys }); 
+  // FIXME
+  dispatch({ type: SCAN_KEYS_FINISHED });
 };
 
-const getValueByKeyAndType = async (redis, key, type) => {
-  switch (type) {
-  case 'hash':
-    // FIXME
-    return JSON.stringify(await redis.hgetall(key));
-  case 'string':
-    return await redis.get(key);
-  case 'list':
-    // FIXME
-    return JSON.stringify(await redis.lrange(key, 0, -1)); 
-  case 'set': 
-    return JSON.stringify(await redis.smembers(key));
-  case 'zset':
-    return JSON.stringify(await redis.zrange(key, 0, -1));
-  default:
-    throw new Error('not implemented');
-  }
-};
-
-export const getKeyContent = key => async (dispatch, getState) => {
-  const state = getState();
-  const redis = getRedisClient(state);
-
-  const type = await redis.type(key);
-  const value = await getValueByKeyAndType(redis, key, type);
+export const getKeyContent = key => async (dispatch, getState, { redis }) => {
+  const { value, type } = await redis.getKeyContent(key);
  
   dispatch({
     type: GET_KEY_CONTENT_SUCCEEDED,      
-    payload: { value, type }
+    payload: {
+      // FIXME
+      value: JSON.stringify(value),
+      type: type
+    }
   });
 };
 
