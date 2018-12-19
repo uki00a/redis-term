@@ -1,7 +1,7 @@
 const CONNECT_SUCCEEDED = 'CONNECT_SUCCEEDED';
 
 export const connect = config => async (dispatch, getState, { redis }) => {
-  await redis.connect();
+  await redis.connect(config);
 
   dispatch({ type: CONNECT_SUCCEEDED });
 };
