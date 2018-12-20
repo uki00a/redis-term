@@ -26,8 +26,7 @@ export const getKeyContent = key => async (dispatch, getState, { redis }) => {
   dispatch({
     type: GET_KEY_CONTENT_SUCCEEDED,      
     payload: {
-      // FIXME
-      value: JSON.stringify(value),
+      value: value,
       type: type
     }
   });
