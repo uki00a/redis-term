@@ -9,11 +9,13 @@ import Database from './containers/database';
 import configureStore from './store';
 
 const setupScreen = () => {
+  const isDevMode = process.env.NODE_ENV !== 'production';
   const screen = blessed.screen({
     autopadding: true,
     smartCSR: true,
     title: 'redis-term',
-    fullUnicode: true
+    fullUnicode: true,
+    debug: isDevMode
   });
 
   screen.key(['escape'], (ch, key) => {
@@ -30,7 +32,7 @@ const render = createBlessedRenderer(blessed);
 render(
   <Provider store={store}>
     <MemoryRouter initialEntries={['/connection']}>
-      <App>
+      <App screen={screen}>
         <Route path='/connection' component={ConfigForm} />
         <Route path='/database' component={Database} />
       </App>
