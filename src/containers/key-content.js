@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { set } from '../modules/redux/database';
+import { setKey } from '../modules/redux/database';
 import StringContent from '../components/string-content';
 
 class KeyContent extends Component {
@@ -11,7 +11,7 @@ class KeyContent extends Component {
     type: PropTypes.string,
     theme: PropTypes.object.isRequired,
 
-    set: PropTypes.func.isRequired
+    setKey: PropTypes.func.isRequired
   };
 
   _renderContent() {
@@ -26,7 +26,7 @@ class KeyContent extends Component {
       return (
         <StringContent
           keyName={this.props.keyName}
-          save={this.props.set}
+          save={this.props.setKey}
           content={this.props.value}>
         </StringContent>
       );
@@ -79,7 +79,7 @@ const ZsetContent = ({ content }) => <text content={JSON.stringify(content)}></t
 
 const mapStateToProps = state => ({});
 const mapDispatchToProps = {
-  set
+  setKey
 };
 
 export default connect(
