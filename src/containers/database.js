@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { scanKeys, getKeyContent } from '../modules/redux/database';
 import KeyList from '../components/key-list';
-import KeyContent from '../components/key-content';
+import KeyContent from '../containers/key-content';
 import theme from '../theme';
 
 class Database extends Component {
