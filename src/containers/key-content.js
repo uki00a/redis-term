@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-// TODO move KeyContent to /containers
 class KeyContent extends Component {
   static propTypes = {
     value: PropTypes.any, 
