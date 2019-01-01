@@ -31,6 +31,7 @@ class Database extends Component {
         </box>
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
+            keyName={this.props.keyContent.key}
             type={this.props.keyContent.type}
             value={this.props.keyContent.value}
             theme={theme}>

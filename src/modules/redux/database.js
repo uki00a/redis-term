@@ -3,7 +3,12 @@ export const SCAN_KEYS_FINISHED = 'SCAN_KEYS_FINISHED';
 export const SCAN_KEYS_MATCHED = 'SCAN_KEY_MATCHED';
 export const GET_KEY_CONTENT_SUCCEEDED = 'GET_VALUE_FOR_KEY_SUCCEEDED';
 
+const SET_STARTED = 'SET_STARTED';
+const SET_SUCCEEDED = 'SET_SUCCEEDED';
+
 const INITIAL_CURSOR = 0;
+
+// TODO error handling
 
 export const scanKeys = ({
   pattern = '*',
@@ -26,10 +31,17 @@ export const getKeyContent = key => async (dispatch, getState, { redis }) => {
   dispatch({
     type: GET_KEY_CONTENT_SUCCEEDED,      
     payload: {
+      key: key,
       value: value,
       type: type
     }
   });
+};
+
+export const set = ({ key, value }) => async (dispatch, getState, { redis }) => {
+  dispatch({ type: SET_STARTED });
+  await redis.set({ key, value });
+  dispatch({ type: SET_SUCCEEDED });
 };
 
 const defaultState = { keys: [], keyContent: {} };

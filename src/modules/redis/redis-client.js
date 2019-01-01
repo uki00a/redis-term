@@ -39,6 +39,15 @@ class RedisClient {
     return { type, value };
   }
 
+  /**
+   * @param {object} param0
+   * @param {string} param0.key
+   * @param {string} param0.value
+   */
+  async set({ key, value }) {
+    await this._redis.set(key, value);
+  }
+
   async _getValueByKeyAndType(key, type) {
     switch (type) {
     case 'hash':
