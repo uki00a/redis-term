@@ -32,9 +32,9 @@ class KeyContent extends Component {
       );
     case 'list':
       return (
-        <HashContent
+        <ListContent
           content={this.props.value}>
-        </HashContent>
+        </ListContent>
       );
     case 'set':
       return (
