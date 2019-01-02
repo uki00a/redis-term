@@ -18,6 +18,7 @@ export default class KeyList extends Component {
     return (
       <list
         ref='keyList'
+        vi
         keys
         mouse
         scrollbar
