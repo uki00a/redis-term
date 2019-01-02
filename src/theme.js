@@ -41,6 +41,11 @@ export default Object.freeze({
       fg: black
     }
   },
+  prompt: {
+    bg: white,
+    fg: black,
+    bold: true
+  },
   header: { fg: yellow, bg: blue, bold: true },
   main: { bg: lightGray }
 });
