@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setKey } from '../modules/redux/database';
 import StringContent from '../components/string-content';
+import ListContent from '../components/list-content';
 
 class KeyContent extends Component {
   static propTypes = {
@@ -33,6 +34,7 @@ class KeyContent extends Component {
     case 'list':
       return (
         <ListContent
+          theme={this.props.theme}
           content={this.props.value}>
         </ListContent>
       );
@@ -73,7 +75,6 @@ class KeyContent extends Component {
 
 const HashContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 
-const ListContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 const SetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 const ZsetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 
