@@ -26,7 +26,7 @@ export const scanKeys = ({
 };
 
 export const getKeyContent = key => async (dispatch, getState, { redis }) => {
-  const { value, type } = await redis.getKeyContent(key);
+  const [type, value] = await redis.getTypeAndValue(key);
  
   dispatch({
     type: GET_KEY_CONTENT_SUCCEEDED,      

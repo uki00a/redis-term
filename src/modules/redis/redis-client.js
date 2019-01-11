@@ -30,13 +30,13 @@ class RedisClient {
   }
 
   /**
-   * @returns {Promise<{ type: string, value: any }>}
+   * @returns {Promise<[string, any]>}
    */
-  async getKeyContent(key) {
+  async getTypeAndValue(key) {
     const type = await this._redis.type(key);
     const value = await this._getValueByKeyAndType(key, type);
 
-    return { type, value };
+    return [type, value];
   }
 
   /**
