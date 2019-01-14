@@ -1,19 +1,74 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { scanKeys, getKeyContent } from '../modules/redux/database';
+import PropTypes from 'prop-types';
+import { withRedis } from '../contexts/redis-context';
 import KeyList from '../components/key-list';
 import KeyContent from '../containers/key-content';
 import theme from '../theme';
 
 class Database extends Component {
-  onKeySelected = (item, keyIndex) => {
-    const key = this.props.keys[keyIndex];
-
-    this.props.getKeyContent(key);
+  static propTypes = {
+    redis: PropTypes.object.isRequired
   };
 
-  componentDidMount() {
-    this.props.scanKeys();
+  state = {
+    keys: [],
+    keyContent: {}
+  };
+
+  onKeySelected = async (item, keyIndex) => {
+    const key = this.state.keys[keyIndex];
+    const [type, value] = await this._getTypeAndValue(key);
+
+    this.setState({
+      keyContent: {
+        key,
+        type,
+        value
+      }
+    });
+  };
+
+  async _getTypeAndValue(key) {
+    const { redis } = this.props;
+    const type = await redis.type(key);
+    const value = await this._getValueByKeyAndType(key, type);
+
+    return [type, value];
+  }
+
+  // FIXME
+  async _getValueByKeyAndType(key, type) {
+    const { redis } = this.props;
+    switch (type) {
+    case 'hash':
+      return await redis.hgetall(key);
+    case 'string':
+      return await redis.get(key);
+    case 'list':
+      return await redis.lrange(key, 0, -1); 
+    case 'set': 
+      return await redis.smembers(key);
+    case 'zset':
+      return await redis.zrange(key, 0, -1);
+    default:
+      throw new Error('not implemented');
+    }
+  }
+
+  _scanKeys({
+    cursor = 0,
+    pattern = '*',
+    count = 100
+  } = {}) {
+    const { redis } = this.props;
+
+    return redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
+  }
+
+  async componentDidMount() {
+    const [newCursor, keys] = await this._scanKeys();
+
+    this.setState({ keys });
     this.refs.keyList.focus();
   }
 
@@ -24,16 +79,16 @@ class Database extends Component {
         <box position={{ left: 0, top: 0, bottom: 0, width: 30 }}>
           <KeyList
             ref='keyList'
-            keys={this.props.keys}
+            keys={this.state.keys}
             theme={theme}
             onSelect={this.onKeySelected}>
           </KeyList>
         </box>
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
-            keyName={this.props.keyContent.key}
-            type={this.props.keyContent.type}
-            value={this.props.keyContent.value}
+            keyName={this.state.keyContent.key}
+            type={this.state.keyContent.type}
+            value={this.state.keyContent.value}
             theme={theme}>
           </KeyContent>
         </box>
@@ -42,16 +97,4 @@ class Database extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  keys: state.database.keys,
-  keyContent: state.database.keyContent
-});
-const mapDispatchToProps = {
-  scanKeys,
-  getKeyContent
-};
-
-export default connect(
-  mapStateToProps, 
-  mapDispatchToProps
-)(Database);
+export default withRedis(Database);

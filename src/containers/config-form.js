@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import ConfigForm from '../components/config-form';
-import { connect as connectToRedis } from '../modules/redux/connections';
 import theme from '../theme';
-
-const mapStateToProps = state => state;
-const mapDispatchToProps = { connectToRedis };
 
 class ConfigFormContainer extends Component {
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    connectToRedis: PropTypes.func.isRequired
   };
   onSubmit = config => {
     this.props.connectToRedis(config);
@@ -21,7 +17,4 @@ class ConfigFormContainer extends Component {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ConfigFormContainer);
+export default ConfigFormContainer;

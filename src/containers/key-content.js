@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setKey } from '../modules/redux/database';
+import { withRedis } from '../contexts/redis-context';
 import StringContent from '../components/string-content';
 import ListContent from '../components/list-content';
 
@@ -11,9 +10,10 @@ class KeyContent extends Component {
     value: PropTypes.any, 
     type: PropTypes.string,
     theme: PropTypes.object.isRequired,
-
-    setKey: PropTypes.func.isRequired
+    redis: PropTypes.object.isRequired
   };
+
+  _setKey = ({ key, value }) => this.props.redis.set(key, value);
 
   _renderContent() {
     switch (this.props.type) {
@@ -27,7 +27,7 @@ class KeyContent extends Component {
       return (
         <StringContent
           keyName={this.props.keyName}
-          save={this.props.setKey}
+          save={this._setKey}
           content={this.props.value}>
         </StringContent>
       );
@@ -78,12 +78,4 @@ const HashContent = ({ content }) => <text content={JSON.stringify(content)}></t
 const SetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 const ZsetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 
-const mapStateToProps = state => ({});
-const mapDispatchToProps = {
-  setKey
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(KeyContent);
+export default withRedis(KeyContent);
