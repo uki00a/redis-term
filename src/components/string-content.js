@@ -4,16 +4,14 @@ import Editor from './editor';
 
 class StringContent extends Component {
   static propTypes = {
-    keyName: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
     save: PropTypes.func.isRequired
   };
 
   _save = () => {
-    const key = this.props.keyName;
     const value = this.refs.editor.value();
 
-    this.props.save({ key, value });
+    this.props.save(value);
   };
 
   render() {
@@ -22,7 +20,7 @@ class StringContent extends Component {
         <box position={{ height: '90%', top: 0 }}>
           <Editor
             ref='editor'
-            defaultValue={this.props.content} />
+            defaultValue={this.props.value} />
         </box>
         <box position={{ height: '10%', top: '90%', bottom: 0, right: 0 }}>
           <button

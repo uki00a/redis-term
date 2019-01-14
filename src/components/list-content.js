@@ -4,12 +4,8 @@ import PropTypes from 'prop-types';
 
 class ListContent extends Component {
   static propTypes = {
-    content: PropTypes.array.isRequired,
+    value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired
-  };
-
-  state = {
-    content: this.props.content
   };
 
   _openAddRowPrompt = () => {
@@ -37,9 +33,9 @@ class ListContent extends Component {
   }
 
   _prepareTableData() {
-    const { content } = this.state;
+    const { value } = this.props;
     const header = [['row', 'value']];
-    const rows = content.map((value, i) => {
+    const rows = value.map((value, i) => {
       const rownum = i + 1; 
 
       return [rownum, value];

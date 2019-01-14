@@ -1,54 +1,41 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
-import StringContent from '../components/string-content';
-import ListContent from '../components/list-content';
+import StringContent from './string-content';
+import ListContent from './list-content';
+import HashContent from './hash-content';
+import SetContent from './set-content';
+import ZsetContent from './zset-content';
 
 class KeyContent extends Component {
   static propTypes = {
     keyName: PropTypes.string,
-    value: PropTypes.any, 
     type: PropTypes.string,
     theme: PropTypes.object.isRequired,
     redis: PropTypes.object.isRequired
   };
 
-  _setKey = ({ key, value }) => this.props.redis.set(key, value);
-
   _renderContent() {
     switch (this.props.type) {
     case 'hash':
       return (
-        <HashContent
-          content={this.props.value}>
-        </HashContent>
+        <HashContent keyName={this.props.keyName} />
       );
     case 'string':
       return (
-        <StringContent
-          keyName={this.props.keyName}
-          save={this._setKey}
-          content={this.props.value}>
-        </StringContent>
+        <StringContent keyName={this.props.keyName} />
       );
     case 'list':
       return (
-        <ListContent
-          theme={this.props.theme}
-          content={this.props.value}>
-        </ListContent>
+        <ListContent keyName={this.props.keyName} />
       );
     case 'set':
       return (
-        <SetContent
-          content={this.props.value}>
-        </SetContent>
+        <SetContent keyName={this.props.keyName} />
       );
     case 'zset':
       return (
-        <ZsetContent
-          content={this.props.value}>
-        </ZsetContent>
+        <ZsetContent keyName={this.props.keyName} />
       );
     default:
       return null;
@@ -71,11 +58,5 @@ class KeyContent extends Component {
   }
 }
 
-// FIXME Move components to separate files
-
-const HashContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
-
-const SetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
-const ZsetContent = ({ content }) => <text content={JSON.stringify(content)}></text>;
 
 export default withRedis(KeyContent);

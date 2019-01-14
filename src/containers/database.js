@@ -12,48 +12,20 @@ class Database extends Component {
 
   state = {
     keys: [],
-    keyContent: {}
+    selectedKey: null,
+    selectedKeyType: null
   };
 
   onKeySelected = async (item, keyIndex) => {
+    const { redis } = this.props;
     const key = this.state.keys[keyIndex];
-    const [type, value] = await this._getTypeAndValue(key);
+    const type = await redis.type(key);
 
     this.setState({
-      keyContent: {
-        key,
-        type,
-        value
-      }
+      selectedKey: key,
+      selectedKeyType: type
     });
   };
-
-  async _getTypeAndValue(key) {
-    const { redis } = this.props;
-    const type = await redis.type(key);
-    const value = await this._getValueByKeyAndType(key, type);
-
-    return [type, value];
-  }
-
-  // FIXME
-  async _getValueByKeyAndType(key, type) {
-    const { redis } = this.props;
-    switch (type) {
-    case 'hash':
-      return await redis.hgetall(key);
-    case 'string':
-      return await redis.get(key);
-    case 'list':
-      return await redis.lrange(key, 0, -1); 
-    case 'set': 
-      return await redis.smembers(key);
-    case 'zset':
-      return await redis.zrange(key, 0, -1);
-    default:
-      throw new Error('not implemented');
-    }
-  }
 
   _scanKeys({
     cursor = 0,
@@ -86,9 +58,8 @@ class Database extends Component {
         </box>
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
-            keyName={this.state.keyContent.key}
-            type={this.state.keyContent.type}
-            value={this.state.keyContent.value}
+            keyName={this.state.selectedKey}
+            type={this.state.selectedKeyType}
             theme={theme}>
           </KeyContent>
         </box>
