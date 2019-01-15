@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 class ListContent extends Component {
   static propTypes = {
     value: PropTypes.array.isRequired,
-    theme: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired,
+    addRow: PropTypes.func.isRequired
   };
 
   _openAddRowPrompt = () => {
@@ -19,14 +20,13 @@ class ListContent extends Component {
   _renderAddRowPrompt() {
     return <Prompt
       ref='addRowPrompt'
-      title='Please input value:'
+      title='Add Row'
       theme={this.props.theme}
-      onOk={(value)=>{
-        // TODO
+      onOk={value => {
         this.refs.addRowPrompt.close();
+        this.props.addRow(value);
       }}
-      onCancel={()=>{
-        // TODO
+      onCancel={() => {
         this.refs.addRowPrompt.close();
       }}
      />;

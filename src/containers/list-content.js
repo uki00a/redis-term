@@ -12,6 +12,19 @@ class ListContentContainer extends Component {
 
   state = { value: [] };
 
+  _addRow = async value => {
+    if (!value) {
+      return;
+    }
+
+    const { keyName, redis } = this.props;
+
+    await redis.lpush(keyName, value);
+    this.setState({
+      value: [value].concat(this.state.value)
+    });
+  };
+
   async componentDidMount() {
     // TODO show loader
     const { keyName, redis } = this.props;
@@ -25,6 +38,7 @@ class ListContentContainer extends Component {
       <ListContent
         value={this.state.value}
         theme={theme}
+        addRow={this._addRow}
       />
     );
   }
