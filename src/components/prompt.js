@@ -13,6 +13,18 @@ class Prompt extends Component {
     isOpened: false
   };
 
+  _onOk = () => {
+    const value = this.refs.input.value;
+
+    this.props.onOk(value);
+    this.close();
+  };
+
+  _onCancel = () => {
+    this.props.onCancel();
+    this.close();
+  };
+
   open() {
     this.setState({ isOpened: true });
   }
@@ -21,37 +33,48 @@ class Prompt extends Component {
     this.setState({ isOpened: false });
   }
 
-  _showPrompt() {
-    setTimeout(() => { // FIXME Workaround for a timing issue
-      const title = this.props.title || '';
-      const initialValue = '';
-
-      this.refs.prompt.readInput(title, initialValue, (err, value) => {
-        this.close();
-
-        if (err || value === null) {
-          this.props.onCancel();
-        } else {
-          this.props.onOk(value);
-        }
-      });
-    }, 250);
-  }
-
-  componentDidUpdate() {
-    if (this.state.isOpened) {
-      this._showPrompt();
-    }
-  }
-
   render() {
-    return this.state.isOpened ? (
-      <prompt
-        ref='prompt'
+    return (
+      <box
+        content={this.props.title}
         style={this.props.theme.prompt}
         border='line'
-      />
-    ) : <box hidden />;
+        hidden={!this.state.isOpened}>
+        <textarea
+          position={{ top: 3, height: 1, left: 2, right: 2 }}
+          inputOnFocus
+          input
+          keyable
+          clickable
+          keys
+          mouse
+          bg='black'
+          hoverBg='blue'
+          ref='input'
+        />
+        <button
+          position={{ top: 5, height: 1, left: 2, width: 6 }}
+          content='OK'
+          align='center'
+          bg='black'
+          hoverBg='blue'
+          mouse
+          clickable
+          onClick={this._onOk}
+        />
+        <button
+          position={{ top: 5, height: 1, left: 10, width: 8 }}
+          shrink
+          content='Cancel'
+          align='center'
+          bg='black'
+          hoverBg='blue'
+          mouse
+          clickable
+          onClick={this._onCancel}
+        />
+      </box>
+    );
   }
 }
 
