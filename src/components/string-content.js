@@ -4,6 +4,7 @@ import Editor from './editor';
 
 class StringContent extends Component {
   static propTypes = {
+    keyName: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     save: PropTypes.func.isRequired
   };
@@ -17,7 +18,12 @@ class StringContent extends Component {
   render() {
     return (
       <form keys>
-        <box position={{ height: '90%', top: 0 }}>
+        <box
+          content={this.props.keyName}
+          position={{ height: '5%' }}
+          bold
+        />
+        <box position={{ height: '85%', top: '5%' }}>
           <Editor
             ref='editor'
             defaultValue={this.props.value} />
