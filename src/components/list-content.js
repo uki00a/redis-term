@@ -6,7 +6,8 @@ class ListContent extends Component {
   static propTypes = {
     value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
-    addRow: PropTypes.func.isRequired
+    addRow: PropTypes.func.isRequired,
+    reload: PropTypes.func.isRequired
   };
 
   _openAddRowPrompt = () => {
@@ -65,6 +66,14 @@ class ListContent extends Component {
             border='line'
             onClick={this._openAddRowPrompt}
             content='{center}Add Row{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ height: 3, top: 3 }}
+            tags
+            border='line'
+            onClick={this.props.reload}
+            content='{center}Reload{/center}' />
         </box>
         {
           this._renderAddRowPrompt()
