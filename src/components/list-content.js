@@ -13,10 +13,6 @@ class ListContent extends Component {
     this.refs.addRowPrompt.open();
   };
 
-  _openRemoveRowPrompt = () => {
-    // TODO
-  };
-
   _renderAddRowPrompt() {
     return <Prompt
       ref='addRowPrompt'
@@ -69,14 +65,6 @@ class ListContent extends Component {
             border='line'
             onClick={this._openAddRowPrompt}
             content='{center}Add Row{/center}' />
-          <button
-            clickable
-            mouse
-            position={{ height: 3, top: 3 }}
-            tags
-            border='line'
-            onClick={this._openRemoveRowPrompt}
-            content='{center}Remove Row{/center}' />
         </box>
         {
           this._renderAddRowPrompt()
