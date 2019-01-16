@@ -36,7 +36,7 @@ class StringContent extends Component {
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ width: 8, right: 2 }}>
+            position={{ width: 8, right: 2, height: 3 }}>
           </button>
         </box>
       </form>
