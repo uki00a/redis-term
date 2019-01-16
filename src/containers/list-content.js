@@ -40,6 +40,7 @@ class ListContentContainer extends Component {
   render() {
     return (
       <ListContent
+        keyName={this.props.keyName}
         value={this.state.value}
         theme={theme}
         addRow={this._addRow}

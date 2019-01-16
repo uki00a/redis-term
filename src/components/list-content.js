@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 class ListContent extends Component {
   static propTypes = {
+    keyName: PropTypes.string.isRequired,
     value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
@@ -46,8 +47,13 @@ class ListContent extends Component {
 
     return (
       <form>
+        <box
+          content={this.props.keyName}
+          position={{ width: '100%', height: 1 }}
+          bold
+        />
         <listtable
-          position={{ width: '70%' }}
+          position={{ width: '70%', top: 1 }}
           data={data}
           border='line'
           alwaysScroll
@@ -57,7 +63,7 @@ class ListContent extends Component {
           keys
           vi>
         </listtable>
-        <box position={{ left: '70%' }}>
+        <box position={{ left: '70%', top: 1 }}>
           <button
             clickable
             mouse
