@@ -13,7 +13,7 @@ class StringContentContainer extends Component {
     value: ''
   };
 
-  save = value => {
+  _save = value => {
     const { keyName, redis } = this.props;
 
     return redis.set(keyName, value);
@@ -36,7 +36,7 @@ class StringContentContainer extends Component {
       <StringContent
         keyName={this.props.keyName}
         value={this.state.value}
-        save={this.save}
+        save={this._save}
         reload={this._loadString}
       />
     );
