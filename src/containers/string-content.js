@@ -19,12 +19,16 @@ class StringContentContainer extends Component {
     return redis.set(keyName, value);
   };
 
-  async componentDidMount() {
+  _loadString = async () => {
     // TODO show loader
     const { keyName, redis } = this.props;
     const value = await redis.get(keyName);
 
     this.setState({ value });
+  };
+
+  componentDidMount() {
+    this._loadString();
   }
 
   render() {
@@ -33,6 +37,7 @@ class StringContentContainer extends Component {
         keyName={this.props.keyName}
         value={this.state.value}
         save={this.save}
+        reload={this._loadString}
       />
     );
   }

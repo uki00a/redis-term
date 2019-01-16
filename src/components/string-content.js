@@ -6,7 +6,8 @@ class StringContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
-    save: PropTypes.func.isRequired
+    save: PropTypes.func.isRequired,
+    reload: PropTypes.func.isRequired
   };
 
   _save = () => {
@@ -20,15 +21,24 @@ class StringContent extends Component {
       <form keys>
         <box
           content={this.props.keyName}
-          position={{ height: '5%' }}
-          bold
-        />
-        <box position={{ height: '85%', top: '5%' }}>
+          position={{ height: '8%' }}
+          bold>
+          <button
+            border='line'
+            onClick={this.props.reload}
+            keys
+            mouse
+            content='{center}Reload{/center}'
+            tags
+            position={{ width: 8, right: 2, height: 3 }}
+          />
+        </box>
+        <box position={{ height: '84%', top: '8%' }}>
           <Editor
             ref='editor'
             defaultValue={this.props.value} />
         </box>
-        <box position={{ height: '10%', top: '90%', bottom: 0, right: 0 }}>
+        <box position={{ height: '8%', top: '92%', bottom: 0, right: 0 }}>
           <button
             border='line'
             onClick={this._save}
