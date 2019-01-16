@@ -52,7 +52,13 @@ class ListContent extends Component {
         <listtable
           position={{ width: '70%' }}
           data={data}
-          border='line'>
+          border='line'
+          alwaysScroll
+          scrollbar
+          scrollable
+          clickable
+          keys
+          vi>
         </listtable>
         <box position={{ left: '70%' }}>
           <button
