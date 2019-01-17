@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Prompt from './prompt';
+import Table from './table';
 import PropTypes from 'prop-types';
 
 class HashContent extends Component {
@@ -34,16 +34,9 @@ class HashContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <listtable
-          position={{ width: '70%', top: 1 }}
+        <Table
           data={data}
-          border='line'
-          alwaysScroll
-          scrollbar
-          scrollable
-          clickable
-          keys
-          vi
+          position={{ width: '70%', top: 1 }}
         />
         <box position={{ left: '70%', top: 1 }}>
           <button
