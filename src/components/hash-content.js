@@ -6,7 +6,8 @@ class HashContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.object.isRequired,
-    theme: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired,
+    reload: PropTypes.func.isRequired
   };
 
   _prepareTableData() {
@@ -58,6 +59,7 @@ class HashContent extends Component {
             position={{ height: 3, top: 3 }}
             tags
             border='line'
+            onClick={this.props.reload}
             content='{center}Reload{/center}' />
         </box>
       </form>

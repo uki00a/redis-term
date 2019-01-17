@@ -12,11 +12,15 @@ class HashContentContainer extends Component {
 
   state = { value: {} };
 
-  async componentDidMount() {
+  _loadHash = async () => {
     const { redis, keyName } = this.props;
     const value = await redis.hgetall(keyName);
 
     this.setState({ value });
+  };
+
+  componentDidMount() {
+    this._loadHash();
   }
 
   render() {
@@ -25,6 +29,7 @@ class HashContentContainer extends Component {
         keyName={this.props.keyName}
         value={this.state.value}
         theme={theme}
+        reload={this._loadHash}
       />
     );
   }
