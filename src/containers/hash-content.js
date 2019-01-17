@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
-
-const HashContent = ({ value }) => <text content={JSON.stringify(value)}></text>;
+import HashContent from '../components/hash-content';
+import theme from '../theme';
 
 class HashContentContainer extends Component {
   static propTypes = {
@@ -21,7 +21,11 @@ class HashContentContainer extends Component {
 
   render() {
     return (
-      <HashContent value={this.state.value} />
+      <HashContent
+        keyName={this.props.keyName}
+        value={this.state.value}
+        theme={theme}
+      />
     );
   }
 }
