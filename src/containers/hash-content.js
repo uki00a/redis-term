@@ -12,6 +12,18 @@ class HashContentContainer extends Component {
 
   state = { value: {} };
 
+  _addRow = async ({ key, value }) => {
+    const { redis, keyName } = this.props;
+
+    await redis.hset(keyName, key, value);
+    this.setState({
+      value: {
+        ...this.state.value,
+        [key]: value
+      }
+    });
+  };
+
   _loadHash = async () => {
     const { redis, keyName } = this.props;
     const value = await redis.hgetall(keyName);
@@ -29,6 +41,7 @@ class HashContentContainer extends Component {
         keyName={this.props.keyName}
         value={this.state.value}
         theme={theme}
+        addRow={this._addRow}
         reload={this._loadHash}
       />
     );

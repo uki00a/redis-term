@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import Table from './table';
 import PropTypes from 'prop-types';
+import KeyValueDialog from './key-value-dialog';
 
 class HashContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
+    addRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
+  };
+
+  _addRow = pair => this.props.addRow(pair);
+  _openAddKeyValueDialog = () => {
+    this.refs.keyValueDialog.open();
   };
 
   _prepareTableData() {
@@ -45,6 +52,7 @@ class HashContent extends Component {
             position={{ height: 3 }}
             tags
             border='line'
+            onClick={this._openAddKeyValueDialog}
             content='{center}Add Row{/center}' />
           <button
             clickable
@@ -55,6 +63,11 @@ class HashContent extends Component {
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
         </box>
+        <KeyValueDialog
+          ref='keyValueDialog'
+          theme={this.props.theme}
+          onOk={this._addRow}
+        />
       </form>
     );
   }
