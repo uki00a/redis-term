@@ -45,7 +45,7 @@ class KeyValueDialog extends Component {
           content='Key:'
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
-        <textarea
+        <textbox
           position={{ top: 4, height: 1, left: 2, right: 2 }}
           name='keyInput'
           keyable
@@ -61,7 +61,7 @@ class KeyValueDialog extends Component {
           content='Value:'
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
-        <textarea
+        <textbox
           position={{ top: 7, height: 1, left: 2, right: 2 }}
           name='valueInput'
           keyable
