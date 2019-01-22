@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Textbox from './textbox';
 
 export default class ConfigForm extends Component {
   static propTypes = {
@@ -33,14 +34,11 @@ export default class ConfigForm extends Component {
               style={style}
               position={{ left: 0 }}>
             </text>
-            <textbox
-              keys
-              inputOnFocus
-              mouse
+            <Textbox
               name='name'
               value='FIXME'
               position={{ left: 6, height: 1, width: 16 }}>
-            </textbox>
+            </Textbox>
           </box>
           <box position={{ left: 0, top: 2, height: 2 }} style={style}>
             <text
@@ -48,14 +46,11 @@ export default class ConfigForm extends Component {
               style={style}
               position={{ left: 0 }}
             ></text>
-            <textbox
-              keys
-              inputOnFocus
-              mouse
+            <Textbox
               name='host'
               value='127.0.0.1'
               position={{ left: 6, height: 1, width: 16 }}>
-            </textbox>
+            </Textbox>
           </box>
           <box position={{ left: 0, top: 4, height: 2 }} style={style}>
             <text
@@ -63,14 +58,11 @@ export default class ConfigForm extends Component {
               style={style}
               position={{ left: 0 }}>
             </text>
-            <textbox
-              keys
-              inputOnFocus
-              mouse
+            <Textbox
               name='port'
               value='6379'
               position={{ left: 6, height: 1, width: 16 }}>
-            </textbox>
+            </Textbox>
           </box>
           <box position={{ left: 0, top: 6, height: 2 }} style={style}>
             <text
@@ -78,14 +70,11 @@ export default class ConfigForm extends Component {
               style={style}
               position={{ left: 0 }}>
             </text>
-            <textbox
-              keys
-              inputOnFocus
-              mouse
+            <Textbox
               name='password'
               value=''
               position={{ left: 10, height: 1, width: 16 }}>
-            </textbox>
+            </Textbox>
           </box>
           <box position={{ left: 0, top: 8, height: 2 }} style={style}>
             <button
