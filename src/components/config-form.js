@@ -15,7 +15,6 @@ export default class ConfigForm extends Component {
   render() {
     const { theme } = this.props;
     const style = Object.assign({}, theme.box.normal, theme.box.focus);
-    const textboxWidth = 16;
 
     return (
       <box
