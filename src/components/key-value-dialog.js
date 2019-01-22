@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Textbox from './textbox';
 
 class KeyValueDialog extends Component {
   static propTypes = {
@@ -11,8 +12,8 @@ class KeyValueDialog extends Component {
   state = { isOpened: false };
 
   _onOk = () => {
-    const key = this.refs.keyInput.value;
-    const value = this.refs.valueInput.value;
+    const key = this.refs.keyInput.value();
+    const value = this.refs.valueInput.value();
 
     this.props.onOk({ key, value });
     this.close();
@@ -28,12 +29,6 @@ class KeyValueDialog extends Component {
     this.setState({ isOpened: false });
   }
 
-  _onFocus(ref) {
-    // FIXME: Workaround for TypeError when inputOnFocus is set.
-    // `TypeError: done is not a function`
-    return () => setImmediate(() => this.refs[ref].readInput());
-  }
-
   render() {
     return (
       <box
@@ -45,33 +40,23 @@ class KeyValueDialog extends Component {
           content='Key:'
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
-        <textbox
+        <Textbox
           position={{ top: 4, height: 1, left: 2, right: 2 }}
           name='keyInput'
-          keyable
-          clickable
-          keys
-          mouse
           bg='black'
           hoverBg='blue'
           ref='keyInput'
-          onFocus={this._onFocus('keyInput')}
         />
         <text
           content='Value:'
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
-        <textbox
+        <Textbox
           position={{ top: 7, height: 1, left: 2, right: 2 }}
           name='valueInput'
-          keyable
-          clickable
-          keys
-          mouse
           bg='black'
           hoverBg='blue'
           ref='valueInput'
-          onFocus={this._onFocus('valueInput')}
         />
         <button
           position={{ top: 9, height: 1, left: 2, width: 6 }}
