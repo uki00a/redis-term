@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
-
-const SetContent = ({ value }) => <text content={JSON.stringify(value)}></text>;
+import SetContent from '../components/set-content';
+import theme from '../theme';
 
 class SetContentContainer extends Component {
   static propTypes = {
@@ -21,7 +21,11 @@ class SetContentContainer extends Component {
 
   render() {
     return (
-      <SetContent value={this.state.value} />
+      <SetContent
+        keyName={this.props.keyName}
+        value={this.state.value}
+        theme={theme}
+      />
     );
   }
 }
