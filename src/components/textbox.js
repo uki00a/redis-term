@@ -22,7 +22,7 @@ class Textbox extends Component {
         mouse
         onFocus={this._onFocus}
         ref='textbox'
-        { ....props }
+        { ...props }
       />
     );
   }
