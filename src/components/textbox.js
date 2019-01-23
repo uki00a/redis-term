@@ -12,7 +12,7 @@ class Textbox extends Component {
 
   render() {
     // FIXME
-    const { onFocus, ref, ...props } = this.props;
+    const { onFocus, ...props } = this.props;
 
     return (
       <textbox
