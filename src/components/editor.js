@@ -27,6 +27,8 @@ class Editor extends Component {
   }
 
   render() {
+    const { defaultValue, ...restProps } = this.props;
+
     return (
       <textarea
         inputOnFocus
@@ -37,6 +39,7 @@ class Editor extends Component {
         mouse
         ref='textarea'
         border='line'
+        { ...restProps }
       />
     );
   }
