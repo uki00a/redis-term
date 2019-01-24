@@ -16,20 +16,14 @@ class ListContent extends Component {
     this.refs.addRowPrompt.open();
   };
 
-  _renderAddRowPrompt() {
-    return <Prompt
-      ref='addRowPrompt'
-      title='Add Row'
-      theme={this.props.theme}
-      onOk={value => {
-        this.refs.addRowPrompt.close();
-        this.props.addRow(value);
-      }}
-      onCancel={() => {
-        this.refs.addRowPrompt.close();
-      }}
-     />;
-  }
+  _closeAddRowPrompt = () => {
+    this.refs.addRowPrompt.close();
+  };
+
+  _addRow = value => {
+    this._closeAddRowPrompt();
+    this.props.addRow(value);
+  };
 
   _prepareTableData() {
     const { value } = this.props;
@@ -75,9 +69,13 @@ class ListContent extends Component {
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
         </box>
-        {
-          this._renderAddRowPrompt()
-        }
+        <Prompt
+          ref='addRowPrompt'
+          title='Add Row'
+          theme={this.props.theme}
+          onOk={this._addRow}
+          onCancel={this._closeAddRowPrompt}
+         />
       </form>
     );
   }
