@@ -13,11 +13,15 @@ class SetContentContainer extends Component {
   state = { value: [] };
 
   async componentDidMount() {
+    this._loadSet();
+  }
+
+  _loadSet = async () => {
     const { redis, keyName } = this.props;
     const value = await redis.smembers(keyName);
 
     this.setState({ value });
-  }
+  };
 
   render() {
     return (
@@ -25,6 +29,7 @@ class SetContentContainer extends Component {
         keyName={this.props.keyName}
         value={this.state.value}
         theme={theme}
+        reload={this._loadSet}
       />
     );
   }
