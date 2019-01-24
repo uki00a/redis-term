@@ -11,6 +11,7 @@ const Table = ({
     alwaysScroll
     scrollbar
     scrollable
+    mouse
     clickable
     keys
     vi
