@@ -16,6 +16,19 @@ class SetContentContainer extends Component {
     this._loadSet();
   }
 
+  _addRow = async value => {
+    if (!value) {
+      return;
+    }
+
+    const { keyName, redis } = this.props;
+
+    await redis.sadd(keyName, value);
+    this.setState({
+      value: [value].concat(this.state.value)
+    });
+  };
+
   _loadSet = async () => {
     const { redis, keyName } = this.props;
     const value = await redis.smembers(keyName);
@@ -29,6 +42,7 @@ class SetContentContainer extends Component {
         keyName={this.props.keyName}
         value={this.state.value}
         theme={theme}
+        addRow={this._addRow}
         reload={this._loadSet}
       />
     );

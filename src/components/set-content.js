@@ -9,7 +9,21 @@ class SetContent extends Component {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
+    addRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
+  };
+
+  _openAddRowPrompt = () => {
+    this.refs.addRowPrompt.open();
+  };
+
+  _closeAddRowPrompt = () => {
+    this.refs.addRowPrompt.close();
+  };
+
+  _addRow = value => {
+    this._closeAddRowPrompt();
+    this.props.addRow(value);
   };
 
   _prepareTableData() {
@@ -46,7 +60,7 @@ class SetContent extends Component {
             position={{ height: 3 }}
             tags
             border='line'
-            onClick={() => {}}
+            onClick={this._openAddRowPrompt}
             content='{center}Add Row{/center}' />
           <button
             clickable
@@ -75,8 +89,8 @@ class SetContent extends Component {
           ref='addRowPrompt'
           title='Add Row'
           theme={this.props.theme}
-          onOk={() => {}}
-          onCancel={() => {}}
+          onOk={this._addRow}
+          onCancel={this._closeAddRowPrompt}
         />
       </form>
     );
