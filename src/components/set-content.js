@@ -10,8 +10,11 @@ class SetContent extends Component {
     value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
-    reload: PropTypes.func.isRequired
+    reload: PropTypes.func.isRequired,
+    saveElement: PropTypes.func.isRequired
   };
+
+  state = { editingIndex: null };
 
   _openAddRowPrompt = () => {
     this.refs.addRowPrompt.open();
@@ -24,6 +27,27 @@ class SetContent extends Component {
   _addRow = value => {
     this._closeAddRowPrompt();
     this.props.addRow(value);
+  };
+
+  _onTableRowSelected = (item, index) => {
+    const isHeaderRowSelected = index === 0;
+
+    if (isHeaderRowSelected) {
+      return;
+    }
+
+    this.setState({ editingIndex: index - 1 });
+  };
+
+  _saveElement = () => {
+    if (this.state.editingIndex == null) {
+      return;
+    }
+
+    const oldValue = this.props.value[this.state.editingIndex];
+    const newValue = this.refs.editor.value();
+
+    this.props.saveElement(oldValue, newValue);
   };
 
   _prepareTableData() {
@@ -41,6 +65,9 @@ class SetContent extends Component {
 
   render() {
     const data = this._prepareTableData();
+    const editingValue = this.state.editingIndex == null
+      ? ''
+      : this.props.value[this.state.editingIndex];
 
     return (
       <form>
@@ -52,6 +79,7 @@ class SetContent extends Component {
         <Table
           data={data}
           position={{ width: '70%', height: '48%', top: 1 }}
+          onSelect={this._onTableRowSelected}
         />
         <box position={{ left: '70%', top: 1 }}>
           <button
@@ -72,8 +100,10 @@ class SetContent extends Component {
             content='{center}Reload{/center}' />
         </box>
         <Editor
+          ref='editor'
           position={{ top: '50%', height: '40%' }}
-          defaultValue=''
+          defaultValue={editingValue}
+          disabled={this.state.editingIndex == null}
         />
         <box position={{ height: '8%', top: '92%', bottom: 0, right: 0 }}>
           <button
@@ -83,6 +113,7 @@ class SetContent extends Component {
             content='{center}Save{/center}'
             tags
             position={{ width: 8, right: 2, height: 3 }}
+            onClick={this._saveElement}
           />
         </box>
         <Prompt

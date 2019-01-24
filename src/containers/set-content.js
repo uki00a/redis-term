@@ -36,6 +36,29 @@ class SetContentContainer extends Component {
     this.setState({ value });
   };
 
+  _saveElement = async (oldValue, newValue) => {
+    const { redis, keyName } = this.props;
+    const newValueExists = await redis.sismember(keyName, newValue);
+
+    if (newValueExists) {
+      return;
+    }
+
+    await redis
+      .multi()
+      .srem(keyName, oldValue)
+      .sadd(keyName, newValue)
+      .exec();
+
+    const oldValueIndex = this.state.value.indexOf(oldValue);
+    const newMembers = this.state.value.map((x, index) => index === oldValueIndex
+        ? newValue
+        : x
+    );
+
+    this.setState({ value: newMembers });
+  };
+
   render() {
     return (
       <SetContent
@@ -44,6 +67,7 @@ class SetContentContainer extends Component {
         theme={theme}
         addRow={this._addRow}
         reload={this._loadSet}
+        saveElement={this._saveElement}
       />
     );
   }
