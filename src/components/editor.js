@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 
 class Editor extends Component {
   static propTypes = {
-    defaultValue: PropTypes.string
+    defaultValue: PropTypes.string,
+    disabled: PropTypes.bool
   };
 
   componentDidUpdate(prevProps) {
@@ -26,12 +27,21 @@ class Editor extends Component {
     return this.refs.textarea.value;
   }
 
+  _onFocus = () => {
+    if (this.props.disabled) {
+      return;
+    }
+
+    // FIXME: Workaround for timing issue
+    setImmediate(() => this.refs.textarea.readInput());
+  };
+
   render() {
     const { defaultValue, ...restProps } = this.props;
 
     return (
       <textarea
-        inputOnFocus
+        onFocus={this._onFocus}
         input
         keyable
         clickable
