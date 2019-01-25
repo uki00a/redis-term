@@ -20,6 +20,10 @@ export default Object.freeze({
       border: { fg: cyan }
     }
   },
+  table: {
+    header: { bold: true },
+    selected: { bg: white }
+  },
   list: {
     normal: { 
       bg: blue,

@@ -50,6 +50,7 @@ class ListContent extends Component {
         <Table
           data={data}
           position={{ width: '70%', top: 1 }}
+          style={this.props.theme.table}
         />
         <box position={{ left: '70%', top: 1 }}>
           <button

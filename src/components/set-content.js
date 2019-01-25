@@ -80,6 +80,7 @@ class SetContent extends Component {
           data={data}
           position={{ width: '70%', height: '48%', top: 1 }}
           onSelect={this._onTableRowSelected}
+          style={this.props.theme.table}
         />
         <box position={{ left: '70%', top: 1 }}>
           <button
