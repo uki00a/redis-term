@@ -25,17 +25,12 @@ export default Object.freeze({
     selected: { bg: white }
   },
   list: {
-    normal: { 
-      bg: blue,
-      fg: yellow,
-      border: { fg: white, bg: blue },
-      scrollbar: { bg: green },
-      label: { fg: white, bg: blue },
-      item: { fg: yellow }
-    },
-    focus: {
-      border: { fg: cyan }
-    }
+    bg: blue,
+    fg: yellow,
+    border: { fg: cyan }
+    scrollbar: { bg: green },
+    label: { fg: white, bg: blue },
+    item: { fg: yellow }
   },
   button: {
     fg: black,
