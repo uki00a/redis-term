@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Prompt from './prompt';
 import PropTypes from 'prop-types';
-import Table from './table';
+import Editor from './editor';
+import List from './list';
 
 class ListContent extends Component {
   static propTypes = {
@@ -9,8 +10,11 @@ class ListContent extends Component {
     value: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
+    save: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
   };
+
+  state = { selectedIndex: null };
 
   _openAddRowPrompt = () => {
     this.refs.addRowPrompt.open();
@@ -25,20 +29,24 @@ class ListContent extends Component {
     this.props.addRow(value);
   };
 
-  _prepareTableData() {
-    const { value } = this.props;
-    const header = [['row', 'value']];
-    const rows = value.map((value, i) => {
-      const rownum = i + 1; 
+  _save = () => {
+    if (this.state.selectedIndex == null) {
+      return;
+    }
+    const index = this.state.selectedIndex;
+    const value = this.refs.editor.value();
 
-      return [rownum, value];
-    });
+    this.props.save(value, index);
+  };
 
-    return header.concat(rows);
-  }
+  _onSelect = (item, index) => {
+    this.setState({ selectedIndex: index });
+  };
 
   render() {
-    const data = this._prepareTableData();
+    const selectedValue = this.state.selectedIndex == null
+      ? null
+      : this.props.value[this.state.selectedIndex];
 
     return (
       <form>
@@ -47,16 +55,31 @@ class ListContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <Table
-          data={data}
-          position={{ width: '70%', top: 1 }}
-          style={this.props.theme.table}
+        <List
+          items={this.props.value}
+          position={{ width: '50%', top: 1 }}
+          style={this.props.theme.list}
+          onSelect={this._onSelect}
         />
-        <box position={{ left: '70%', top: 1 }}>
+        <box position={{ left: '50%', top: 1 }}>
+          <Editor
+            ref='editor'
+            defaultValue={selectedValue}
+            disabled={this.state.selectedIndex == null}
+            position={{ height: 30 }}
+          />
           <button
             clickable
             mouse
-            position={{ height: 3 }}
+            position={{ top: 30, height: 3 }}
+            tags
+            border='line'
+            onClick={this._save}
+            content='{center}Save{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 33, height: 3 }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
@@ -64,7 +87,7 @@ class ListContent extends Component {
           <button
             clickable
             mouse
-            position={{ height: 3, top: 3 }}
+            position={{ top: 36, height: 3 }}
             tags
             border='line'
             onClick={this.props.reload}

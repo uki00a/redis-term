@@ -25,6 +25,15 @@ class ListContentContainer extends Component {
     });
   };
 
+  _save = async (value, index) => {
+    const { keyName, redis } = this.props;
+
+    await redis.lset(keyName, index, value);
+    this.setState({
+      value: this.state.value.map((x, i) => i === index ? value : x)
+    });
+  };
+
   _loadList = async () => {
     // TODO show loader
     const { keyName, redis } = this.props;
@@ -44,6 +53,7 @@ class ListContentContainer extends Component {
         value={this.state.value}
         theme={theme}
         addRow={this._addRow}
+        save={this._save}
         reload={this._loadList}
       />
     );
