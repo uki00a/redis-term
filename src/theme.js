@@ -27,7 +27,7 @@ export default Object.freeze({
   list: {
     bg: blue,
     fg: yellow,
-    border: { fg: cyan }
+    border: { fg: cyan },
     scrollbar: { bg: green },
     label: { fg: white, bg: blue },
     item: { fg: yellow }
