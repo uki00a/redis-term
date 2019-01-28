@@ -7,7 +7,7 @@ import List from './list';
 class ListContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    value: PropTypes.array.isRequired,
+    elements: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
@@ -24,9 +24,9 @@ class ListContent extends Component {
     this.refs.addRowPrompt.close();
   };
 
-  _addRow = value => {
+  _addRow = element => {
     this._closeAddRowPrompt();
-    this.props.addRow(value);
+    this.props.addRow(element);
   };
 
   _save = () => {
@@ -46,7 +46,7 @@ class ListContent extends Component {
   render() {
     const selectedValue = this.state.selectedIndex == null
       ? null
-      : this.props.value[this.state.selectedIndex];
+      : this.props.elements[this.state.selectedIndex];
 
     return (
       <form>
@@ -56,7 +56,7 @@ class ListContent extends Component {
           bold
         />
         <List
-          items={this.props.value}
+          items={this.props.elements}
           position={{ width: '50%', top: 1 }}
           style={this.props.theme.list}
           onSelect={this._onSelect}

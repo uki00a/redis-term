@@ -10,37 +10,43 @@ class ListContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { value: [] };
+  state = { elements: [] };
 
-  _addRow = async value => {
-    if (!value) {
+  _addRow = async newElement => {
+    if (!newElement) {
       return;
     }
 
     const { keyName, redis } = this.props;
 
-    await redis.lpush(keyName, value);
-    this.setState({
-      value: [value].concat(this.state.value)
-    });
+    await redis.lpush(keyName, newElement);
+    this._addElement(newElement);
   };
 
-  _save = async (value, index) => {
+  _save = async (newValue, index) => {
     const { keyName, redis } = this.props;
 
-    await redis.lset(keyName, index, value);
-    this.setState({
-      value: this.state.value.map((x, i) => i === index ? value : x)
-    });
+    await redis.lset(keyName, index, newValue);
+    const newElements = this.state.elements.map((x, i) => i === index
+      ? newValue
+      : x
+    );
+    this.setState({ elements: newElements });
   };
 
   _loadList = async () => {
     // TODO show loader
     const { keyName, redis } = this.props;
-    const value = await redis.lrange(keyName, 0, -1); 
+    const elements = await redis.lrange(keyName, 0, -1);
 
-    this.setState({ value });
+    this.setState({ elements });
   };
+
+  _addElement(newElement) {
+    const newElements = [newElement].concat(this.state.elements);
+
+    this.setState({ elements: newElements });
+  }
 
   async componentDidMount() {
     this._loadList();
@@ -50,7 +56,7 @@ class ListContentContainer extends Component {
     return (
       <ListContent
         keyName={this.props.keyName}
-        value={this.state.value}
+        elements={this.state.elements}
         theme={theme}
         addRow={this._addRow}
         save={this._save}
