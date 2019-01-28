@@ -10,7 +10,7 @@ class HashContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { value: {} };
+  state = { hash: {} };
 
   _addRow = async ({ key, value }) => {
     const { redis, keyName } = this.props;
@@ -21,9 +21,9 @@ class HashContentContainer extends Component {
 
   _loadHash = async () => {
     const { redis, keyName } = this.props;
-    const value = await redis.hgetall(keyName);
+    const hash = await redis.hgetall(keyName);
 
-    this.setState({ value });
+    this.setState({ hash });
   };
 
   _saveField = async (field, newValue) => {
@@ -35,11 +35,11 @@ class HashContentContainer extends Component {
 
   _updateField(field, value) {
     const newHash = {
-      ...this.state.value,
+      ...this.state.hash,
       [field]: value
     };
 
-    this.setState({ value: newHash });
+    this.setState({ hash: newHash });
   }
 
   componentDidMount() {
@@ -50,7 +50,7 @@ class HashContentContainer extends Component {
     return (
       <HashContent
         keyName={this.props.keyName}
-        value={this.state.value}
+        hash={this.state.hash}
         theme={theme}
         addRow={this._addRow}
         saveField={this._saveField}

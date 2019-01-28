@@ -7,7 +7,7 @@ import KeyValueDialog from './key-value-dialog';
 class HashContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    value: PropTypes.object.isRequired,
+    hash: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
     saveField: PropTypes.func.isRequired,
@@ -26,7 +26,7 @@ class HashContent extends Component {
       return;
     }
 
-    const fields = Object.keys(this.props.value);
+    const fields = Object.keys(this.props.hash);
     const field = fields[this.state.selectedIndex];
     const newValue = this.refs.editor.value();
 
@@ -38,12 +38,12 @@ class HashContent extends Component {
   };
 
   render() {
-    const fields = Object.keys(this.props.value);
+    const fields = Object.keys(this.props.hash);
     const selectedField = this.state.selectedIndex == null
       ? null
       : fields[this.state.selectedIndex];
     const selectedFieldValue = selectedField 
-      ? this.props.value[selectedField]
+      ? this.props.hash[selectedField]
       : null;
 
     return (
