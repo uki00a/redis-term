@@ -16,7 +16,7 @@ class HashContent extends Component {
 
   state = { selectedIndex: null };
 
-  _addRow = pair => this.props.addRow(pair);
+  _addRow = (field, value) => this.props.addRow(field, value);
   _openAddKeyValueDialog = () => {
     this.refs.keyValueDialog.open();
   };

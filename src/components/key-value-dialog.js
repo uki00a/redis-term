@@ -15,7 +15,7 @@ class KeyValueDialog extends Component {
     const key = this.refs.keyInput.value();
     const value = this.refs.valueInput.value();
 
-    this.props.onOk({ key, value });
+    this.props.onOk(key, value);
     this.close();
   };
 

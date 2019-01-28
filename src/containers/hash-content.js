@@ -12,11 +12,11 @@ class HashContentContainer extends Component {
 
   state = { hash: {} };
 
-  _addRow = async ({ key, value }) => {
+  _addRow = async (field, value) => {
     const { redis, keyName } = this.props;
 
-    await redis.hset(keyName, key, value);
-    this._updateField(key, value);
+    await redis.hset(keyName, field, value);
+    this._updateField(field, value);
   };
 
   _loadHash = async () => {
