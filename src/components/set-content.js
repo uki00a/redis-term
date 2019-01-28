@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Table from './table';
+import List from './list';
 import Editor from './editor';
 import Prompt from './prompt';
 
@@ -14,7 +14,7 @@ class SetContent extends Component {
     saveElement: PropTypes.func.isRequired
   };
 
-  state = { editingIndex: null };
+  state = { selectedIndex: null };
 
   _openAddRowPrompt = () => {
     this.refs.addRowPrompt.open();
@@ -29,45 +29,25 @@ class SetContent extends Component {
     this.props.addRow(value);
   };
 
-  _onTableRowSelected = (item, index) => {
-    const isHeaderRowSelected = index === 0;
-
-    if (isHeaderRowSelected) {
-      return;
-    }
-
-    this.setState({ editingIndex: index - 1 });
+  _onMemberSelected = (item, index) => {
+    this.setState({ selectedIndex: index });
   };
 
   _saveElement = () => {
-    if (this.state.editingIndex == null) {
+    if (this.state.selectedIndex == null) {
       return;
     }
 
-    const oldValue = this.props.value[this.state.editingIndex];
+    const oldValue = this.props.value[this.state.selectedIndex];
     const newValue = this.refs.editor.value();
 
     this.props.saveElement(oldValue, newValue);
   };
 
-  _prepareTableData() {
-    const header = [['row', 'value']];
-    const rows = this.props.value.map((x, i) => {
-      const rownum = i + 1;
-      const row = [rownum, x];
-
-      return row;
-    });
-    const table = header.concat(rows);
-
-    return table;
-  }
-
   render() {
-    const data = this._prepareTableData();
-    const editingValue = this.state.editingIndex == null
+    const editingValue = this.state.selectedIndex == null
       ? ''
-      : this.props.value[this.state.editingIndex];
+      : this.props.value[this.state.selectedIndex];
 
     return (
       <form>
@@ -76,17 +56,23 @@ class SetContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <Table
-          data={data}
-          position={{ width: '70%', height: '48%', top: 1 }}
-          onSelect={this._onTableRowSelected}
-          style={this.props.theme.table}
+        <List
+          items={this.props.value}
+          position={{ width: '50%', top: 1 }}
+          style={this.props.theme.list}
+          onSelect={this._onMemberSelected}
         />
-        <box position={{ left: '70%', top: 1 }}>
+        <box position={{ left: '50%', top: 1 }}>
+          <Editor
+            ref='editor'
+            position={{ height: 30 }}
+            defaultValue={editingValue}
+            disabled={this.state.selectedIndex == null}
+          />
           <button
             clickable
             mouse
-            position={{ height: 3 }}
+            position={{ top: 30, height: 3 }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
@@ -94,26 +80,18 @@ class SetContent extends Component {
           <button
             clickable
             mouse
-            position={{ height: 3, top: 3 }}
+            position={{ top: 33, height: 3 }}
             tags
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
-        </box>
-        <Editor
-          ref='editor'
-          position={{ top: '50%', height: '40%' }}
-          defaultValue={editingValue}
-          disabled={this.state.editingIndex == null}
-        />
-        <box position={{ height: '8%', top: '92%', bottom: 0, right: 0 }}>
           <button
             border='line'
             keys
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ width: 8, right: 2, height: 3 }}
+            position={{ top: 36, height: 3 }}
             onClick={this._saveElement}
           />
         </box>
