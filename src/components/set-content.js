@@ -7,7 +7,7 @@ import Prompt from './prompt';
 class SetContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    value: PropTypes.array.isRequired,
+    members: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
@@ -38,7 +38,7 @@ class SetContent extends Component {
       return;
     }
 
-    const oldValue = this.props.value[this.state.selectedIndex];
+    const oldValue = this.props.members[this.state.selectedIndex];
     const newValue = this.refs.editor.value();
 
     this.props.saveElement(oldValue, newValue);
@@ -47,7 +47,7 @@ class SetContent extends Component {
   render() {
     const editingValue = this.state.selectedIndex == null
       ? ''
-      : this.props.value[this.state.selectedIndex];
+      : this.props.members[this.state.selectedIndex];
 
     return (
       <form>
@@ -57,7 +57,7 @@ class SetContent extends Component {
           bold
         />
         <List
-          items={this.props.value}
+          items={this.props.members}
           position={{ width: '50%', top: 1 }}
           style={this.props.theme.list}
           onSelect={this._onMemberSelected}

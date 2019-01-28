@@ -10,30 +10,34 @@ class SetContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { value: [] };
+  state = { members: [] };
 
   async componentDidMount() {
     this._loadSet();
   }
 
-  _addRow = async value => {
-    if (!value) {
+  _addMember = newMember => {
+    const newMembers = [newMember].concat(this.state.members);
+
+    this.setState({ members: newMembers });
+  };
+
+  _addRow = async newMember => {
+    if (!newMember) {
       return;
     }
 
     const { keyName, redis } = this.props;
 
-    await redis.sadd(keyName, value);
-    this.setState({
-      value: [value].concat(this.state.value)
-    });
+    await redis.sadd(keyName, newMember);
+    this._addMember(newMember);
   };
 
   _loadSet = async () => {
     const { redis, keyName } = this.props;
-    const value = await redis.smembers(keyName);
+    const members = await redis.smembers(keyName);
 
-    this.setState({ value });
+    this.setState({ members });
   };
 
   _saveElement = async (oldValue, newValue) => {
@@ -50,20 +54,20 @@ class SetContentContainer extends Component {
       .sadd(keyName, newValue)
       .exec();
 
-    const oldValueIndex = this.state.value.indexOf(oldValue);
-    const newMembers = this.state.value.map((x, index) => index === oldValueIndex
+    const oldValueIndex = this.state.members.indexOf(oldValue);
+    const newMembers = this.state.members.map((x, index) => index === oldValueIndex
         ? newValue
         : x
     );
 
-    this.setState({ value: newMembers });
+    this.setState({ members: newMembers });
   };
 
   render() {
     return (
       <SetContent
         keyName={this.props.keyName}
-        value={this.state.value}
+        members={this.state.members}
         theme={theme}
         addRow={this._addRow}
         reload={this._loadSet}
