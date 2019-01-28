@@ -16,12 +16,7 @@ class HashContentContainer extends Component {
     const { redis, keyName } = this.props;
 
     await redis.hset(keyName, key, value);
-    this.setState({
-      value: {
-        ...this.state.value,
-        [key]: value
-      }
-    });
+    this._updateField(key, value);
   };
 
   _loadHash = async () => {
@@ -30,6 +25,22 @@ class HashContentContainer extends Component {
 
     this.setState({ value });
   };
+
+  _saveField = async (field, newValue) => {
+    const { redis, keyName } = this.props;
+
+    await redis.hset(keyName, field, newValue);
+    this._updateField(field, newValue);
+  };
+
+  _updateField(field, value) {
+    const newHash = {
+      ...this.state.value,
+      [field]: value
+    };
+
+    this.setState({ value: newHash });
+  }
 
   componentDidMount() {
     this._loadHash();
@@ -42,6 +53,7 @@ class HashContentContainer extends Component {
         value={this.state.value}
         theme={theme}
         addRow={this._addRow}
+        saveField={this._saveField}
         reload={this._loadHash}
       />
     );

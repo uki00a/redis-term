@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Table from './table';
+import List from './list';
+import Editor from './editor';
 import PropTypes from 'prop-types';
 import KeyValueDialog from './key-value-dialog';
 
@@ -9,30 +10,41 @@ class HashContent extends Component {
     value: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
+    saveField: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
   };
+
+  state = { selectedIndex: null };
 
   _addRow = pair => this.props.addRow(pair);
   _openAddKeyValueDialog = () => {
     this.refs.keyValueDialog.open();
   };
 
-  _prepareTableData() {
-    const header = [['row', 'key', 'value']];
-    const rows = Object.keys(this.props.value).map((key, i) => {
-      const rownum = i + 1;
-      const value = this.props.value[key];
-      const row = [rownum, key, value];
+  _saveField = () => {
+    if (this.state.selectedIndex == null) {
+      return;
+    }
 
-      return row;
-    });
-    const table = header.concat(rows);
+    const fields = Object.keys(this.props.value);
+    const field = fields[this.state.selectedIndex];
+    const newValue = this.refs.editor.value();
 
-    return table;
-  }
+    this.props.saveField(field, newValue);
+  };
+
+  _onFieldSelected = (item, fieldIndex) => {
+    this.setState({ selectedIndex: fieldIndex });
+  };
 
   render() {
-    const data = this._prepareTableData();
+    const fields = Object.keys(this.props.value);
+    const selectedField = this.state.selectedIndex == null
+      ? null
+      : fields[this.state.selectedIndex];
+    const selectedFieldValue = selectedField 
+      ? this.props.value[selectedField]
+      : null;
 
     return (
       <form>
@@ -41,15 +53,31 @@ class HashContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <Table
-          data={data}
-          position={{ width: '70%', top: 1 }}
+        <List
+          items={fields}
+          position={{ width: '50%', top: 1 }}
+          style={this.props.theme.list}
+          onSelect={this._onFieldSelected}
         />
-        <box position={{ left: '70%', top: 1 }}>
+        <box position={{ left: '50%', top: 1 }}>
+          <Editor
+            ref='editor'
+            position={{ height: 30 }}
+            defaultValue={selectedFieldValue}
+            disabled={this.state.selectedIndex == null}
+          />
           <button
             clickable
             mouse
-            position={{ height: 3 }}
+            position={{ top: 30, height: 3 }}
+            tags
+            border='line'
+            onClick={this._saveField}
+            content='{center}Save{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 33, height: 3 }}
             tags
             border='line'
             onClick={this._openAddKeyValueDialog}
@@ -57,7 +85,7 @@ class HashContent extends Component {
           <button
             clickable
             mouse
-            position={{ height: 3, top: 3 }}
+            position={{ top: 36, height: 3 }}
             tags
             border='line'
             onClick={this.props.reload}
