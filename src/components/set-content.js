@@ -70,9 +70,18 @@ class SetContent extends Component {
             disabled={this.state.selectedIndex == null}
           />
           <button
+            border='line'
+            keys
+            mouse
+            content='{center}Save{/center}'
+            tags
+            position={{ top: 30, height: 3 }}
+            onClick={this._saveElement}
+          />
+          <button
             clickable
             mouse
-            position={{ top: 30, height: 3 }}
+            position={{ top: 33, height: 3 }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
@@ -80,20 +89,11 @@ class SetContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 33, height: 3 }}
+            position={{ top: 36, height: 3 }}
             tags
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
-          <button
-            border='line'
-            keys
-            mouse
-            content='{center}Save{/center}'
-            tags
-            position={{ top: 36, height: 3 }}
-            onClick={this._saveElement}
-          />
         </box>
         <Prompt
           ref='addRowPrompt'
