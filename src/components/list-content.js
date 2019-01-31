@@ -49,7 +49,7 @@ class ListContent extends Component {
       : this.props.elements[this.state.selectedIndex];
 
     return (
-      <form>
+      <box>
         <box
           content={this.props.keyName}
           position={{ width: '100%', height: 1 }}
@@ -61,17 +61,26 @@ class ListContent extends Component {
           style={this.props.theme.list}
           onSelect={this._onSelect}
         />
-        <box position={{ left: '50%', top: 1 }}>
+        <box
+          keys
+          mouse
+          vi
+          keyable
+          clickable
+          scrollable
+          scrollbar
+          alwaysScroll
+          position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
             defaultValue={selectedValue}
             disabled={this.state.selectedIndex == null}
-            position={{ height: 30 }}
+            position={{ height: 30, width: '95%' }}
           />
           <button
             clickable
             mouse
-            position={{ top: 30, height: 3 }}
+            position={{ top: 30, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._save}
@@ -79,7 +88,7 @@ class ListContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 33, height: 3 }}
+            position={{ top: 33, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
@@ -87,7 +96,7 @@ class ListContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 36, height: 3 }}
+            position={{ top: 36, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
@@ -100,7 +109,7 @@ class ListContent extends Component {
           onOk={this._addRow}
           onCancel={this._closeAddRowPrompt}
          />
-      </form>
+      </box>
     );
   }
 }
