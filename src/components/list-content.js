@@ -43,11 +43,13 @@ class ListContent extends Component {
     this.setState({ selectedIndex: index });
   };
 
-  render() {
-    const selectedValue = this.state.selectedIndex == null
+  _editingValue() {
+    return = this.state.selectedIndex == null
       ? null
       : this.props.elements[this.state.selectedIndex];
+  }
 
+  render() {
     return (
       <box>
         <box
@@ -73,7 +75,7 @@ class ListContent extends Component {
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
-            defaultValue={selectedValue}
+            defaultValue={this._editingValue()}
             disabled={this.state.selectedIndex == null}
             position={{ height: 30, width: '95%' }}
           />
