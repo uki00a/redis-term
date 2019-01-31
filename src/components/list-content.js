@@ -44,7 +44,7 @@ class ListContent extends Component {
   };
 
   _editingValue() {
-    return = this.state.selectedIndex == null
+    return this.state.selectedIndex == null
       ? null
       : this.props.elements[this.state.selectedIndex];
   }
