@@ -45,10 +45,13 @@ class SetContent extends Component {
     this.props.saveElement(oldValue, newValue);
   };
 
-  render() {
-    const editingValue = this.state.selectedIndex == null
+  _editingValue() {
+    return this.state.selectedIndex == null
       ? ''
       : this.props.members[this.state.selectedIndex];
+  }
+
+  render() {
 
     return (
       <box>
@@ -68,7 +71,7 @@ class SetContent extends Component {
           <Editor
             ref='editor'
             position={{ height: 30, width: '95%' }}
-            defaultValue={editingValue}
+            defaultValue={this._editingValue()}
             disabled={this.state.selectedIndex == null}
           />
           <button
