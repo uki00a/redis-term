@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import List from './list';
 import Editor from './editor';
 import Prompt from './prompt';
+import ScrollableBox from './scrollable-box';
 
 class SetContent extends Component {
   static propTypes = {
@@ -50,7 +51,7 @@ class SetContent extends Component {
       : this.props.members[this.state.selectedIndex];
 
     return (
-      <form>
+      <box>
         <box
           content={this.props.keyName}
           position={{ width: '100%', height: 1 }}
@@ -62,10 +63,11 @@ class SetContent extends Component {
           style={this.props.theme.list}
           onSelect={this._onMemberSelected}
         />
-        <box position={{ left: '50%', top: 1 }}>
+        <ScrollableBox
+          position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
-            position={{ height: 30 }}
+            position={{ height: 30, width: '95%' }}
             defaultValue={editingValue}
             disabled={this.state.selectedIndex == null}
           />
@@ -75,13 +77,13 @@ class SetContent extends Component {
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ top: 30, height: 3 }}
+            position={{ top: 30, height: 3, width: '95%' }}
             onClick={this._saveElement}
           />
           <button
             clickable
             mouse
-            position={{ top: 33, height: 3 }}
+            position={{ top: 33, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
@@ -89,12 +91,12 @@ class SetContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 36, height: 3 }}
+            position={{ top: 36, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
-        </box>
+        </ScrollableBox>
         <Prompt
           ref='addRowPrompt'
           title='Add Row'
@@ -102,7 +104,7 @@ class SetContent extends Component {
           onOk={this._addRow}
           onCancel={this._closeAddRowPrompt}
         />
-      </form>
+      </box>
     );
   }
 }

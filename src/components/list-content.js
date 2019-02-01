@@ -3,6 +3,7 @@ import Prompt from './prompt';
 import PropTypes from 'prop-types';
 import Editor from './editor';
 import List from './list';
+import ScrollableBox from './scrollable-box';
 
 class ListContent extends Component {
   static propTypes = {
@@ -63,15 +64,7 @@ class ListContent extends Component {
           style={this.props.theme.list}
           onSelect={this._onSelect}
         />
-        <box
-          keys
-          mouse
-          vi
-          keyable
-          clickable
-          scrollable
-          scrollbar
-          alwaysScroll
+        <ScrollableBox
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
@@ -103,7 +96,7 @@ class ListContent extends Component {
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
-        </box>
+        </ScrollableBox>
         <Prompt
           ref='addRowPrompt'
           title='Add Row'
