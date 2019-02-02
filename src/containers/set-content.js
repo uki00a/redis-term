@@ -12,25 +12,25 @@ class SetContentContainer extends Component {
 
   state = { members: [] };
 
-  async componentDidMount() {
-    this._loadSet();
-  }
-
-  _addMember = newMember => {
-    const newMembers = [newMember].concat(this.state.members);
-
-    this.setState({ members: newMembers });
-  };
-
-  _addRow = async newMember => {
+  _addMember = async newMember => {
     if (!newMember) {
       return;
     }
 
+    await this._addMemberToDb(newMember);
+    this._addMemberToState(newMember);
+  };
+
+  async _addMemberToDb(newMember) {
     const { keyName, redis } = this.props;
 
     await redis.sadd(keyName, newMember);
-    this._addMember(newMember);
+  }
+
+  _addMemberToState = newMember => {
+    const newMembers = [newMember].concat(this.state.members);
+
+    this.setState({ members: newMembers });
   };
 
   _loadSet = async () => {
@@ -41,27 +41,45 @@ class SetContentContainer extends Component {
   };
 
   _saveElement = async (oldValue, newValue) => {
-    const { redis, keyName } = this.props;
-    const newValueExists = await redis.sismember(keyName, newValue);
-
-    if (newValueExists) {
+    if (await this._checkIfValueExistsInDb(newValue)) {
       return;
     }
+
+    await this._applyChangesToDb(oldValue, newValue);
+    this._applyChangesToState(oldValue, newValue);
+  };
+
+  async _checkIfValueExistsInDb(value) {
+    const { redis, keyName } = this.props;
+    return await redis.sismember(keyName, value);
+  }
+
+  async _applyChangesToDb(oldValue, newValue) {
+    const { redis, keyName } = this.props;
 
     await redis
       .multi()
       .srem(keyName, oldValue)
       .sadd(keyName, newValue)
       .exec();
+  }
 
+  _applyChangesToState(oldValue, newValue) {
     const oldValueIndex = this.state.members.indexOf(oldValue);
-    const newMembers = this.state.members.map((x, index) => index === oldValueIndex
-        ? newValue
-        : x
-    );
+    const newMembers = this._updateMemberAt(oldValueIndex, newValue);
 
     this.setState({ members: newMembers });
-  };
+  }
+
+  _updateMemberAt(index, newValue) {
+    const newMembers = this.state.members.slice(0);
+    newMembers[index] = newValue;
+    return newMembers;
+  }
+
+  async componentDidMount() {
+    this._loadSet();
+  }
 
   render() {
     return (
@@ -69,7 +87,7 @@ class SetContentContainer extends Component {
         keyName={this.props.keyName}
         members={this.state.members}
         theme={theme}
-        addRow={this._addRow}
+        addRow={this._addMember}
         reload={this._loadSet}
         saveElement={this._saveElement}
       />
