@@ -27,8 +27,7 @@ class HashContent extends Component {
       return;
     }
 
-    const fields = Object.keys(this.props.hash);
-    const field = fields[this.state.selectedFieldIndex];
+    const field = this._selectedField();
     const newValue = this.refs.editor.value();
 
     this.props.saveField(field, newValue);
@@ -42,10 +41,14 @@ class HashContent extends Component {
     return this.state.selectedFieldIndex != null;
   }
 
+  _selectedField() {
+    const fields = Object.keys(this.props.hash);
+    return fields[this.state.selectedFieldIndex];
+  }
+
   _selectedFieldValue() {
     if (this._hasSelectedField()) {
-      const fields = Object.keys(this.props.hash);
-      const selectedField = fields[this.state.selectedFieldIndex];
+      const selectedField = this._selectedField();
       return this.props.hash[selectedField];
     } else {
       return null;
