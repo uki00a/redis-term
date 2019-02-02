@@ -3,6 +3,7 @@ import Prompt from './prompt';
 import PropTypes from 'prop-types';
 import Editor from './editor';
 import List from './list';
+import ScrollableBox from './scrollable-box';
 
 class ZsetContent extends Component {
   static propTypes = {
@@ -50,7 +51,7 @@ class ZsetContent extends Component {
     const isNotEditing = this.state.selectedMemberIndex == null;
 
     return (
-      <form>
+      <box>
         <box
           content={this.props.keyName}
           position={{ width: '100%', height: 1 }}
@@ -62,18 +63,18 @@ class ZsetContent extends Component {
           style={this.props.theme.list}
           onSelect={this._onMemberSelected}
         />
-        <box position={{ left: '50%', top: 1 }}>
+        <ScrollableBox position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='scoreEditor'
             label='score'
-            position={{ height: 5 }}
+            position={{ height: 5, width: '95%' }}
             defaultValue={editingScore}
             disabled={isNotEditing}
           />
           <Editor
             ref='valueEditor'
             label='value'
-            position={{ top: 5, height: 30 }}
+            position={{ top: 5, height: 30, width: '95%' }}
             defaultValue={editingMember}
             disabled={isNotEditing}
           />
@@ -83,19 +84,19 @@ class ZsetContent extends Component {
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ top: 35, height: 3 }}
+            position={{ top: 35, height: 3, width: '95%' }}
             onClick={this._saveMember}
           />
           <button
             clickable
             mouse
-            position={{ top: 38, height: 3 }}
+            position={{ top: 38, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
-        </box>
-      </form>
+        </ScrollableBox>
+      </box>
     );
   }
 }
