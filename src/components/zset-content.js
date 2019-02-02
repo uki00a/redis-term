@@ -17,20 +17,24 @@ class ZsetContent extends Component {
 
   state = { selectedMemberIndex: null };
 
+  _hasSelectedMember() {
+    return this.state.selectedMemberIndex != null;
+  }
+
   _editingMember() {
-    return this.state.selectedMemberIndex == null
-      ? null
-      : this.props.members[this.state.selectedMemberIndex];
+    return this._hasSelectedMember()
+      ? this.props.members[this.state.selectedMemberIndex]
+      : null;
   }
 
   _editingScore() {
-    return this.state.selectedMemberIndex == null
-      ? null
-      : this.props.scores[this.state.selectedMemberIndex];
+    return this._hasSelectedMember()
+      ? this.props.scores[this.state.selectedMemberIndex]
+      : null;
   }
 
   _saveMember = () => {
-    if (this.state.selectedMemberIndex == null) {
+    if (!this._hasSelectedMember()) {
       return;
     }
 
@@ -46,9 +50,9 @@ class ZsetContent extends Component {
   };
 
   render() {
+    const hasSelectedMember = this._hasSelectedMember();
     const editingMember = this._editingMember();
     const editingScore = this._editingScore();
-    const isNotEditing = this.state.selectedMemberIndex == null;
 
     return (
       <box>
@@ -69,14 +73,14 @@ class ZsetContent extends Component {
             label='score'
             position={{ height: 5, width: '95%' }}
             defaultValue={editingScore}
-            disabled={isNotEditing}
+            disabled={!hasSelectedMember}
           />
           <Editor
             ref='valueEditor'
             label='value'
             position={{ top: 5, height: 30, width: '95%' }}
             defaultValue={editingMember}
-            disabled={isNotEditing}
+            disabled={!hasSelectedMember}
           />
           <button
             border='line'
