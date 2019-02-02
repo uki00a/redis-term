@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Editor from './editor';
+import ScrollableBox from './scrollable-box';
 
 class StringContent extends Component {
   static propTypes = {
@@ -18,7 +19,7 @@ class StringContent extends Component {
 
   render() {
     return (
-      <form keys>
+      <box>
         <box
           content={this.props.keyName}
           position={{ height: '8%' }}
@@ -33,12 +34,14 @@ class StringContent extends Component {
             position={{ width: 8, right: 2, height: 3 }}
           />
         </box>
-        <box position={{ height: '84%', top: '8%' }}>
+        <ScrollableBox position={{ top: '8%', height: '90%' }}>
           <Editor
             ref='editor'
+            position={{
+              height: 30,
+              width: '95%'
+            }}
             defaultValue={this.props.value} />
-        </box>
-        <box position={{ height: '8%', top: '92%', bottom: 0, right: 0 }}>
           <button
             border='line'
             onClick={this._save}
@@ -46,10 +49,14 @@ class StringContent extends Component {
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ width: 8, right: 2, height: 3 }}>
+            position={{
+              top: 30,
+              width: 8,
+              height: 3
+            }}>
           </button>
-        </box>
-      </form>
+        </ScrollableBox>
+      </box>
     );
   }
 }
