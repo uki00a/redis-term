@@ -13,11 +13,15 @@ class StringContentContainer extends Component {
     value: ''
   };
 
-  _save = value => {
-    const { keyName, redis } = this.props;
-
-    return redis.set(keyName, value);
+  _save = async newValue => {
+    this._saveChangeToDb(newValue);
+    this.setState({ value: newValue });
   };
+
+  async _saveChangeToDb(newValue) {
+    const { keyName, redis } = this.props;
+    await redis.set(keyName, newValue);
+  }
 
   _loadString = async () => {
     // TODO show loader
