@@ -15,26 +15,38 @@ class ZsetContentContainer extends Component {
     scores: []
   };
 
-  // TODO refactor
   _saveMember = async (oldValue, newValue, newScore) => {
+    await this._applyChangesToDb(oldValue, newValue, newScore);
+    this._applyChangesToState(oldValue, newValue, newScore);
+  };
+
+  async _applyChangesToDb(oldValue, newValue, newScore) {
     const { redis, keyName } = this.props;
 
     await redis.multi()
       .zrem(keyName, oldValue)
       .zadd(keyName, newScore, newValue)
       .exec();
+  }
 
+  _applyChangesToState(oldValue, newValue, newScore) {
     const oldValueIndex = this.state.members.indexOf(oldValue);
-    const newMembers = this.state.members.map((x, index) => index === oldValue
-      ? newValue
-      : x
-    );
-    const newScores = this.state.scores.map((x, index) => index === oldValue
-      ? newScore
-      : x
-    );
+    const newMembers = this._updateMemberAt(oldValueIndex, newValue);
+    const newScores = this._updateScoreAt(oldValueIndex, newScore);
     this.setState({ members: newMembers, scores: newScores });
-  };
+  }
+
+  _updateMemberAt(index, newValue) {
+    const members = this.state.members.slice(0);
+    members[index] = newValue;
+    return members;
+  }
+
+  _updateScoreAt(index, newScore) {
+    const scores = this.state.scores.slice(0);
+    scores[index] = newScore;
+    return scores;
+  }
 
   _loadZset = async () => {
     const { redis, keyName } = this.props;
