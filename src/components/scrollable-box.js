@@ -1,8 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+const defaultStyle = {
+  scrollbar: { bg: '#e7e7e7' }
+};
+
 const ScrollableBox = ({
   children,
+  style = defaultStyle,
   ...restProps
 }) => (
   <box
@@ -14,6 +19,7 @@ const ScrollableBox = ({
     scrollable
     scrollbar
     alwaysScroll
+    style={style}
     {...restProps}>
     {
       children
@@ -22,7 +28,8 @@ const ScrollableBox = ({
 );
 
 ScrollableBox.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  style: PropTypes.object
 };
 
 export default ScrollableBox;
