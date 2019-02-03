@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import HashContent from '../components/hash-content';
-import theme from '../theme';
 
 class HashContentContainer extends Component {
   static propTypes = {
@@ -47,7 +46,6 @@ class HashContentContainer extends Component {
       <HashContent
         keyName={this.props.keyName}
         hash={this.state.hash}
-        theme={theme}
         addRow={this._saveField}
         saveField={this._saveField}
         reload={this._loadHash}

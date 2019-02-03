@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
+import { withTheme } from '../contexts/theme-context';
 
 class KeyValueDialog extends Component {
   static propTypes = {
@@ -84,4 +85,4 @@ class KeyValueDialog extends Component {
   }
 }
 
-export default KeyValueDialog;
+export default withTheme(KeyValueDialog);

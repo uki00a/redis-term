@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ListContent from '../components/list-content';
 import { withRedis } from '../contexts/redis-context';
-import theme from '../theme';
 
 class ListContentContainer extends Component {
   static propTypes = {
@@ -72,7 +71,6 @@ class ListContentContainer extends Component {
       <ListContent
         keyName={this.props.keyName}
         elements={this.state.elements}
-        theme={theme}
         addRow={this._addElementToList}
         save={this._save}
         reload={this._loadList}

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import SetContent from '../components/set-content';
-import theme from '../theme';
 
 class SetContentContainer extends Component {
   static propTypes = {
@@ -86,7 +85,6 @@ class SetContentContainer extends Component {
       <SetContent
         keyName={this.props.keyName}
         members={this.state.members}
-        theme={theme}
         addRow={this._addMember}
         reload={this._loadSet}
         saveElement={this._saveElement}

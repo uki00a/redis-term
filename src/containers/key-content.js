@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
+import { withTheme } from '../contexts/theme-context';
 import StringContent from './string-content';
 import ListContent from './list-content';
 import HashContent from './hash-content';
@@ -59,4 +60,4 @@ class KeyContent extends Component {
 }
 
 
-export default withRedis(KeyContent);
+export default withTheme(withRedis(KeyContent));

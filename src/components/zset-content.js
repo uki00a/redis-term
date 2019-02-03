@@ -10,7 +10,6 @@ class ZsetContent extends Component {
     keyName: PropTypes.string.isRequired,
     members: PropTypes.array.isRequired,
     scores: PropTypes.array.isRequired,
-    theme: PropTypes.object.isRequired,
     reload: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired
   };
@@ -64,7 +63,6 @@ class ZsetContent extends Component {
         <List
           items={this.props.members}
           position={{ width: '50%', top: 1 }}
-          style={this.props.theme.list}
           onSelect={this._onMemberSelected}
         />
         <ScrollableBox position={{ left: '50%', top: 1, height: '90%' }}>

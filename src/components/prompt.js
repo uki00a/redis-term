@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import { withTheme } from '../contexts/theme-context';
 
 class Prompt extends Component {
   static propTypes = {
@@ -78,4 +79,4 @@ class Prompt extends Component {
   }
 }
 
-export default Prompt;
+export default withTheme(Prompt);

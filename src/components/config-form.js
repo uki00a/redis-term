@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
+import { withTheme } from '../contexts/theme-context';
 
-export default class ConfigForm extends Component {
+class ConfigForm extends Component {
   static propTypes = {
     theme: PropTypes.object.isRequired,
     onSubmit: PropTypes.func.isRequired
@@ -90,3 +91,5 @@ export default class ConfigForm extends Component {
     );
   }
 }
+
+export default withTheme(ConfigForm);

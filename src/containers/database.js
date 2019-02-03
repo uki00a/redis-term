@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import KeyList from '../components/key-list';
 import KeyContent from '../containers/key-content';
-import theme from '../theme';
 
 class Database extends Component {
   static propTypes = {
@@ -52,15 +51,13 @@ class Database extends Component {
           <KeyList
             ref='keyList'
             keys={this.state.keys}
-            theme={theme}
             onSelect={this.onKeySelected}>
           </KeyList>
         </box>
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
             keyName={this.state.selectedKey}
-            type={this.state.selectedKeyType}
-            theme={theme}>
+            type={this.state.selectedKeyType}>
           </KeyContent>
         </box>
       </box>

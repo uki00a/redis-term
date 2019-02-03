@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ConfigForm from '../components/config-form';
-import theme from '../theme';
 
 class ConfigFormContainer extends Component {
   static propTypes = {
@@ -13,7 +12,7 @@ class ConfigFormContainer extends Component {
     this.props.history.push('/database');
   };
   render() {
-    return <ConfigForm theme={theme} onSubmit={this.onSubmit}></ConfigForm>;
+    return <ConfigForm onSubmit={this.onSubmit}></ConfigForm>;
   }
 }
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import ZsetContent from '../components/zset-content';
-import theme from '../theme';
 
 class ZsetContentContainer extends Component {
   static propTypes = {
@@ -69,7 +68,6 @@ class ZsetContentContainer extends Component {
         keyName={this.props.keyName}
         members={this.state.members}
         scores={this.state.scores}
-        theme={theme}
         reload={this._loadZset}
         saveMember={this._saveMember}
       />

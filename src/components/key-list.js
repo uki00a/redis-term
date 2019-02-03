@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTheme } from '../contexts/theme-context';
 
-export default class KeyList extends Component {
+class KeyList extends Component {
   static propTypes = {
     keys: PropTypes.array.isRequired,
     theme: PropTypes.object.isRequired,
@@ -31,3 +32,5 @@ export default class KeyList extends Component {
     );
   }
 }
+
+export default withTheme(KeyList);

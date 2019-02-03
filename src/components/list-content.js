@@ -9,7 +9,6 @@ class ListContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     elements: PropTypes.array.isRequired,
-    theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
@@ -61,7 +60,6 @@ class ListContent extends Component {
         <List
           items={this.props.elements}
           position={{ width: '50%', top: 1 }}
-          style={this.props.theme.list}
           onSelect={this._onSelect}
         />
         <ScrollableBox
@@ -100,7 +98,6 @@ class ListContent extends Component {
         <Prompt
           ref='addRowPrompt'
           title='Add Row'
-          theme={this.props.theme}
           onOk={this._addRow}
           onCancel={this._closeAddRowPrompt}
          />

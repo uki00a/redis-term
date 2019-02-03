@@ -9,7 +9,6 @@ class HashContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     hash: PropTypes.object.isRequired,
-    theme: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
     saveField: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
@@ -69,7 +68,6 @@ class HashContent extends Component {
         <List
           items={fields}
           position={{ width: '50%', top: 1 }}
-          style={this.props.theme.list}
           onSelect={this._onFieldSelected}
         />
         <ScrollableBox
@@ -107,7 +105,6 @@ class HashContent extends Component {
         </ScrollableBox>
         <KeyValueDialog
           ref='keyValueDialog'
-          theme={this.props.theme}
           onOk={this._addRow}
         />
       </form>
