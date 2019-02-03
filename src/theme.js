@@ -40,7 +40,7 @@ export default Object.freeze({
       fg: black
     }
   },
-  prompt: {
+  dialog: {
     bg: white,
     fg: black,
     bold: true

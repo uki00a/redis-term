@@ -33,7 +33,7 @@ class KeyValueDialog extends Component {
     return (
       <box
         content={this.props.title}
-        style={this.props.theme.prompt}
+        style={this.props.theme.dialog}
         border='line'
         hidden={!this.state.isOpened}>
         <text
