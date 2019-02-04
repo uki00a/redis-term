@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ListContent from '../components/list-content';
+import Loader from '../components/loader';
 import { withRedis } from '../contexts/redis-context';
 
 class ListContentContainer extends Component {
@@ -9,7 +10,7 @@ class ListContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { elements: [] };
+  state = { elements: [], isLoading: false };
 
   _addElementToList = async newElement => {
     if (!newElement) {
@@ -55,27 +56,40 @@ class ListContentContainer extends Component {
   }
 
   _loadList = async () => {
-    // TODO show loader
+    this._showLoader();
     const { keyName, redis } = this.props;
     const elements = await redis.lrange(keyName, 0, -1);
 
     this.setState({ elements });
+    this._hideLoader();
   };
+
+  _showLoader() {
+    this.setState({ isLoading: true });
+  }
+
+  _hideLoader() {
+    this.setState({ isLoading: false });
+  }
 
   async componentDidMount() {
     this._loadList();
   }
 
   render() {
-    return (
-      <ListContent
-        keyName={this.props.keyName}
-        elements={this.state.elements}
-        addRow={this._addElementToList}
-        save={this._save}
-        reload={this._loadList}
-      />
-    );
+    if (this.state.isLoading) {
+      return <Loader />;
+    } else {
+      return (
+        <ListContent
+          keyName={this.props.keyName}
+          elements={this.state.elements}
+          addRow={this._addElementToList}
+          save={this._save}
+          reload={this._loadList}
+        />
+      );
+    }
   }
 }
 

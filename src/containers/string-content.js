@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import StringContent from '../components/string-content';
+import Loader from '../components/loader';
 import { withRedis } from '../contexts/redis-context';
 
 class StringContentContainer extends Component {
@@ -10,7 +11,8 @@ class StringContentContainer extends Component {
   };
 
   state = {
-    value: ''
+    value: '',
+    isLoading: false
   };
 
   _save = async newValue => {
@@ -24,26 +26,39 @@ class StringContentContainer extends Component {
   }
 
   _loadString = async () => {
-    // TODO show loader
+    this._showLoader();
     const { keyName, redis } = this.props;
     const value = await redis.get(keyName);
 
     this.setState({ value });
+    this._hideLoader();
   };
+
+  _showLoader() {
+    this.setState({ isLoading: true });
+  }
+
+  _hideLoader() {
+    this.setState({ isLoading: false });
+  }
 
   componentDidMount() {
     this._loadString();
   }
 
   render() {
-    return (
-      <StringContent
-        keyName={this.props.keyName}
-        value={this.state.value}
-        save={this._save}
-        reload={this._loadString}
-      />
-    );
+    if (this.state.isLoading) {
+      return <Loader />;
+    } else {
+      return (
+        <StringContent
+          keyName={this.props.keyName}
+          value={this.state.value}
+          save={this._save}
+          reload={this._loadString}
+        />
+      );
+    }
   }
 }
 

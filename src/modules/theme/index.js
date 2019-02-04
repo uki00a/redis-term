@@ -7,7 +7,7 @@ const black = '#000000';
 const yellow = '#ffff00';
 const lightGray = '#e7e7e7';
 
-export default Object.freeze({
+const theme = {
   box: {
     normal: {
       bg: blue,
@@ -47,4 +47,7 @@ export default Object.freeze({
   },
   header: { fg: yellow, bg: blue, bold: true },
   main: { bg: lightGray }
-});
+};
+theme.loader = theme.box;
+
+export default Object.freeze(theme);

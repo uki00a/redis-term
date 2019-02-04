@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import ZsetContent from '../components/zset-content';
+import Loader from '../components/loader';
 
 class ZsetContentContainer extends Component {
   static propTypes = {
@@ -11,7 +12,8 @@ class ZsetContentContainer extends Component {
 
   state = {
     members: [],
-    scores: []
+    scores: [],
+    isLoading: false
   };
 
   _saveMember = async (oldValue, newValue, newScore) => {
@@ -48,6 +50,8 @@ class ZsetContentContainer extends Component {
   }
 
   _loadZset = async () => {
+    this._showLoader();
+
     const { redis, keyName } = this.props;
     const values =  await redis.zrange(keyName, 0, -1, 'WITHSCORES');
     const isEven = x => (x % 2) === 0;
@@ -56,22 +60,35 @@ class ZsetContentContainer extends Component {
       members: values.filter((_, index) => isEven(index)),
       scores: values.filter((_, index) => !isEven(index))
     });
+    this._hideLoader();
   };
+
+  _showLoader() {
+    this.setState({ isLoading: true });
+  }
+
+  _hideLoader() {
+    this.setState({ isLoading: false });
+  }
 
   async componentDidMount() {
     this._loadZset();
   }
 
   render() {
-    return (
-      <ZsetContent
-        keyName={this.props.keyName}
-        members={this.state.members}
-        scores={this.state.scores}
-        reload={this._loadZset}
-        saveMember={this._saveMember}
-      />
-    );
+    if (this.state.isLoading) {
+      return <Loader />;
+    } else {
+      return (
+        <ZsetContent
+          keyName={this.props.keyName}
+          members={this.state.members}
+          scores={this.state.scores}
+          reload={this._loadZset}
+          saveMember={this._saveMember}
+        />
+      );
+    }
   }
 }
 

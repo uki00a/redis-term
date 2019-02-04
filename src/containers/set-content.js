@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import SetContent from '../components/set-content';
+import Loader from '../components/loader';
 
 class SetContentContainer extends Component {
   static propTypes = {
@@ -9,7 +10,7 @@ class SetContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { members: [] };
+  state = { members: [], isLoading: false };
 
   _addMember = async newMember => {
     if (!newMember) {
@@ -33,11 +34,22 @@ class SetContentContainer extends Component {
   };
 
   _loadSet = async () => {
+    this._showLoader();
+
     const { redis, keyName } = this.props;
     const members = await redis.smembers(keyName);
 
     this.setState({ members });
+    this._hideLoader();
   };
+
+  _showLoader() {
+    this.setState({ isLoading: true });
+  }
+
+  _hideLoader() {
+    this.setState({ isLoading: false });
+  }
 
   _saveElement = async (oldValue, newValue) => {
     if (await this._checkIfValueExistsInDb(newValue)) {
@@ -81,15 +93,19 @@ class SetContentContainer extends Component {
   }
 
   render() {
-    return (
-      <SetContent
-        keyName={this.props.keyName}
-        members={this.state.members}
-        addRow={this._addMember}
-        reload={this._loadSet}
-        saveElement={this._saveElement}
-      />
-    );
+    if (this.state.isLoading) {
+      return <Loader />;
+    } else {
+      return (
+        <SetContent
+          keyName={this.props.keyName}
+          members={this.state.members}
+          addRow={this._addMember}
+          reload={this._loadSet}
+          saveElement={this._saveElement}
+        />
+      );
+    }
   }
 }
 
