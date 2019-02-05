@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
+import List from './list';
 
 class KeyList extends Component {
   static propTypes = {
@@ -17,18 +18,11 @@ class KeyList extends Component {
     const { keys, theme, onSelect } = this.props;
 
     return (
-      <list
+      <List
         ref='keyList'
-        vi
-        keys
-        mouse
-        scrollbar
-        border='line'
-        label='Keys'
-        style={theme.list}
         items={keys}
-        onSelect={onSelect}>
-      </list>
+        onSelect={onSelect}
+      />
     );
   }
 }
