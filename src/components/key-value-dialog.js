@@ -36,7 +36,8 @@ class KeyValueDialog extends Component {
         content={this.props.title}
         style={this.props.theme.dialog}
         border='line'
-        hidden={!this.state.isOpened}>
+        hidden={!this.state.isOpened}
+        draggable>
         <text
           content='Key:'
           position={{ top: 3, height: 1, left: 2, right: 2 }}

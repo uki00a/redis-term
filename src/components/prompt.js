@@ -40,7 +40,8 @@ class Prompt extends Component {
         content={this.props.title}
         style={this.props.theme.dialog}
         border='line'
-        hidden={!this.state.isOpened}>
+        hidden={!this.state.isOpened}
+        draggable>
         <textarea
           position={{ top: 3, height: 1, left: 2, right: 2 }}
           inputOnFocus
