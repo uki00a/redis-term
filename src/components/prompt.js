@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withTheme } from '../contexts/theme-context';
+import Dialog from './dialog';
 
 class Prompt extends Component {
   static propTypes = {
-    theme: PropTypes.object.isRequired,
     title: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired
@@ -36,12 +35,9 @@ class Prompt extends Component {
 
   render() {
     return (
-      <box
-        content={this.props.title}
-        style={this.props.theme.dialog}
-        border='line'
-        hidden={!this.state.isOpened}
-        draggable>
+      <Dialog
+        isOpened={this.state.isOpened}
+        title={this.props.title}>
         <textarea
           position={{ top: 3, height: 1, left: 2, right: 2 }}
           inputOnFocus
@@ -75,9 +71,9 @@ class Prompt extends Component {
           clickable
           onClick={this._onCancel}
         />
-      </box>
+      </Dialog>
     );
   }
 }
 
-export default withTheme(Prompt);
+export default Prompt;

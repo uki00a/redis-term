@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
-import { withTheme } from '../contexts/theme-context';
+import Dialog from './dialog';
 
 class KeyValueDialog extends Component {
   static propTypes = {
-    theme: PropTypes.object.isRequired,
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func
   };
@@ -32,12 +31,9 @@ class KeyValueDialog extends Component {
 
   render() {
     return (
-      <box
-        content={this.props.title}
-        style={this.props.theme.dialog}
-        border='line'
-        hidden={!this.state.isOpened}
-        draggable>
+      <Dialog
+        title={this.props.title}
+        isOpened={this.state.isOpened}>
         <text
           content='Key:'
           position={{ top: 3, height: 1, left: 2, right: 2 }}
@@ -81,9 +77,9 @@ class KeyValueDialog extends Component {
           clickable
           onClick={this._onCancel}
         />
-      </box>
+      </Dialog>
     );
   }
 }
 
-export default withTheme(KeyValueDialog);
+export default KeyValueDialog;
