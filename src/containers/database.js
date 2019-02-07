@@ -42,7 +42,7 @@ class Database extends Component {
   _scanKeys({
     cursor = 0,
     pattern = '*',
-    count = 100
+    count = 1000
   } = {}) {
     const { redis } = this.props;
 
