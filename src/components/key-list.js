@@ -15,13 +15,14 @@ class KeyList extends Component {
   }
 
   render() {
-    const { keys, theme, onSelect } = this.props;
+    const { keys, theme, onSelect, ...restProps } = this.props;
 
     return (
       <List
         ref='keyList'
         items={keys}
         onSelect={onSelect}
+        {...restProps}
       />
     );
   }
