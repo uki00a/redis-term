@@ -63,10 +63,12 @@ class Database extends Component {
         <box position={{ left: 0, top: 0, bottom: 0, width: 30 }}>
           <Textbox
             ref='keysPattern'
+            label='pattern'
             onSubmit={this._filterKeys}
             border='line'
             position={{top: 0, left: 0, height: 3, width: '100%'}} />
           <KeyList
+            label='keys'
             position={{top: 3}}
             ref='keyList'
             keys={this.state.keys}
