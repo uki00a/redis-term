@@ -8,7 +8,7 @@ class Editor extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (prevProps !== this.props.defaultValue) {
+    if (prevProps.defaultValue !== this.props.defaultValue) {
       // FIXME
       // Workaround for: `TypeError: Cannot read property 'height' of null`
       // `<textarea ... value={this.state.value} />`
