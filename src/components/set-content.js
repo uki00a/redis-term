@@ -14,7 +14,7 @@ class SetContent extends Component {
     saveElement: PropTypes.func.isRequired
   };
 
-  state = { selectedIndex: null };
+  state = { selectedMemberIndex: null };
 
   _openAddRowPrompt = () => {
     this.refs.addRowPrompt.open();
@@ -30,27 +30,32 @@ class SetContent extends Component {
   };
 
   _onMemberSelected = (item, index) => {
-    this.setState({ selectedIndex: index });
+    this.setState({ selectedMemberIndex: index });
   };
 
   _saveElement = () => {
-    if (this.state.selectedIndex == null) {
+    if (!this._hasSelectedMember()) {
       return;
     }
 
-    const oldValue = this.props.members[this.state.selectedIndex];
+    const oldValue = this.props.members[this.state.selectedMemberIndex];
     const newValue = this.refs.editor.value();
 
     this.props.saveElement(oldValue, newValue);
   };
 
+  _hasSelectedMember() {
+    return this.state.selectedMemberIndex != null;
+  }
+
   _editingValue() {
-    return this.state.selectedIndex == null
-      ? ''
-      : this.props.members[this.state.selectedIndex];
+    return this._hasSelectedMember()
+      ? this.props.members[this.state.selectedMemberIndex]
+      : '';
   }
 
   render() {
+    const hasSelectedMember = this._hasSelectedMember();
 
     return (
       <box>
@@ -70,7 +75,7 @@ class SetContent extends Component {
             ref='editor'
             position={{ height: 30, width: '95%' }}
             defaultValue={this._editingValue()}
-            disabled={this.state.selectedIndex == null}
+            disabled={!hasSelectedMember}
           />
           <button
             border='line'
