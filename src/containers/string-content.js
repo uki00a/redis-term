@@ -2,7 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import StringContent from '../components/string-content';
 import Loader from '../components/loader';
+import MessageDialog from '../components/message-dialog';
 import { withRedis } from '../contexts/redis-context';
+
+class Message extends Component {
+  componentDidMount() {
+    this.refs.message.error('error occurred!!!');
+  }
+  render() {
+    return <message ref='message' />
+  }
+}
 
 class StringContentContainer extends Component {
   static propTypes = {
@@ -18,6 +28,7 @@ class StringContentContainer extends Component {
   _save = async newValue => {
     this._saveChangeToDb(newValue);
     this.setState({ value: newValue });
+    this.refs.messageDialog.open();
   };
 
   async _saveChangeToDb(newValue) {
@@ -51,12 +62,18 @@ class StringContentContainer extends Component {
       return <Loader />;
     } else {
       return (
-        <StringContent
-          keyName={this.props.keyName}
-          value={this.state.value}
-          save={this._save}
-          reload={this._loadString}
-        />
+        <box>
+          <StringContent
+            keyName={this.props.keyName}
+            value={this.state.value}
+            save={this._save}
+            reload={this._loadString}
+          />
+          <MessageDialog
+            position={{ height: 8, left: 'center', top: 'center' }}
+            text='Value was updated!'
+            ref='messageDialog' />
+        </box>
       );
     }
   }
