@@ -1,6 +1,5 @@
 import React from 'react';
 import StringContentContainer from '../../src/containers/string-content';
-import Editor from '../../src/components/editor';
 import {
   connectToRedis,
   cleanupRedisConnection,
@@ -9,7 +8,6 @@ import {
   fireEvent,
   simulateInput
 } from '../helpers';
-import { RedisProvider } from '../../src/contexts/redis-context';
 import assert from 'assert';
 
 describe('<StringContentContainer>', () => {
