@@ -17,11 +17,34 @@ class ZsetContentContainer extends Component {
   };
 
   _saveMember = async (oldValue, newValue, newScore) => {
-    await this._applyChangesToDb(oldValue, newValue, newScore);
-    this._applyChangesToState(oldValue, newValue, newScore);
+    await this._saveChangesToDb(oldValue, newValue, newScore);
+    this._saveChangesToState(oldValue, newValue, newScore);
   };
 
-  async _applyChangesToDb(oldValue, newValue, newScore) {
+  _addMember = async (score, value) => {
+    await this._addMemberToDb(score, value);     
+    this._addMemberToState(score, value);
+  };
+
+  async _addMemberToDb(score, value) {
+    const { redis, keyName } = this.props;
+    await redis.zadd(keyName, score, value);
+  }
+
+  // TODO refactor
+  _addMemberToState(score, value) {
+    const index = this.state.members.indexOf(value);
+    if (index !== -1) {
+      const newScores = this._updateScoreAt(index, score);
+      this.setState({ scores: newScores });
+    } else {
+      const newMembers = [value].concat(this.state.members);
+      const newScores = [score].concat(this.state.scores);
+      this.setState({ members: newMembers, scores: newScores });
+    }
+  }
+
+  async _saveChangesToDb(oldValue, newValue, newScore) {
     const { redis, keyName } = this.props;
 
     await redis.multi()
@@ -30,7 +53,7 @@ class ZsetContentContainer extends Component {
       .exec();
   }
 
-  _applyChangesToState(oldValue, newValue, newScore) {
+  _saveChangesToState(oldValue, newValue, newScore) {
     const oldValueIndex = this.state.members.indexOf(oldValue);
     const newMembers = this._updateMemberAt(oldValueIndex, newValue);
     const newScores = this._updateScoreAt(oldValueIndex, newScore);
@@ -85,6 +108,7 @@ class ZsetContentContainer extends Component {
           members={this.state.members}
           scores={this.state.scores}
           reload={this._loadZset}
+          addRow={this._addMember}
           saveMember={this._saveMember}
         />
       );

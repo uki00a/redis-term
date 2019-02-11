@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Editor from './editor';
 import List from './list';
 import ScrollableBox from './scrollable-box';
+import AddZsetMemberDialog from './add-zset-member-dialog';
 
 class ZsetContent extends Component {
   static propTypes = {
@@ -11,10 +12,19 @@ class ZsetContent extends Component {
     members: PropTypes.array.isRequired,
     scores: PropTypes.array.isRequired,
     reload: PropTypes.func.isRequired,
-    saveMember: PropTypes.func.isRequired
+    saveMember: PropTypes.func.isRequired,
+    addRow: PropTypes.func.isRequired
   };
 
   state = { selectedMemberIndex: null };
+
+  _addRow = (score, value) => {
+    this.props.addRow(score, value);
+  };
+
+  _openAddZsetMemberDialog = () => {
+    this.refs.addZsetMemberDialog.open();
+  };
 
   _hasSelectedMember() {
     return this.state.selectedMemberIndex != null;
@@ -76,7 +86,7 @@ class ZsetContent extends Component {
           <Editor
             ref='valueEditor'
             label='value'
-            position={{ top: 5, height: 30, width: '95%' }}
+            position={{ top: 5, height: 25, width: '95%' }}
             defaultValue={editingMember}
             disabled={!hasSelectedMember}
           />
@@ -86,18 +96,30 @@ class ZsetContent extends Component {
             mouse
             content='{center}Save{/center}'
             tags
-            position={{ top: 35, height: 3, width: '95%' }}
+            position={{ top: 30, height: 3, width: '95%' }}
             onClick={this._saveMember}
           />
           <button
             clickable
             mouse
-            position={{ top: 38, height: 3, width: '95%' }}
+            position={{ top: 33, height: 3, width: '95%' }}
+            tags
+            border='line'
+            onClick={this._openAddZsetMemberDialog}
+            content='{center}Add Row{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 36, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
         </ScrollableBox>
+        <AddZsetMemberDialog
+          ref='addZsetMemberDialog'
+          onOk={this._addRow}
+        />
       </box>
     );
   }
