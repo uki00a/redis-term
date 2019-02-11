@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import List from './list';
 import Editor from './editor';
 import PropTypes from 'prop-types';
-import KeyValueDialog from './key-value-dialog';
+import AddHashFieldDialog from './add-hash-field-dialog';
 import ScrollableBox from './scrollable-box';
 
 class HashContent extends Component {
@@ -17,8 +17,8 @@ class HashContent extends Component {
   state = { selectedFieldIndex: null };
 
   _addRow = (field, value) => this.props.addRow(field, value);
-  _openAddKeyValueDialog = () => {
-    this.refs.keyValueDialog.open();
+  _openAddHashFieldDialog = () => {
+    this.refs.addHashFieldDialog.open();
   };
 
   _saveField = () => {
@@ -92,7 +92,7 @@ class HashContent extends Component {
             position={{ top: 33, height: 3, width: '95%' }}
             tags
             border='line'
-            onClick={this._openAddKeyValueDialog}
+            onClick={this._openAddHashFieldDialog}
             content='{center}Add Row{/center}' />
           <button
             clickable
@@ -103,8 +103,8 @@ class HashContent extends Component {
             onClick={this.props.reload}
             content='{center}Reload{/center}' />
         </ScrollableBox>
-        <KeyValueDialog
-          ref='keyValueDialog'
+        <AddHashFieldDialog
+          ref='addHashFieldDialog'
           onOk={this._addRow}
         />
       </form>
