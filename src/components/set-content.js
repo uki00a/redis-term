@@ -34,6 +34,10 @@ class SetContent extends Component {
     this.setState({ selectedMemberIndex: index });
   };
 
+  _unselectMember() {
+    this.setState({ selectedMemberIndex: null });
+  }
+
   _saveMember = () => {
     if (!this._hasSelectedMember()) {
       return;
@@ -51,6 +55,7 @@ class SetContent extends Component {
     }
     const memberToRemove = this.props.members[this.state.selectedMemberIndex];
     this.props.removeRow(memberToRemove);
+    this._unselectMember();
   };
 
   _hasSelectedMember() {
