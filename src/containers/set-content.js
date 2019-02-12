@@ -33,24 +33,6 @@ class SetContentContainer extends Component {
     this.setState({ members: newMembers });
   };
 
-  _loadSet = async () => {
-    this._showLoader();
-
-    const { redis, keyName } = this.props;
-    const members = await redis.smembers(keyName);
-
-    this.setState({ members });
-    this._hideLoader();
-  };
-
-  _showLoader() {
-    this.setState({ isLoading: true });
-  }
-
-  _hideLoader() {
-    this.setState({ isLoading: false });
-  }
-
   _saveMember = async (oldValue, newValue) => {
     if (await this._checkIfValueExistsInDb(newValue)) {
       return;
@@ -86,6 +68,24 @@ class SetContentContainer extends Component {
     const newMembers = this.state.members.slice(0);
     newMembers[index] = newValue;
     return newMembers;
+  }
+
+  _loadSet = async () => {
+    this._showLoader();
+
+    const { redis, keyName } = this.props;
+    const members = await redis.smembers(keyName);
+
+    this.setState({ members });
+    this._hideLoader();
+  };
+
+  _showLoader() {
+    this.setState({ isLoading: true });
+  }
+
+  _hideLoader() {
+    this.setState({ isLoading: false });
   }
 
   async componentDidMount() {
