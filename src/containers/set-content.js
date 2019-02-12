@@ -51,13 +51,13 @@ class SetContentContainer extends Component {
     this.setState({ isLoading: false });
   }
 
-  _saveElement = async (oldValue, newValue) => {
+  _saveMember = async (oldValue, newValue) => {
     if (await this._checkIfValueExistsInDb(newValue)) {
       return;
     }
 
-    await this._applyChangesToDb(oldValue, newValue);
-    this._applyChangesToState(oldValue, newValue);
+    await this._saveChangesToDb(oldValue, newValue);
+    this._saveChangesToState(oldValue, newValue);
   };
 
   async _checkIfValueExistsInDb(value) {
@@ -65,7 +65,7 @@ class SetContentContainer extends Component {
     return await redis.sismember(keyName, value);
   }
 
-  async _applyChangesToDb(oldValue, newValue) {
+  async _saveChangesToDb(oldValue, newValue) {
     const { redis, keyName } = this.props;
 
     await redis
@@ -75,7 +75,7 @@ class SetContentContainer extends Component {
       .exec();
   }
 
-  _applyChangesToState(oldValue, newValue) {
+  _saveChangesToState(oldValue, newValue) {
     const oldValueIndex = this.state.members.indexOf(oldValue);
     const newMembers = this._updateMemberAt(oldValueIndex, newValue);
 
@@ -102,7 +102,7 @@ class SetContentContainer extends Component {
           members={this.state.members}
           addRow={this._addMember}
           reload={this._loadSet}
-          saveElement={this._saveElement}
+          saveMember={this._saveMember}
         />
       );
     }

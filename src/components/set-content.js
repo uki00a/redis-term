@@ -11,7 +11,7 @@ class SetContent extends Component {
     members: PropTypes.array.isRequired,
     addRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
-    saveElement: PropTypes.func.isRequired
+    saveMember: PropTypes.func.isRequired
   };
 
   state = { selectedMemberIndex: null };
@@ -33,7 +33,7 @@ class SetContent extends Component {
     this.setState({ selectedMemberIndex: index });
   };
 
-  _saveElement = () => {
+  _saveMember = () => {
     if (!this._hasSelectedMember()) {
       return;
     }
@@ -41,7 +41,7 @@ class SetContent extends Component {
     const oldValue = this.props.members[this.state.selectedMemberIndex];
     const newValue = this.refs.editor.value();
 
-    this.props.saveElement(oldValue, newValue);
+    this.props.saveMember(oldValue, newValue);
   };
 
   _hasSelectedMember() {
@@ -84,7 +84,7 @@ class SetContent extends Component {
             content='{center}Save{/center}'
             tags
             position={{ top: 30, height: 3, width: '95%' }}
-            onClick={this._saveElement}
+            onClick={this._saveMember}
           />
           <button
             clickable
