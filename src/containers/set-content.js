@@ -70,6 +70,23 @@ class SetContentContainer extends Component {
     return newMembers;
   }
 
+  _removeMember = async memberToRemove => {
+    await this._deleteMemberFromDb(memberToRemove); 
+    this._removeMemberFromState(memberToRemove);
+  };
+
+  async _deleteMemberFromDb(memberToDelete) {
+    const { redis, keyName } = this.props;
+    await redis.srem(keyName, memberToDelete);
+  }
+
+  _removeMemberFromState(memberToRemove) {
+    const index = this.state.members.indexOf(memberToRemove);
+    const newMembers = this.state.members.slice(0);
+    newMembers.splice(index, 1);
+    this.setState({ members: newMembers });
+  }
+
   _loadSet = async () => {
     this._showLoader();
 
@@ -103,6 +120,7 @@ class SetContentContainer extends Component {
           addRow={this._addMember}
           reload={this._loadSet}
           saveMember={this._saveMember}
+          removeRow={this._removeMember}
         />
       );
     }

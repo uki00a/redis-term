@@ -10,6 +10,7 @@ class SetContent extends Component {
     keyName: PropTypes.string.isRequired,
     members: PropTypes.array.isRequired,
     addRow: PropTypes.func.isRequired,
+    removeRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired
   };
@@ -42,6 +43,14 @@ class SetContent extends Component {
     const newValue = this.refs.editor.value();
 
     this.props.saveMember(oldValue, newValue);
+  };
+
+  _removeRow = () => {
+    if (!this._hasSelectedMember()) {
+      return;
+    }
+    const memberToRemove = this.props.members[this.state.selectedMemberIndex];
+    this.props.removeRow(memberToRemove);
   };
 
   _hasSelectedMember() {
@@ -98,6 +107,14 @@ class SetContent extends Component {
             clickable
             mouse
             position={{ top: 36, height: 3, width: '95%' }}
+            tags
+            border='line'
+            onClick={this._removeRow}
+            content='{center}Remove Row{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 39, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
