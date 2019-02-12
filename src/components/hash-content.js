@@ -29,6 +29,7 @@ class HashContent extends Component {
     }
     const fieldToRemove = this._selectedField();
     this.props.removeRow(fieldToRemove);
+    this._unselectField();
   };
 
   _saveField = () => {
@@ -46,6 +47,10 @@ class HashContent extends Component {
     this.setState({ selectedFieldIndex: fieldIndex });
   };
 
+  _unselectField = () => {
+    this.setState({ selectedFieldIndex: null });
+  };
+
   _hasSelectedField() {
     return this.state.selectedFieldIndex != null;
   }
@@ -60,7 +65,7 @@ class HashContent extends Component {
       const selectedField = this._selectedField();
       return this.props.hash[selectedField];
     } else {
-      return null;
+      return '';
     }
   }
 
