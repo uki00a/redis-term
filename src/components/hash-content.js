@@ -10,6 +10,7 @@ class HashContent extends Component {
     keyName: PropTypes.string.isRequired,
     hash: PropTypes.object.isRequired,
     addRow: PropTypes.func.isRequired,
+    removeRow: PropTypes.func.isRequired,
     saveField: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired
   };
@@ -17,8 +18,17 @@ class HashContent extends Component {
   state = { selectedFieldIndex: null };
 
   _addRow = (field, value) => this.props.addRow(field, value);
+
   _openAddHashFieldDialog = () => {
     this.refs.addHashFieldDialog.open();
+  };
+
+  _removeRow = () => {
+    if (!this._hasSelectedField()) {
+      return;
+    }
+    const fieldToRemove = this._selectedField();
+    this.props.removeRow(fieldToRemove);
   };
 
   _saveField = () => {
@@ -98,6 +108,14 @@ class HashContent extends Component {
             clickable
             mouse
             position={{ top: 36, height: 3, width: '95%' }}
+            tags
+            border='line'
+            onClick={this._removeRow}
+            content='{center}Remove Row{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 39, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}

@@ -31,6 +31,22 @@ class HashContentContainer extends Component {
     this.setState({ hash: newHash });
   }
 
+  _removeField = async fieldToRemove => {
+    await this._deleteFieldFromDb(fieldToRemove);
+    this._removeFieldFromState(fieldToRemove);
+  };
+
+  async _deleteFieldFromDb(fieldToDelete) {
+    const { redis, keyName } = this.props;
+    await redis.hdel(keyName, fieldToDelete);
+  }
+
+  _removeFieldFromState(fieldToRemove) {
+    const newHash = { ...this.state.hash };
+    delete newHash[fieldToRemove];
+    this.setState({ hash: newHash });
+  }
+
   _loadHash = async () => {
     this._showLoader();
 
@@ -62,6 +78,7 @@ class HashContentContainer extends Component {
           keyName={this.props.keyName}
           hash={this.state.hash}
           addRow={this._saveField}
+          removeRow={this._removeField}
           saveField={this._saveField}
           reload={this._loadHash}
         />
