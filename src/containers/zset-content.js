@@ -26,6 +26,11 @@ class ZsetContentContainer extends Component {
     this._addMemberToState(score, value);
   };
 
+  _removeMember = async memberToRemove => {
+    await this._deleteMemberFromDb(memberToRemove);
+    this._removeMemberFromState(memberToRemove);
+  };
+
   async _addMemberToDb(score, value) {
     const { redis, keyName } = this.props;
     await redis.zadd(keyName, score, value);
@@ -60,6 +65,18 @@ class ZsetContentContainer extends Component {
     this.setState({ members: newMembers, scores: newScores });
   }
 
+  async _deleteMemberFromDb(memberToDelete) {
+    const { redis, keyName } = this.props;
+    await redis.zrem(keyName, memberToDelete);
+  }
+
+  _removeMemberFromState(memberToRemove) {
+    const index = this.state.members.indexOf(memberToRemove);
+    const newMembers = this._removeMemberAt(index);
+    const newScores = this._removeScoreAt(index);
+    this.setState({ members: newMembers, scores: newScores });
+  }
+
   _updateMemberAt(index, newValue) {
     const members = this.state.members.slice(0);
     members[index] = newValue;
@@ -69,6 +86,18 @@ class ZsetContentContainer extends Component {
   _updateScoreAt(index, newScore) {
     const scores = this.state.scores.slice(0);
     scores[index] = newScore;
+    return scores;
+  }
+
+  _removeMemberAt(index) {
+    const members = this.state.members.slice(0);
+    members.splice(index, 1);
+    return members;
+  }
+
+  _removeScoreAt(index) {
+    const scores = this.state.scores.slice(0);
+    scores.splice(index, 1);
     return scores;
   }
 
@@ -109,6 +138,7 @@ class ZsetContentContainer extends Component {
           scores={this.state.scores}
           reload={this._loadZset}
           addRow={this._addMember}
+          removeRow={this._removeMember}
           saveMember={this._saveMember}
         />
       );

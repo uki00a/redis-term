@@ -13,13 +13,23 @@ class ZsetContent extends Component {
     scores: PropTypes.array.isRequired,
     reload: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired,
-    addRow: PropTypes.func.isRequired
+    addRow: PropTypes.func.isRequired,
+    removeRow: PropTypes.func.isRequired
   };
 
   state = { selectedMemberIndex: null };
 
   _addRow = (score, value) => {
     this.props.addRow(score, value);
+  };
+
+  _removeRow = () => {
+    if (!this._hasSelectedMember()) {
+      return;
+    }
+    const memberToRemove = this._editingMember();
+    this.props.removeRow(memberToRemove);
+    this._unselectMember();
   };
 
   _openAddZsetMemberDialog = () => {
@@ -33,13 +43,13 @@ class ZsetContent extends Component {
   _editingMember() {
     return this._hasSelectedMember()
       ? this.props.members[this.state.selectedMemberIndex]
-      : null;
+      : '';
   }
 
   _editingScore() {
     return this._hasSelectedMember()
       ? this.props.scores[this.state.selectedMemberIndex]
-      : null;
+      : '';
   }
 
   _saveMember = () => {
@@ -57,6 +67,10 @@ class ZsetContent extends Component {
   _onMemberSelected = (item, index) => {
     this.setState({ selectedMemberIndex: index });
   };
+
+  _unselectMember() {
+    this.setState({ selectedMemberIndex: null });
+  }
 
   render() {
     const hasSelectedMember = this._hasSelectedMember();
@@ -111,6 +125,14 @@ class ZsetContent extends Component {
             clickable
             mouse
             position={{ top: 36, height: 3, width: '95%' }}
+            tags
+            border='line'
+            onClick={this._removeRow}
+            content='{center}Remove Row{/center}' />
+          <button
+            clickable
+            mouse
+            position={{ top: 39, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
