@@ -4,6 +4,7 @@ import { withRedis } from '../contexts/redis-context';
 import KeyList from '../components/key-list';
 import KeyContent from '../containers/key-content';
 import Textbox from '../components/textbox';
+import FilterableList from '../components/filterable-list';
 
 class Database extends Component {
   static propTypes = {
@@ -27,8 +28,7 @@ class Database extends Component {
     });
   };
 
-  _filterKeys = async () => {
-    const pattern = this.refs.keysPattern.value();
+  _filterKeys = async pattern => {
     const [newCursor, keys] = await this._scanKeysStartWith(pattern);
     this.setState({ keys });
   };
@@ -49,6 +49,16 @@ class Database extends Component {
     return redis.scan(cursor, 'MATCH', pattern, 'COUNT', count);   
   }
 
+  _renderList() {
+    return (
+      <KeyList
+        label='keys'
+        ref='keyList'
+        keys={this.state.keys}
+        onSelect={this.onKeySelected} />
+    );
+  };
+
   async componentDidMount() {
     const [newCursor, keys] = await this._scanKeys();
 
@@ -57,24 +67,14 @@ class Database extends Component {
   }
 
   render() {
-    // FIXME
+    const keyList = this._renderList();
     return (
       <box position={{ top: 1, left: 1, bottom: 2, right: 3 }}>
-        <box position={{ left: 0, top: 0, bottom: 0, width: 30 }}>
-          <KeyList
-            position={{bottom: 3}}
-            label='keys'
-            ref='keyList'
-            keys={this.state.keys}
-            onSelect={this.onKeySelected}>
-          </KeyList>
-          <Textbox
-            ref='keysPattern'
-            label='Search'
-            onSubmit={this._filterKeys}
-            border='line'
-            position={{bottom: 0, height: 3, width: '100%'}} />
-        </box>
+        <FilterableList
+          position={{ left: 0, top: 0, bottom: 0, width: 30 }}
+          List={keyList}
+          filterList={this._filterKeys}
+        />
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
             keyName={this.state.selectedKey}
