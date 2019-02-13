@@ -10,7 +10,7 @@ class SetContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { members: [], isLoading: false };
+  state = { members: [], isLoading: false, lastPattern: '' };
 
   _addMember = async newMember => {
     if (!newMember) {
@@ -87,12 +87,31 @@ class SetContentContainer extends Component {
     this.setState({ members: newMembers });
   }
 
+  async _scanMembersStartWith(pattern) {
+    const { redis, keyName } = this.props;
+    const cursor = 0;
+    const count = 1000;
+    const [newCursor, members] = await redis.sscan(
+      keyName,
+      cursor,
+      'MATCH',
+      pattern.endsWith('*') ? pattern : `${pattern}*`,
+      'COUNT',
+      count
+    );
+    return members;
+  }
+
+  _filterMembers = async pattern => {
+    this._showLoader();
+    const members = await this._scanMembersStartWith(pattern);  
+    this.setState({ members, lastPattern: pattern });
+    this._hideLoader();
+  };
+
   _loadSet = async () => {
     this._showLoader();
-
-    const { redis, keyName } = this.props;
-    const members = await redis.smembers(keyName);
-
+    const members = await this._scanMembersStartWith('*');
     this.setState({ members });
     this._hideLoader();
   };
@@ -119,8 +138,10 @@ class SetContentContainer extends Component {
           members={this.state.members}
           addRow={this._addMember}
           reload={this._loadSet}
+          filterMembers={this._filterMembers}
           saveMember={this._saveMember}
           removeRow={this._removeMember}
+          lastPattern={this.state.lastPattern}
         />
       );
     }

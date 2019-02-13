@@ -7,6 +7,7 @@ class Editor extends Component {
     disabled: PropTypes.bool
   };
 
+  // TODO remove duplicate logic between <Textbox> and <Editor>
   componentDidUpdate(prevProps) {
     if (prevProps.defaultValue !== this.props.defaultValue) {
       // FIXME
@@ -16,6 +17,7 @@ class Editor extends Component {
     }
   }
 
+  // TODO remove duplicate logic between <Textbox> and <Editor>
   componentDidMount() {
     // FIXME
     // Workaround for: `TypeError: Cannot read property 'height' of null`

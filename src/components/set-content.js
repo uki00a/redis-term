@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import List from './list';
+import FilterableList from './filterable-list';
 import Editor from './editor';
 import Prompt from './prompt';
 import ScrollableBox from './scrollable-box';
@@ -12,7 +13,9 @@ class SetContent extends Component {
     addRow: PropTypes.func.isRequired,
     removeRow: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
-    saveMember: PropTypes.func.isRequired
+    filterMembers: PropTypes.func.isRequired,
+    saveMember: PropTypes.func.isRequired,
+    lastPattern: PropTypes.string
   };
 
   state = { selectedMemberIndex: null };
@@ -68,8 +71,22 @@ class SetContent extends Component {
       : '';
   }
 
+  _filterMembers = pattern => {
+    this.props.filterMembers(pattern);
+  };
+
+  _renderMemberList = () => {
+    return (
+      <List
+        items={this.props.members}
+        onSelect={this._onMemberSelected}
+      />
+    );
+  };
+
   render() {
     const hasSelectedMember = this._hasSelectedMember();
+    const memberList = this._renderMemberList();
 
     return (
       <box>
@@ -78,10 +95,11 @@ class SetContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <List
-          items={this.props.members}
+        <FilterableList
           position={{ width: '50%', top: 1 }}
-          onSelect={this._onMemberSelected}
+          List={memberList}
+          filterList={this._filterMembers}
+          defaultPattern={this.props.lastPattern}
         />
         <ScrollableBox
           position={{ left: '50%', top: 1, height: '90%' }}>
