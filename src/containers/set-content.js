@@ -112,9 +112,10 @@ class SetContentContainer extends Component {
     this.setState({ members });
   });
 
-  _withLoader(func) {
+  async _withLoader(func) {
     this._showLoader();
-    func().then(() => this._hideLoader());
+    await func();
+    this._hideLoader();
   }
 
   _showLoader() {
