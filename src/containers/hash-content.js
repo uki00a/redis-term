@@ -51,9 +51,12 @@ class HashContentContainer extends Component {
 
   _filterFields = async (pattern = '') => {
     this._showLoader();
-    const hash = await this._scanFieldsStartWith(pattern);
-    this.setState({ hash, lastPattern: pattern });
-    this._hideLoader();
+    try {
+      const hash = await this._scanFieldsStartWith(pattern);
+      this.setState({ hash, lastPattern: pattern });
+    } finally {
+      this._hideLoader();
+    }
   };
 
   async _scanFieldsStartWith(pattern) {

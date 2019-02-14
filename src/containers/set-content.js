@@ -102,21 +102,17 @@ class SetContentContainer extends Component {
     return members;
   }
 
-  _filterMembers = pattern => this._withLoader(async () => {
-    const members = await this._scanMembersStartWith(pattern);  
-    this.setState({ members, lastPattern: pattern });
-  });
+  _loadSet = () => this._filterMembers();
 
-  _loadSet = () => this._withLoader(async () => {
-    const members = await this._scanMembersStartWith('*');
-    this.setState({ members });
-  });
-
-  async _withLoader(func) {
+  _filterMembers = async (pattern = '') => {
     this._showLoader();
-    await func();
-    this._hideLoader();
-  }
+    try {
+      const members = await this._scanMembersStartWith(pattern);  
+      this.setState({ members, lastPattern: pattern });
+    } finally {
+      this._hideLoader();
+    }
+  };
 
   _showLoader() {
     this.setState({ isLoading: true });
