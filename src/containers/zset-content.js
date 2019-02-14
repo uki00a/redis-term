@@ -13,7 +13,8 @@ class ZsetContentContainer extends Component {
   state = {
     members: [],
     scores: [],
-    isLoading: false
+    isLoading: false,
+    lastPattern: ''
   };
 
   _saveMember = async (oldValue, newValue, newScore) => {
@@ -101,19 +102,43 @@ class ZsetContentContainer extends Component {
     return scores;
   }
 
-  _loadZset = async () => {
+  _loadZset = () => this._filterMembers();
+
+  _filterMembers = async (pattern = '') => {
     this._showLoader();
-
-    const { redis, keyName } = this.props;
-    const values =  await redis.zrange(keyName, 0, -1, 'WITHSCORES');
-    const isEven = x => (x % 2) === 0;
-
-    this.setState({
-      members: values.filter((_, index) => isEven(index)),
-      scores: values.filter((_, index) => !isEven(index))
-    });
-    this._hideLoader();
+    try {
+      const [members, scores] = await this._scanMembersStartWith(pattern);
+      this.setState({
+        members,
+        scores,
+        lastPattern: pattern
+      });
+    } finally {
+      this._hideLoader();
+    }
   };
+
+  async _scanMembersStartWith(pattern) {
+    const { redis, keyName } = this.props;
+    const cursor = 0;
+    const count = 1000;
+    const [newCursor, values] = await redis.zscan(
+      keyName,
+      cursor,
+      'MATCH',
+      pattern.endsWith('*') ? pattern : `${pattern}*`,
+      'COUNT',
+      count
+    );
+    return this._extractMembersAndScoresFromScannedResult(values);
+  }
+
+  _extractMembersAndScoresFromScannedResult(scannedResult) {
+    const isEven = x => (x % 2) === 0;
+    const members = scannedResult.filter((_, index) => isEven(index));
+    const scores = scannedResult.filter((_, index) => !isEven(index));
+    return [members, scores];
+  }
 
   _showLoader() {
     this.setState({ isLoading: true });
@@ -137,9 +162,11 @@ class ZsetContentContainer extends Component {
           members={this.state.members}
           scores={this.state.scores}
           reload={this._loadZset}
+          filterMembers={this._filterMembers}
           addRow={this._addMember}
           removeRow={this._removeMember}
           saveMember={this._saveMember}
+          lastPattern={this.state.lastPattern}
         />
       );
     }

@@ -5,6 +5,7 @@ import Editor from './editor';
 import List from './list';
 import ScrollableBox from './scrollable-box';
 import AddZsetMemberDialog from './add-zset-member-dialog';
+import FilterableList from './filterable-list';
 
 class ZsetContent extends Component {
   static propTypes = {
@@ -12,9 +13,11 @@ class ZsetContent extends Component {
     members: PropTypes.array.isRequired,
     scores: PropTypes.array.isRequired,
     reload: PropTypes.func.isRequired,
+    filterMembers: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired,
     addRow: PropTypes.func.isRequired,
-    removeRow: PropTypes.func.isRequired
+    removeRow: PropTypes.func.isRequired,
+    lastPattern: PropTypes.string
   };
 
   state = { selectedMemberIndex: null };
@@ -76,6 +79,12 @@ class ZsetContent extends Component {
     const hasSelectedMember = this._hasSelectedMember();
     const editingMember = this._editingMember();
     const editingScore = this._editingScore();
+    const memberList = (
+      <List
+        items={this.props.members}
+        onSelect={this._onMemberSelected}
+      />
+    );
 
     return (
       <box>
@@ -84,10 +93,11 @@ class ZsetContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <List
-          items={this.props.members}
-          position={{ width: '50%', top: 1 }}
-          onSelect={this._onMemberSelected}
+        <FilterableList
+          List={memberList}
+          filterList={this.props.filterMembers}
+          defaultPattern={this.props.lastPattern}
+          position={{ width: '50%', top: 1 }}         
         />
         <ScrollableBox position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
