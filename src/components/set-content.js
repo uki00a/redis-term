@@ -71,10 +71,6 @@ class SetContent extends Component {
       : '';
   }
 
-  _filterMembers = pattern => {
-    this.props.filterMembers(pattern);
-  };
-
   _renderMemberList = () => {
     return (
       <List
@@ -98,7 +94,7 @@ class SetContent extends Component {
         <FilterableList
           position={{ width: '50%', top: 1 }}
           List={memberList}
-          filterList={this._filterMembers}
+          filterList={this.props.filterMembers}
           defaultPattern={this.props.lastPattern}
         />
         <ScrollableBox
