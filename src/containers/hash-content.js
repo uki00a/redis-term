@@ -10,7 +10,7 @@ class HashContentContainer extends Component {
     redis: PropTypes.object.isRequired
   };
 
-  state = { hash: {}, isLoading: false };
+  state = { hash: {}, isLoading: false, lastPattern: '' };
 
   _saveField = async (field, newValue) => {
     await this._saveFieldToDb(field, newValue);
@@ -47,15 +47,39 @@ class HashContentContainer extends Component {
     this.setState({ hash: newHash });
   }
 
-  _loadHash = async () => {
+  _loadHash = () => this._filterFields();
+
+  _filterFields = async (pattern = '') => {
     this._showLoader();
-
-    const { redis, keyName } = this.props;
-    const hash = await redis.hgetall(keyName);
-
-    this.setState({ hash });
+    const hash = await this._scanFieldsStartWith(pattern);
+    this.setState({ hash, lastPattern: pattern });
     this._hideLoader();
   };
+
+  async _scanFieldsStartWith(pattern) {
+    const { redis, keyName } = this.props;
+    const cursor = 0;
+    const count = 1000;
+    const [newCursor, result] = await redis.hscan(
+      keyName, 
+      cursor,
+      'MATCH',
+      pattern.endsWith('*') ? pattern : `${pattern}*`,
+      'COUNT',
+      count
+    );
+    return this._makeHashFromScannedResult(result);
+  }
+
+  _makeHashFromScannedResult(scannedResult) {
+    const hash = {};
+    for (let i = 0; i < scannedResult.length; i += 2) {
+      const field = scannedResult[i];
+      const value = scannedResult[i+1];
+      hash[field] = value;
+    }
+    return hash;
+  }
 
   _showLoader() {
     this.setState({ isLoading: true });
@@ -81,6 +105,8 @@ class HashContentContainer extends Component {
           removeRow={this._removeField}
           saveField={this._saveField}
           reload={this._loadHash}
+          filterFields={this._filterFields}
+          lastPattern={this.state.lastPattern}
         />
       );
     }

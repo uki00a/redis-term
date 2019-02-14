@@ -4,6 +4,7 @@ import Editor from './editor';
 import PropTypes from 'prop-types';
 import AddHashFieldDialog from './add-hash-field-dialog';
 import ScrollableBox from './scrollable-box';
+import FilterableList from './filterable-list';
 
 class HashContent extends Component {
   static propTypes = {
@@ -12,7 +13,9 @@ class HashContent extends Component {
     addRow: PropTypes.func.isRequired,
     removeRow: PropTypes.func.isRequired,
     saveField: PropTypes.func.isRequired,
-    reload: PropTypes.func.isRequired
+    reload: PropTypes.func.isRequired,
+    filterFields: PropTypes.func.isRequired,
+    lastPattern: PropTypes.string
   };
 
   state = { selectedFieldIndex: null };
@@ -72,6 +75,12 @@ class HashContent extends Component {
   render() {
     const fields = Object.keys(this.props.hash);
     const selectedFieldValue = this._selectedFieldValue();
+    const fieldsList = (
+      <List
+        items={fields}
+        onSelect={this._onFieldSelected}
+      />
+    );
 
     return (
       <form>
@@ -80,10 +89,11 @@ class HashContent extends Component {
           position={{ width: '100%', height: 1 }}
           bold
         />
-        <List
-          items={fields}
+        <FilterableList
+          List={fieldsList}
+          filterList={this.props.filterFields}
           position={{ width: '50%', top: 1 }}
-          onSelect={this._onFieldSelected}
+          defaultPattern={this.props.lastPattern}
         />
         <ScrollableBox
           position={{ left: '50%', top: 1, height: '90%' }}>
