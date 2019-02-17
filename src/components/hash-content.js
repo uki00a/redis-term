@@ -99,14 +99,14 @@ class HashContent extends Component {
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
-            position={{ height: 30, width: '95%' }}
+            position={{ height: 25, width: '95%' }}
             defaultValue={selectedFieldValue}
             disabled={!this._hasSelectedField()}
           />
           <button
             clickable
             mouse
-            position={{ top: 30, height: 3, width: '95%' }}
+            position={{ top: 25, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._saveField}
@@ -114,7 +114,7 @@ class HashContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 33, height: 3, width: '95%' }}
+            position={{ top: 28, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddHashFieldDialog}
@@ -122,7 +122,7 @@ class HashContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 36, height: 3, width: '95%' }}
+            position={{ top: 31, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._removeRow}
@@ -130,7 +130,7 @@ class HashContent extends Component {
           <button
             clickable
             mouse
-            position={{ top: 39, height: 3, width: '95%' }}
+            position={{ top: 34, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this.props.reload}
