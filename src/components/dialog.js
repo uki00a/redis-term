@@ -9,17 +9,18 @@ const Dialog = ({
   children,
   ...restProps
 }) => (
-  <box
+  <form
     hidden={!isOpened}
     style={theme.dialog}
     content={title}
     border='line'
     draggable
+    keys
     {...restProps}>
     {
       children
     }
-  </box>
+  </form>
 );
 
 Dialog.propTypes = {
