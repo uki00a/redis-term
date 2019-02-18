@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import ZsetContent from '../components/zset-content';
 import Loader from '../components/loader';
+import { partitionByParity } from '../modules/utils';
 
 class ZsetContentContainer extends Component {
   static propTypes = {
@@ -130,14 +131,7 @@ class ZsetContentContainer extends Component {
       'COUNT',
       count
     );
-    return this._extractMembersAndScoresFromScannedResult(values);
-  }
-
-  _extractMembersAndScoresFromScannedResult(scannedResult) {
-    const isEven = x => (x % 2) === 0;
-    const members = scannedResult.filter((_, index) => isEven(index));
-    const scores = scannedResult.filter((_, index) => !isEven(index));
-    return [members, scores];
+    return partitionByParity(values);
   }
 
   _showLoader() {

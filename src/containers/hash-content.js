@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
 import HashContent from '../components/hash-content';
 import Loader from '../components/loader';
+import { plistToHash } from '../modules/utils';
 
 class HashContentContainer extends Component {
   static propTypes = {
@@ -71,17 +72,7 @@ class HashContentContainer extends Component {
       'COUNT',
       count
     );
-    return this._makeHashFromScannedResult(result);
-  }
-
-  _makeHashFromScannedResult(scannedResult) {
-    const hash = {};
-    for (let i = 0; i < scannedResult.length; i += 2) {
-      const field = scannedResult[i];
-      const value = scannedResult[i+1];
-      hash[field] = value;
-    }
-    return hash;
+    return plistToHash(result);
   }
 
   _showLoader() {
