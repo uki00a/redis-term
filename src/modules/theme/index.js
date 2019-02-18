@@ -41,7 +41,6 @@ const theme = {
     }
   },
   dialog: {
-    bg: white,
     fg: black,
     bold: true
   },
