@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
+import ThemedButton from './themed-button';
 import { withTheme } from '../contexts/theme-context';
 
 class ConfigForm extends Component {
@@ -77,14 +78,11 @@ class ConfigForm extends Component {
             </Textbox>
           </box>
           <box position={{ left: 0, top: 8, height: 2 }} style={style}>
-            <button
-              keys
-              mouse
+            <ThemedButton
               position={{ left: 36, height: 1, width: 16 }}
-              style={theme.button}
               content=' Connect '
               onPress={this.onConnectButtonClicked}>
-            </button>
+            </ThemedButton>
           </box>
         </form>
       </box>

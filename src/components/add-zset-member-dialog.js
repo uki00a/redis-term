@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import Dialog from './dialog';
+import ThemedButton from './themed-button';
 
 class AddZsetMemberDialog extends Component {
   static propTypes = {
@@ -54,25 +55,16 @@ class AddZsetMemberDialog extends Component {
           hoverBg='blue'
           ref='valueInput'
         />
-        <button
+        <ThemedButton
           position={{ top: 9, height: 1, left: 2, width: 6 }}
           content='OK'
           align='center'
-          bg='black'
-          hoverBg='blue'
-          mouse
-          clickable
           onClick={this._onOk}
         />
-        <button
+        <ThemedButton
           position={{ top: 9, height: 1, left: 10, width: 8 }}
-          shrink
           content='Cancel'
           align='center'
-          bg='black'
-          hoverBg='blue'
-          mouse
-          clickable
           onClick={this._onCancel}
         />
       </Dialog>

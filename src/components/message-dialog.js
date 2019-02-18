@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
+import ThemedButton from './themed-button';
 
 class MessageDialog extends Component {
   static propTypes = {
@@ -28,12 +29,10 @@ class MessageDialog extends Component {
           content={text}
           tags
         />
-        <button
+        <ThemedButton
           position={{ top: 4, height: 1, right: 2, width: 4 }}
           content='OK'
           align='center'
-          mouse
-          clickable
           onClick={this.close}
         />
       </Dialog>

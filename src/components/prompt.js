@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
+import ThemedButton from './themed-button';
 
 class Prompt extends Component {
   static propTypes = {
@@ -50,25 +51,16 @@ class Prompt extends Component {
           hoverBg='blue'
           ref='input'
         />
-        <button
+        <ThemedButton
           position={{ top: 5, height: 1, left: 2, width: 6 }}
           content='OK'
           align='center'
-          bg='black'
-          hoverBg='blue'
-          mouse
-          clickable
           onClick={this._onOk}
         />
-        <button
+        <ThemedButton
           position={{ top: 5, height: 1, left: 10, width: 8 }}
-          shrink
           content='Cancel'
           align='center'
-          bg='black'
-          hoverBg='blue'
-          mouse
-          clickable
           onClick={this._onCancel}
         />
       </Dialog>

@@ -38,6 +38,10 @@ const theme = {
     focus: {
       bg: green,
       fg: black
+    },
+    hover: {
+      bg: green,
+      fg: black
     }
   },
   dialog: {
