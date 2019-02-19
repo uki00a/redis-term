@@ -39,8 +39,20 @@ class App extends Component {
     this.setState({ redis });
   };
 
+  _handleError = error => {
+    this.props.screen.debug(error);
+  };
+
   componentDidCatch(err, info) { 
-    this.props.screen.debug(err);
+    this._handleError(err);
+  }
+
+  componentDidMount() {
+    process.on('unhandledRejection', this._handleError);
+  }
+
+  componentWillUnmount() {
+    process.removeListener('unhandledRejection', this._handleError);
   }
 
   render() {
