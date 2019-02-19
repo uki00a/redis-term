@@ -29,6 +29,7 @@ class Prompt extends Component {
 
   open() {
     this.setState({ isOpened: true });
+    this.refs.input.focus();
   }
 
   close() {

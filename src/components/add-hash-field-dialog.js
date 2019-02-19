@@ -24,6 +24,7 @@ class KeyValueDialog extends Component {
 
   open() {
     this.setState({ isOpened: true });
+    this.refs.keyInput.focus();
   }
 
   close() {

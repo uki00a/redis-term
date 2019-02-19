@@ -30,6 +30,10 @@ class Textbox extends Component {
     }
   }
 
+  focus() {
+    this.refs.textbox.focus();
+  }
+
   value() {
     return this.refs.textbox.value;
   }
