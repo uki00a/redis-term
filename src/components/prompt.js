@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
+import Textbox from './textbox';
 
 class Prompt extends Component {
   static propTypes = {
@@ -15,7 +16,7 @@ class Prompt extends Component {
   };
 
   _onOk = () => {
-    const value = this.refs.input.value;
+    const value = this.refs.input.value();
 
     this.props.onOk(value);
     this.close();
@@ -39,14 +40,8 @@ class Prompt extends Component {
       <Dialog
         isOpened={this.state.isOpened}
         title={this.props.title}>
-        <textarea
+        <Textbox
           position={{ top: 3, height: 1, left: 2, right: 2 }}
-          inputOnFocus
-          input
-          keyable
-          clickable
-          keys
-          mouse
           bg='black'
           hoverBg='blue'
           ref='input'
