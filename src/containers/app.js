@@ -11,7 +11,7 @@ class App extends Component {
     screen: PropTypes.object.isRequired
   };
 
-  state = { redis: null };
+  state = { redis: null, error: null };
 
   connectToRedis = options => {
     const redis = new Redis(options);
@@ -26,7 +26,7 @@ class App extends Component {
       const onReady = () => {
         cleanupListeners();
         resolve();
-        this.setState({ redis });
+        this.setState({ redis, error: null });
       };
       const cleanupListeners = () => {
         redis.removeListener('error', onError);
