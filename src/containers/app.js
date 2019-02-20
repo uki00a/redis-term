@@ -40,6 +40,7 @@ class App extends Component {
 
   _handleError = error => {
     this.props.screen.debug(error);
+    this.setState({ error });
   };
 
   componentDidCatch(err, info) { 
@@ -61,6 +62,7 @@ class App extends Component {
           <MemoryRouter initialEntries={['/connection']}>
             <RedisTerm
               connectToRedis={this.connectToRedis} 
+              error={this.state.error}
             />
           </MemoryRouter>
         </ThemeProvider>

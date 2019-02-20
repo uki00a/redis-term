@@ -19,18 +19,24 @@ class MessageDialog extends Component {
   };
 
   render() {
-    const { text, ...restProps } = this.props;
+    const { text, position = {}, ...restProps } = this.props;
+    const lineHeight = text.split('\n').length + 1;
+    const buttonOffset = lineHeight + 2;
+    const dialogHeight = buttonOffset * 2;
+    const dialogPosition = { height: dialogHeight, ...position };
+
     return (
       <Dialog
         isOpened={this.state.isOpened}
+        position={dialogPosition}
         {...restProps}>
         <box
-          position={{ top: 2, height: 1, left: 2, right: 2 }}
+          position={{ top: 2, height: lineHeight, left: 2, right: 2 }}
           content={text}
           tags
         />
         <ThemedButton
-          position={{ top: 4, height: 1, right: 2, width: 4 }}
+          position={{ top: buttonOffset, height: 1, right: 2, width: 4 }}
           content='OK'
           align='center'
           onClick={this.close}

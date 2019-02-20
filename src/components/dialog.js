@@ -16,6 +16,7 @@ const Dialog = ({
     border='line'
     draggable
     keys
+    tags
     {...restProps}>
     {
       children
