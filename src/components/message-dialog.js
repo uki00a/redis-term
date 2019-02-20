@@ -21,7 +21,8 @@ class MessageDialog extends Component {
   render() {
     const { text, position = {}, ...restProps } = this.props;
     const lineHeight = text.split('\n').length + 1;
-    const buttonOffset = lineHeight + 2;
+    const boxOffset = 2;
+    const buttonOffset = lineHeight + boxOffset;
     const dialogHeight = buttonOffset * 2;
     const dialogPosition = { height: dialogHeight, ...position };
 
@@ -31,7 +32,7 @@ class MessageDialog extends Component {
         position={dialogPosition}
         {...restProps}>
         <box
-          position={{ top: 2, height: lineHeight, left: 2, right: 2 }}
+          position={{ top: boxOffset, height: lineHeight, left: 2, right: 2 }}
           content={text}
           tags
         />
