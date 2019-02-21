@@ -17,7 +17,7 @@ class Database extends Component {
     selectedKeyType: null
   };
 
-  onKeySelected = async (item, keyIndex) => {
+  _onKeySelected = async (item, keyIndex) => {
     const { redis } = this.props;
     const key = this.state.keys[keyIndex];
     const type = await redis.type(key);
@@ -60,7 +60,7 @@ class Database extends Component {
         label='keys'
         ref='keyList'
         keys={this.state.keys}
-        onSelect={this.onKeySelected} />
+        onSelect={this._onKeySelected} />
     );
   };
 
