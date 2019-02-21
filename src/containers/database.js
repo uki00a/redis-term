@@ -18,15 +18,20 @@ class Database extends Component {
   };
 
   _onKeySelected = async (item, keyIndex) => {
-    const { redis } = this.props;
     const key = this.state.keys[keyIndex];
-    const type = await redis.type(key);
+    const type = await this._typeOf(key);
 
     this.setState({
       selectedKey: key,
       selectedKeyType: type
     });
   };
+
+  async _typeOf(key) {
+    const { redis } = this.props;
+    const type = await redis.type(key);
+    return type;
+  }
 
   _loadKeys = async () => {
     const [newCursor, keys] = await this._scanKeys();
