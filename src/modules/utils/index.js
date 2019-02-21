@@ -14,3 +14,5 @@ export const plistToHash = plist => {
   }
   return hash;
 };
+
+export const noop = () => {};
