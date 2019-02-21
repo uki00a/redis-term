@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRedis } from '../contexts/redis-context';
+import KeyContent from './/key-content';
 import KeyList from '../components/key-list';
-import KeyContent from '../containers/key-content';
 import Textbox from '../components/textbox';
 import FilterableList from '../components/filterable-list';
 
@@ -26,6 +26,11 @@ class Database extends Component {
       selectedKey: key,
       selectedKeyType: type
     });
+  };
+
+  _loadKeys = async () => {
+    const [newCursor, keys] = await this._scanKeys();
+    this.setState({ keys });
   };
 
   _filterKeys = async pattern => {
@@ -60,9 +65,7 @@ class Database extends Component {
   };
 
   async componentDidMount() {
-    const [newCursor, keys] = await this._scanKeys();
-
-    this.setState({ keys });
+    await this._loadKeys();
     this.refs.keyList.focus();
   }
 
