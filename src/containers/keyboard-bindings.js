@@ -30,7 +30,8 @@ class KeyboardBindings extends Component {
   }
 
   _findHandlerFor(key) {
-    return this.props.bindings.find(binding => key.full === binding);   
+    const found = this.props.bindings.find(binding => key.full === binding.key);   
+    return found && found.handler;
   }
 
   render() {
