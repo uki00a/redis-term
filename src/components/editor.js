@@ -39,10 +39,11 @@ class Editor extends Component {
   };
 
   render() {
-    const { defaultValue, ...restProps } = this.props;
+    const { defaultValue, disabled, style, ...restProps } = this.props;
 
     return (
       <textarea
+        style={Object.assign({ transparent: Boolean(disabled) }, style)}
         onFocus={this._onFocus}
         input
         keyable
