@@ -4,7 +4,7 @@ import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import Dialog from './dialog';
 
-class KeyValueDialog extends Component {
+class AddHashFieldDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func
@@ -75,4 +75,4 @@ class KeyValueDialog extends Component {
   }
 }
 
-export default KeyValueDialog;
+export default AddHashFieldDialog;
