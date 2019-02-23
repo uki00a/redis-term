@@ -53,7 +53,8 @@ class KeyListContainer extends Component {
 
   render() {
     const keyboardBindings = [
-      { key: 'f5', handler: this._loadKeys } 
+      { key: 'f5', handler: this._loadKeys },
+      { key: 'C-r', handler: this._loadKeys }
     ];
     const keyList = (
       <KeyboardBindings bindings={keyboardBindings}>
