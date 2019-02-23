@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import KeyboardBindings from './keyboard-bindings';
 import KeyList from '../components/key-list';
 import FilterableList from '../components/filterable-list';
 import { withRedis } from '../contexts/redis-context';
@@ -51,12 +52,17 @@ class KeyListContainer extends Component {
   }
 
   render() {
+    const keyboardBindings = [
+      { key: 'f5', handler: this._loadKeys } 
+    ];
     const keyList = (
-      <KeyList
-        label='keys'
-        ref='keyList'
-        keys={this.state.keys}
-        onSelect={this._onKeySelected} />
+      <KeyboardBindings bindings={keyboardBindings}>
+        <KeyList
+          label='keys'
+          ref='keyList'
+          keys={this.state.keys}
+          onSelect={this._onKeySelected} />
+      </KeyboardBindings>
     );
 
     return (
