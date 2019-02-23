@@ -1,18 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
+import Button from './button';
 
-const ThemedButton = withTheme(({
-  theme,
-  ...restProps
-}) => (
-  <button
-    keys
+const ThemedButton = withTheme(({ theme, ...restProps }) => (
+  <Button
     style={theme.button}
-    position={{ top: 9, height: 1, left: 2, width: 6 }}
-    mouse
-    clickable
     {...restProps}
   />
 ));
+
+ThemedButton.propTypes = { theme: PropTypes.object.isRequired };
 
 export default ThemedButton;
