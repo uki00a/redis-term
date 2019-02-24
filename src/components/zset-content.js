@@ -6,6 +6,7 @@ import List from './list';
 import ScrollableBox from './scrollable-box';
 import AddZsetMemberDialog from './add-zset-member-dialog';
 import FilterableList from './filterable-list';
+import Button from './button';
 
 class ZsetContent extends Component {
   static propTypes = {
@@ -114,34 +115,28 @@ class ZsetContent extends Component {
             defaultValue={editingMember}
             disabled={!hasSelectedMember}
           />
-          <button
+          <Button
+            disabled={!hasSelectedMember}
             border='line'
-            keys
-            mouse
             content='{center}Save{/center}'
             tags
             position={{ top: 25, height: 3, width: '95%' }}
             onClick={this._saveMember}
           />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 28, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddZsetMemberDialog}
             content='{center}Add Row{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
+            disabled={!hasSelectedMember}
             position={{ top: 31, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._removeRow}
             content='{center}Remove Row{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 34, height: 3, width: '95%' }}
             tags
             border='line'

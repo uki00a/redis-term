@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Editor from './editor';
 import List from './list';
 import ScrollableBox from './scrollable-box';
+import Button from './button';
 
 class ListContent extends Component {
   static propTypes = {
@@ -70,25 +71,20 @@ class ListContent extends Component {
             disabled={this.state.selectedIndex == null}
             position={{ height: 30, width: '95%' }}
           />
-          <button
-            clickable
-            mouse
+          <Button
+            disabled={this.state.selectedIndex == null}
             position={{ top: 30, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._save}
             content='{center}Save{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 33, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddRowPrompt}
             content='{center}Add Row{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 36, height: 3, width: '95%' }}
             tags
             border='line'

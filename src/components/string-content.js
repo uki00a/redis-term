@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Editor from './editor';
 import ScrollableBox from './scrollable-box';
+import Button from './button';
 
 class StringContent extends Component {
   static propTypes = {
@@ -42,11 +43,9 @@ class StringContent extends Component {
               width: '95%'
             }}
             defaultValue={this.props.value} />
-          <button
+          <Button
             border='line'
             onClick={this._save}
-            keys
-            mouse
             content='{center}Save{/center}'
             tags
             position={{
@@ -54,7 +53,7 @@ class StringContent extends Component {
               width: 8,
               height: 3
             }}>
-          </button>
+          </Button>
         </ScrollableBox>
       </box>
     );

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import AddHashFieldDialog from './add-hash-field-dialog';
 import ScrollableBox from './scrollable-box';
 import FilterableList from './filterable-list';
+import Button from './button';
 
 class HashContent extends Component {
   static propTypes = {
@@ -75,6 +76,7 @@ class HashContent extends Component {
   render() {
     const fields = Object.keys(this.props.hash);
     const selectedFieldValue = this._selectedFieldValue();
+    const hasSelectedField = this._hasSelectedField();
     const fieldsList = (
       <List
         items={fields}
@@ -101,35 +103,29 @@ class HashContent extends Component {
             ref='editor'
             position={{ height: 25, width: '95%' }}
             defaultValue={selectedFieldValue}
-            disabled={!this._hasSelectedField()}
+            disabled={!hasSelectedField}
           />
-          <button
-            clickable
-            mouse
+          <Button
+            disabled={!hasSelectedField}
             position={{ top: 25, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._saveField}
             content='{center}Save{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 28, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._openAddHashFieldDialog}
             content='{center}Add Row{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
+            disabled={!hasSelectedField}
             position={{ top: 31, height: 3, width: '95%' }}
             tags
             border='line'
             onClick={this._removeRow}
             content='{center}Remove Row{/center}' />
-          <button
-            clickable
-            mouse
+          <Button
             position={{ top: 34, height: 3, width: '95%' }}
             tags
             border='line'
