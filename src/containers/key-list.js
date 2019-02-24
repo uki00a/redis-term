@@ -53,12 +53,14 @@ class KeyListContainer extends Component {
 
   render() {
     const keyboardBindings = [
-      { key: 'f5', handler: this._loadKeys },
-      { key: 'C-r', handler: this._loadKeys }
+      { key: 'f5', handler: this._loadKeys, description: 'Reload Keys' },
+      { key: 'C-r', handler: this._loadKeys, description: 'Reload Keys' }
     ];
+    const hoverText = makeHoverText(keyboardBindings);
     const keyList = (
       <KeyboardBindings bindings={keyboardBindings}>
         <KeyList
+          hoverText={hoverText}
           label='keys'
           ref='keyList'
           keys={this.state.keys}
@@ -67,7 +69,7 @@ class KeyListContainer extends Component {
     );
 
     return (
-      <FilterableList
+      <FilterableList 
         List={keyList}
         filterList={this._filterKeys}
         { ...this.props }
@@ -75,5 +77,9 @@ class KeyListContainer extends Component {
     );
   }
 }
+
+const makeHoverText = bindings => {
+  return bindings.map(x => `${x.key}: ${x.description}`).join('\n');
+};
 
 export default withRedis(KeyListContainer);
