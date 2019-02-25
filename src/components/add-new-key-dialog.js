@@ -10,7 +10,7 @@ class AddNewKeyDialog extends Component {
     onCancel: PropTypes.func
   };
 
-  state = { isOpened: false, checkedType: 'string' };
+  state = { isOpened: false };
 
   _onOk = () => {
     const keyName = this.refs.keyInput.value();
@@ -49,7 +49,7 @@ class AddNewKeyDialog extends Component {
               mouse
               name={type}
               position={{ top: 0, left: width * i }}
-              checked={type === this.state.checkedType}
+              checked={i === 0}
               content={type}
             />
           ))
