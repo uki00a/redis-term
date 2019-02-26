@@ -6,6 +6,7 @@ import KeyboardBindings from './keyboard-bindings';
 import KeyList from '../components/key-list';
 import FilterableList from '../components/filterable-list';
 import AddNewKeyDialog from '../components/add-new-key-dialog';
+import ConfirmationDialog from '../components/confirmation-dialog';
 
 class Database extends Component {
   static propTypes = {
@@ -64,6 +65,32 @@ class Database extends Component {
     this.setState({ keys: newKeys });
   }
 
+  _deleteHoveredKey = async () => {
+    const hoveredKeyIndex = this.refs.keyList.selected();
+    const hoveredKey = this.state.keys[hoveredKeyIndex];
+    if (hoveredKey) {
+      await this._deleteKeyFromDB(hoveredKey); 
+      this._deleteKeyFromState(hoveredKey);
+    }
+  };
+
+  async _deleteKeyFromDB(key) {
+    const { redis } = this.props;
+    await redis.del(key);
+  }
+
+  _deleteKeyFromState(keyToRemove) {
+    const selectedKeyRemoved = keyToRemove === this.state.selectedKey;
+    this.setState({ keys: this.state.keys.filter(key => key !== keyToRemove) });
+    if (selectedKeyRemoved) {
+      this._unselectKey();
+    }
+  }
+
+  _unselectKey() {
+    this.setState({ selectedKey: null, selectedKeyType: null });
+  }
+
   async _typeOf(key) {
     const { redis } = this.props;
     const type = await redis.type(key);
@@ -100,7 +127,8 @@ class Database extends Component {
     const keyboardBindings = [
       { key: 'f5', handler: this._loadKeys, description: 'Reload Keys' },
       { key: 'C-r', handler: this._loadKeys, description: 'Reload Keys' },
-      { key: 'C-n', handler: this._openAddNewKeyDialog, description: 'Add New Key' }
+      { key: 'C-n', handler: this._openAddNewKeyDialog, description: 'Add New Key' },
+      { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Selected Key' }
     ];
     const hoverText = makeHoverText(keyboardBindings);
     return (
@@ -116,6 +144,9 @@ class Database extends Component {
   }
   
   _openAddNewKeyDialog = () => this.refs.addNewKeyDialog.open();
+  _openConfirmationDialog = () => {
+    this.refs.confirmationDialog.open();
+  };
 
   async componentDidMount() {
     this.refs.keyList.focus();
@@ -141,6 +172,11 @@ class Database extends Component {
         <AddNewKeyDialog
           ref='addNewKeyDialog'
           onOk={this._addNewKeyIfNotExists} 
+        />
+        <ConfirmationDialog
+          text='Are you sure you want to delete this key?'
+          onOk={this._deleteHoveredKey}
+          ref='confirmationDialog'
         />
       </box>
     );

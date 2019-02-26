@@ -10,6 +10,10 @@ class KeyList extends Component {
     onSelect: PropTypes.func.isRequired
   };
 
+  selected() {
+    return this.refs.keyList.selected;
+  }
+
   focus() {
     this.refs.keyList.focus();
   }
