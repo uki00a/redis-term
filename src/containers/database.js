@@ -5,7 +5,6 @@ import KeyContent from './key-content';
 import KeyboardBindings from './keyboard-bindings';
 import KeyList from '../components/key-list';
 import FilterableList from '../components/filterable-list';
-import Textbox from '../components/textbox';
 import AddNewKeyDialog from '../components/add-new-key-dialog';
 
 class Database extends Component {
