@@ -49,7 +49,7 @@ class KeyContent extends Component {
     return (
       <box
         position={{ top: 0, left: 0 }}
-        style={theme.box.normal}
+        style={theme.box}
         border='line'>
         {
           this._renderContent()

@@ -9,13 +9,11 @@ const lightGray = '#e7e7e7';
 
 const theme = {
   box: {
-    normal: {
-      bg: blue,
-      fg: yellow,
-      border: { fg: white, bg: blue },
-      scrollbar: { bg: green },
-      label: { fg: white, bg: blue }
-    },
+    bg: blue,
+    fg: yellow,
+    border: { fg: white, bg: blue },
+    scrollbar: { bg: green },
+    label: { fg: white, bg: blue },
     focus: {
       border: { fg: cyan }
     }
@@ -54,5 +52,6 @@ const theme = {
   main: { bg: lightGray }
 };
 theme.loader = theme.box;
+theme.editor = theme.box;
 
 export default Object.freeze(theme);

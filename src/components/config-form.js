@@ -16,23 +16,22 @@ class ConfigForm extends Component {
 
   render() {
     const { theme } = this.props;
-    const style = Object.assign({}, theme.box.normal, theme.box.focus);
 
     return (
       <box
         border='line'
-        style={style}
+        style={Object.assign({}, theme.box, theme.box.focus)}
         position={{ left: 1, right: 1, top: 0, bottom: 0 }}>
         <form
           keys
           ref='form'
-          style={style}
+          style={theme.box}
           position={{ left: 1, right: 1, top: 1, bottom: 1 }}
           onSubmit={this.props.onSubmit}>
-          <box position={{ left: 0, top: 0, height: 2 }} style={style}>
+          <box position={{ left: 0, top: 0, height: 2 }} style={theme.box}>
             <text
               content='Name:'
-              style={style}
+              style={theme.box}
               position={{ left: 0 }}>
             </text>
             <Textbox
@@ -41,10 +40,10 @@ class ConfigForm extends Component {
               position={{ left: 6, height: 1, width: 16 }}>
             </Textbox>
           </box>
-          <box position={{ left: 0, top: 2, height: 2 }} style={style}>
+          <box position={{ left: 0, top: 2, height: 2 }} style={theme.box}>
             <text
               content='Host:'
-              style={style}
+              style={theme.box}
               position={{ left: 0 }}
             ></text>
             <Textbox
@@ -53,10 +52,10 @@ class ConfigForm extends Component {
               position={{ left: 6, height: 1, width: 16 }}>
             </Textbox>
           </box>
-          <box position={{ left: 0, top: 4, height: 2 }} style={style}>
+          <box position={{ left: 0, top: 4, height: 2 }} style={theme.box}>
             <text
               content='Port:'
-              style={style}
+              style={theme.box}
               position={{ left: 0 }}>
             </text>
             <Textbox
@@ -65,10 +64,10 @@ class ConfigForm extends Component {
               position={{ left: 6, height: 1, width: 16 }}>
             </Textbox>
           </box>
-          <box position={{ left: 0, top: 6, height: 2 }} style={style}>
+          <box position={{ left: 0, top: 6, height: 2 }} style={theme.box}>
             <text
               content='Password:'
-              style={style}
+              style={theme.box}
               position={{ left: 0 }}>
             </text>
             <Textbox
@@ -77,7 +76,7 @@ class ConfigForm extends Component {
               position={{ left: 10, height: 1, width: 16 }}>
             </Textbox>
           </box>
-          <box position={{ left: 0, top: 8, height: 2 }} style={style}>
+          <box position={{ left: 0, top: 8, height: 2 }} style={theme.box}>
             <ThemedButton
               position={{ left: 36, height: 1, width: 16 }}
               content=' Connect '
