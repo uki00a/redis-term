@@ -27,10 +27,12 @@ const theme = {
   list: {
     bg: blue,
     fg: yellow,
-    border: { fg: cyan },
     scrollbar: { bg: green },
     label: { fg: white, bg: blue },
-    item: { fg: yellow }
+    item: { fg: yellow },
+    focus: {
+      border: { fg: cyan }
+    }
   },
   button: {
     fg: black,
