@@ -18,10 +18,6 @@ const theme = {
       border: { fg: cyan }
     }
   },
-  table: {
-    header: { bold: true },
-    selected: { bg: white }
-  },
   list: {
     bg: blue,
     fg: yellow,
