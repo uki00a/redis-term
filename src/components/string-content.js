@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Editor from './editor';
 import ScrollableBox from './scrollable-box';
-import Button from './button';
+import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class StringContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     save: PropTypes.func.isRequired,
-    reload: PropTypes.func.isRequired
+    reload: PropTypes.func.isRequired,
+    theme: PropTypes.object.isRequired
   };
 
   _save = () => {
@@ -20,22 +22,22 @@ class StringContent extends Component {
 
   render() {
     return (
-      <box>
+      <box style={this.props.theme.box}>
         <box
+          style={this.props.theme.box}
           content={this.props.keyName}
           position={{ height: '8%' }}
           bold>
-          <button
-            border='line'
+          <ThemedButton
             onClick={this.props.reload}
-            keys
-            mouse
             content='{center}Reload{/center}'
             tags
-            position={{ width: 8, right: 2, height: 3 }}
+            position={{ width: 8, right: 2, height: 1 }}
           />
         </box>
-        <ScrollableBox position={{ top: '8%', height: '90%' }}>
+        <ScrollableBox
+          style={this.props.theme.box}
+          position={{ top: '8%', height: '90%' }}>
           <Editor
             ref='editor'
             position={{
@@ -43,21 +45,20 @@ class StringContent extends Component {
               width: '95%'
             }}
             defaultValue={this.props.value} />
-          <Button
-            border='line'
+          <ThemedButton
             onClick={this._save}
             content='{center}Save{/center}'
             tags
             position={{
               top: 30,
               width: 8,
-              height: 3
+              height: 1
             }}>
-          </Button>
+          </ThemedButton>
         </ScrollableBox>
       </box>
     );
   }
 }
 
-export default StringContent;
+export default withTheme(StringContent);
