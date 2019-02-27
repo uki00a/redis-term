@@ -4,8 +4,9 @@ import List from './list';
 import FilterableList from './filterable-list';
 import Editor from './editor';
 import Prompt from './prompt';
-import Button from './button';
+import ThemedButton from './themed-button';
 import ScrollableBox from './scrollable-box';
+import { withTheme } from '../contexts/theme-context';
 
 class SetContent extends Component {
   static propTypes = {
@@ -16,7 +17,8 @@ class SetContent extends Component {
     reload: PropTypes.func.isRequired,
     filterMembers: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired,
-    lastPattern: PropTypes.string
+    lastPattern: PropTypes.string,
+    theme: PropTypes.object.isRequired
   };
 
   state = { selectedMemberIndex: null };
@@ -86,12 +88,29 @@ class SetContent extends Component {
     const memberList = this._renderMemberList();
 
     return (
-      <box>
+      <box style={this.props.theme.box}>
         <box
+          style={this.props.theme.box}
           content={this.props.keyName}
-          position={{ width: '100%', height: 1 }}
+          position={{ height: 1 }}
           bold
         />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 23  }}
+          tags
+          onClick={this._openAddRowPrompt}
+          content='{center}Add Row{/center}' />
+        <ThemedButton
+          disabled={!hasSelectedMember}
+          position={{ height: 1, width: 8, right: 14 }}
+          tags
+          onClick={this._removeRow}
+          content='{center}Remove Row{/center}' />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 5 }}
+          tags
+          onClick={this.props.reload}
+          content='{center}Reload{/center}' />
         <FilterableList
           position={{ width: '50%', top: 1 }}
           List={memberList}
@@ -99,6 +118,7 @@ class SetContent extends Component {
           defaultPattern={this.props.lastPattern}
         />
         <ScrollableBox
+          style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
@@ -106,33 +126,13 @@ class SetContent extends Component {
             defaultValue={this._editingValue()}
             disabled={!hasSelectedMember}
           />
-          <Button
+          <ThemedButton
             disabled={!hasSelectedMember}
-            border='line'
             content='{center}Save{/center}'
             tags
-            position={{ top: 25, height: 3, width: '95%' }}
+            position={{ top: 25, left: 1, height: 1, width: 8 }}
             onClick={this._saveMember}
           />
-          <Button
-            position={{ top: 28, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._openAddRowPrompt}
-            content='{center}Add Row{/center}' />
-          <Button
-            disabled={!hasSelectedMember}
-            position={{ top: 31, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._removeRow}
-            content='{center}Remove Row{/center}' />
-          <Button
-            position={{ top: 34, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this.props.reload}
-            content='{center}Reload{/center}' />
         </ScrollableBox>
         <Prompt
           ref='addRowPrompt'
@@ -145,4 +145,4 @@ class SetContent extends Component {
   }
 }
 
-export default SetContent;
+export default withTheme(SetContent);
