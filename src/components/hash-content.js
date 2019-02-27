@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import AddHashFieldDialog from './add-hash-field-dialog';
 import ScrollableBox from './scrollable-box';
 import FilterableList from './filterable-list';
-import Button from './button';
+import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class HashContent extends Component {
   static propTypes = {
@@ -16,7 +17,8 @@ class HashContent extends Component {
     saveField: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
     filterFields: PropTypes.func.isRequired,
-    lastPattern: PropTypes.string
+    lastPattern: PropTypes.string,
+    theme: PropTypes.object.isRequired
   };
 
   state = { selectedFieldIndex: null };
@@ -85,12 +87,29 @@ class HashContent extends Component {
     );
 
     return (
-      <form>
+      <form style={this.props.theme.box}>
         <box
+          style={this.props.theme.box}
           content={this.props.keyName}
-          position={{ width: '100%', height: 1 }}
+          position={{ height: 1 }}
           bold
         />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 24 }}
+          tags
+          onClick={this._openAddHashFieldDialog}
+          content='{center}Add Row{/center}' />
+        <ThemedButton
+          disabled={!hasSelectedField}
+          position={{ height: 1, width: 8, right: 14 }}
+          tags
+          onClick={this._removeRow}
+          content='{center}Remove Row{/center}' />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 5 }}
+          tags
+          onClick={this.props.reload}
+          content='{center}Reload{/center}' />
         <FilterableList
           List={fieldsList}
           filterList={this.props.filterFields}
@@ -98,6 +117,7 @@ class HashContent extends Component {
           defaultPattern={this.props.lastPattern}
         />
         <ScrollableBox
+          style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
@@ -105,32 +125,12 @@ class HashContent extends Component {
             defaultValue={selectedFieldValue}
             disabled={!hasSelectedField}
           />
-          <Button
+          <ThemedButton
             disabled={!hasSelectedField}
-            position={{ top: 25, height: 3, width: '95%' }}
+            position={{ top: 25, left: 1, height: 1, width: 8 }}
             tags
-            border='line'
             onClick={this._saveField}
             content='{center}Save{/center}' />
-          <Button
-            position={{ top: 28, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._openAddHashFieldDialog}
-            content='{center}Add Row{/center}' />
-          <Button
-            disabled={!hasSelectedField}
-            position={{ top: 31, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._removeRow}
-            content='{center}Remove Row{/center}' />
-          <Button
-            position={{ top: 34, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this.props.reload}
-            content='{center}Reload{/center}' />
         </ScrollableBox>
         <AddHashFieldDialog
           ref='addHashFieldDialog'
@@ -141,4 +141,4 @@ class HashContent extends Component {
   }
 }
 
-export default HashContent;
+export default withTheme(HashContent);
