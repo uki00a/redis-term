@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import Editor from './editor';
 import List from './list';
 import ScrollableBox from './scrollable-box';
-import Button from './button';
+import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class ListContent extends Component {
   static propTypes = {
@@ -12,7 +13,8 @@ class ListContent extends Component {
     elements: PropTypes.array.isRequired,
     addRow: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
-    reload: PropTypes.func.isRequired
+    reload: PropTypes.func.isRequired,
+    theme: PropTypes.object.isRequired
   };
 
   state = { selectedIndex: null };
@@ -52,18 +54,30 @@ class ListContent extends Component {
 
   render() {
     return (
-      <box>
+      <box style={this.props.theme.box}>
         <box
+          style={this.props.theme.box}
           content={this.props.keyName}
-          position={{ width: '100%', height: 1 }}
+          position={{ height: 1 }}
           bold
         />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 14 }}
+          tags
+          onClick={this._openAddRowPrompt}
+          content='{center}Add Row{/center}' />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 5 }}
+          tags
+          onClick={this.props.reload}
+          content='{center}Reload{/center}' />
         <List
           items={this.props.elements}
           position={{ width: '50%', top: 1 }}
           onSelect={this._onSelect}
         />
         <ScrollableBox
+          style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='editor'
@@ -71,25 +85,12 @@ class ListContent extends Component {
             disabled={this.state.selectedIndex == null}
             position={{ height: 30, width: '95%' }}
           />
-          <Button
+          <ThemedButton
             disabled={this.state.selectedIndex == null}
-            position={{ top: 30, height: 3, width: '95%' }}
+            position={{ top: 30, left: 1, height: 1, width: 8 }}
             tags
-            border='line'
             onClick={this._save}
             content='{center}Save{/center}' />
-          <Button
-            position={{ top: 33, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._openAddRowPrompt}
-            content='{center}Add Row{/center}' />
-          <Button
-            position={{ top: 36, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this.props.reload}
-            content='{center}Reload{/center}' />
         </ScrollableBox>
         <Prompt
           ref='addRowPrompt'
@@ -102,4 +103,4 @@ class ListContent extends Component {
   }
 }
 
-export default ListContent;
+export default withTheme(ListContent);
