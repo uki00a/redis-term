@@ -51,6 +51,7 @@ class StringContent extends Component {
             tags
             position={{
               top: 30,
+              left: 1,
               width: 8,
               height: 1
             }}>
