@@ -6,7 +6,8 @@ import List from './list';
 import ScrollableBox from './scrollable-box';
 import AddZsetMemberDialog from './add-zset-member-dialog';
 import FilterableList from './filterable-list';
-import Button from './button';
+import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class ZsetContent extends Component {
   static propTypes = {
@@ -18,7 +19,8 @@ class ZsetContent extends Component {
     saveMember: PropTypes.func.isRequired,
     addRow: PropTypes.func.isRequired,
     removeRow: PropTypes.func.isRequired,
-    lastPattern: PropTypes.string
+    lastPattern: PropTypes.string,
+    theme: PropTypes.object.isRequired
   };
 
   state = { selectedMemberIndex: null };
@@ -88,19 +90,38 @@ class ZsetContent extends Component {
     );
 
     return (
-      <box>
+      <box style={this.props.theme.box}>
         <box
+          style={this.props.theme.box}
           content={this.props.keyName}
-          position={{ width: '100%', height: 1 }}
+          position={{ height: 1 }}
           bold
         />
+        <ThemedButton
+          position={{ height: 1, width: 8, right: 23 }}
+          tags
+          onClick={this._openAddZsetMemberDialog}
+          content='{center}Add Row{/center}' />
+        <ThemedButton
+          disabled={!hasSelectedMember}
+          position={{ height: 1, width: 8, right: 14 }}
+          tags
+          onClick={this._removeRow}
+          content='{center}Remove Row{/center}' />
+        <ThemedButton
+          position={{ width: 8, height: 1, right: 5 }}
+          tags
+          onClick={this.props.reload}
+          content='{center}Reload{/center}' />
         <FilterableList
           List={memberList}
           filterList={this.props.filterMembers}
           defaultPattern={this.props.lastPattern}
           position={{ width: '50%', top: 1 }}         
         />
-        <ScrollableBox position={{ left: '50%', top: 1, height: '90%' }}>
+        <ScrollableBox
+          style={this.props.theme.box}
+          position={{ left: '50%', top: 1, height: '90%' }}>
           <Editor
             ref='scoreEditor'
             label='score'
@@ -115,33 +136,13 @@ class ZsetContent extends Component {
             defaultValue={editingMember}
             disabled={!hasSelectedMember}
           />
-          <Button
+          <ThemedButton
             disabled={!hasSelectedMember}
-            border='line'
             content='{center}Save{/center}'
             tags
-            position={{ top: 25, height: 3, width: '95%' }}
+            position={{ top: 25, left: 1, height: 1, width: 8 }}
             onClick={this._saveMember}
           />
-          <Button
-            position={{ top: 28, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._openAddZsetMemberDialog}
-            content='{center}Add Row{/center}' />
-          <Button
-            disabled={!hasSelectedMember}
-            position={{ top: 31, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this._removeRow}
-            content='{center}Remove Row{/center}' />
-          <Button
-            position={{ top: 34, height: 3, width: '95%' }}
-            tags
-            border='line'
-            onClick={this.props.reload}
-            content='{center}Reload{/center}' />
         </ScrollableBox>
         <AddZsetMemberDialog
           ref='addZsetMemberDialog'
@@ -152,4 +153,4 @@ class ZsetContent extends Component {
   }
 }
 
-export default ZsetContent;
+export default withTheme(ZsetContent);
