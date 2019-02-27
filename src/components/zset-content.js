@@ -98,13 +98,13 @@ class ZsetContent extends Component {
           bold
         />
         <ThemedButton
-          position={{ height: 1, width: 8, right: 23 }}
+          position={{ height: 1, width: 8, right: 26 }}
           tags
           onClick={this._openAddZsetMemberDialog}
           content='{center}Add Row{/center}' />
         <ThemedButton
           disabled={!hasSelectedMember}
-          position={{ height: 1, width: 8, right: 14 }}
+          position={{ height: 1, width: 11, right: 14 }}
           tags
           onClick={this._removeRow}
           content='{center}Remove Row{/center}' />

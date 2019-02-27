@@ -95,13 +95,13 @@ class HashContent extends Component {
           bold
         />
         <ThemedButton
-          position={{ height: 1, width: 8, right: 24 }}
+          position={{ height: 1, width: 8, right: 26 }}
           tags
           onClick={this._openAddHashFieldDialog}
           content='{center}Add Row{/center}' />
         <ThemedButton
           disabled={!hasSelectedField}
-          position={{ height: 1, width: 8, right: 14 }}
+          position={{ height: 1, width: 11, right: 14 }}
           tags
           onClick={this._removeRow}
           content='{center}Remove Row{/center}' />
