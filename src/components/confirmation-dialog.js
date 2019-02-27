@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class ConfirmationDialog extends Component {
   static propTypes = {
@@ -25,7 +26,7 @@ class ConfirmationDialog extends Component {
   };
 
   render() {
-    const { text, position = {}, ...restProps } = this.props;
+    const { text, position = {}, theme, ...restProps } = this.props;
     const lineHeight = text.split('\n').length + 1;
     const boxOffset = 2;
     const buttonOffset = lineHeight + boxOffset;
@@ -38,6 +39,7 @@ class ConfirmationDialog extends Component {
         position={dialogPosition}
         {...restProps}>
         <box
+          style={theme.box}
           position={{ top: boxOffset, height: lineHeight, left: 2, right: 2 }}
           content={text}
           tags
@@ -59,4 +61,4 @@ class ConfirmationDialog extends Component {
   }
 }
 
-export default ConfirmationDialog;
+export default withTheme(ConfirmationDialog);

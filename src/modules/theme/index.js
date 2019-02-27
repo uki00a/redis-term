@@ -42,6 +42,7 @@ const theme = {
   },
   dialog: {
     fg: black,
+    bg: blue,
     bold: true
   },
   header: { fg: yellow, bg: blue, bold: true },

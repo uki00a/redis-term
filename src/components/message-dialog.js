@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class MessageDialog extends Component {
   static propTypes = {
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
+    theme: PropTypes.object.isRequired
   };
 
   state = { isOpened: false };
@@ -19,7 +21,7 @@ class MessageDialog extends Component {
   };
 
   render() {
-    const { text, position = {}, ...restProps } = this.props;
+    const { text, position = {}, theme, ...restProps } = this.props;
     const lineHeight = text.split('\n').length + 1;
     const boxOffset = 2;
     const buttonOffset = lineHeight + boxOffset;
@@ -32,6 +34,7 @@ class MessageDialog extends Component {
         position={dialogPosition}
         {...restProps}>
         <box
+          style={theme.box}
           position={{ top: boxOffset, height: lineHeight, left: 2, right: 2 }}
           content={text}
           tags
@@ -47,4 +50,4 @@ class MessageDialog extends Component {
   }
 }
 
-export default MessageDialog;
+export default withTheme(MessageDialog);

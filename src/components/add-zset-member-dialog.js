@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
+import { withTheme } from '../contexts/theme-context';
 
 class AddZsetMemberDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func
+    onCancel: PropTypes.func,
+    theme: PropTypes.object.isRequired
   };
   state = { isOpened: false };
 
@@ -36,6 +38,7 @@ class AddZsetMemberDialog extends Component {
         isOpened={this.state.isOpened}>
         <text
           content='Score:'
+          style={this.props.theme.box}
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
         <Textbox
@@ -47,6 +50,7 @@ class AddZsetMemberDialog extends Component {
         />
         <text
           content='Value:'
+          style={this.props.theme.box}
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
         <Textbox
@@ -73,4 +77,4 @@ class AddZsetMemberDialog extends Component {
   }
 }
 
-export default AddZsetMemberDialog;
+export default withTheme(AddZsetMemberDialog);

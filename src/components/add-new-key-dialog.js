@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import Dialog from './dialog';
+import { withTheme } from '../contexts/theme-context';
 
 class AddNewKeyDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func
+    onCancel: PropTypes.func,
+    theme: PropTypes.object.isRequired
   };
 
   state = { isOpened: false };
@@ -39,10 +41,14 @@ class AddNewKeyDialog extends Component {
     const types = ['string', 'list', 'hash', 'set', 'zset'];
     const width = 12;
     return (
-      <radioset ref='types' position={{ top: 6, height: 2, left: 2, right: 2 }}>
+      <radioset
+        style={this.props.theme.box}
+        ref='types'
+        position={{ top: 6, height: 2, left: 2, right: 2 }}>
         {
           types.map((type, i) => (
             <radiobutton 
+              style={this.props.theme.box}
               key={type}
               keys
               clickable
@@ -64,6 +70,7 @@ class AddNewKeyDialog extends Component {
         title='Add New Key'
         isOpened={this.state.isOpened}>
         <text
+          style={this.props.theme.box}
           content='Key:'
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
@@ -76,6 +83,7 @@ class AddNewKeyDialog extends Component {
           ref='keyInput'
         />
         <text
+          style={this.props.theme.box}
           content='Type:'
           position={{ top: 5, height: 1, left: 2, right: 2}}
         />
@@ -97,4 +105,4 @@ class AddNewKeyDialog extends Component {
   }
 }
 
-export default AddNewKeyDialog;
+export default withTheme(AddNewKeyDialog);

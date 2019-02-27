@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import Dialog from './dialog';
+import { withTheme } from '../contexts/theme-context';
 
 class AddHashFieldDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func
+    onCancel: PropTypes.func,
+    theme: PropTypes.object.isRequired
   };
 
   state = { isOpened: false };
@@ -38,6 +40,7 @@ class AddHashFieldDialog extends Component {
         isOpened={this.state.isOpened}>
         <text
           content='Key:'
+          style={this.props.theme.box}
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
         <Textbox
@@ -49,6 +52,7 @@ class AddHashFieldDialog extends Component {
         />
         <text
           content='Value:'
+          style={this.props.theme.box}
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
         <Textbox
@@ -75,4 +79,4 @@ class AddHashFieldDialog extends Component {
   }
 }
 
-export default AddHashFieldDialog;
+export default withTheme(AddHashFieldDialog);
