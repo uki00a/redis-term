@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTheme } from '../contexts/theme-context';
 
 class Editor extends Component {
   static propTypes = {
+    theme: PropTypes.object.isRequired,
     defaultValue: PropTypes.string,
     disabled: PropTypes.bool
   };
@@ -39,11 +41,11 @@ class Editor extends Component {
   };
 
   render() {
-    const { defaultValue, disabled, style, ...restProps } = this.props;
+    const { defaultValue, theme, disabled, style, ...restProps } = this.props;
 
     return (
       <textarea
-        style={Object.assign({ transparent: Boolean(disabled) }, style)}
+        style={Object.assign({ transparent: Boolean(disabled) }, theme.editor, style)}
         onFocus={this._onFocus}
         input
         keyable
@@ -58,4 +60,4 @@ class Editor extends Component {
   }
 }
 
-export default Editor;
+export default withTheme(Editor);
