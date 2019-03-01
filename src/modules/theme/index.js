@@ -50,5 +50,6 @@ const theme = {
 };
 theme.loader = theme.box;
 theme.editor = theme.box;
+theme.patternInput = theme.editor;
 
 export default Object.freeze(theme);
