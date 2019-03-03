@@ -34,6 +34,10 @@ class Textbox extends Component {
     this.refs.textbox.focus();
   }
 
+  setValue(value) {
+    this.refs.textbox.setValue(value);
+  }
+
   value() {
     return this.refs.textbox.value;
   }
