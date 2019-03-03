@@ -18,16 +18,16 @@ class ConfigForm extends Component {
     const { theme } = this.props;
 
     return (
-      <box
+      <form
+        keys
+        ref='form'
         border='line'
         style={Object.assign({}, theme.box, theme.box.focus)}
-        position={{ left: 1, right: 1, top: 0, bottom: 0 }}>
-        <form
-          keys
-          ref='form'
+        position={{ left: 1, right: 1, top: 0, bottom: 0 }}
+        onSubmit={this.props.onSubmit}>
+        <box
           style={theme.box}
-          position={{ left: 1, right: 1, top: 1, bottom: 1 }}
-          onSubmit={this.props.onSubmit}>
+          position={{ left: 1, right: 1, top: 1, bottom: 1, width: 36 }}>
           <box position={{ left: 0, top: 0, height: 2 }} style={theme.box}>
             <text
               content='Name:'
@@ -83,8 +83,8 @@ class ConfigForm extends Component {
               onPress={this.onConnectButtonClicked}>
             </ThemedButton>
           </box>
-        </form>
-      </box>
+        </box>
+      </form>
     );
   }
 }
