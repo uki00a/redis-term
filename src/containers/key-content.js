@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRedis } from '../contexts/redis-context';
 import { withTheme } from '../contexts/theme-context';
 import StringContent from './string-content';
 import ListContent from './list-content';
@@ -12,8 +12,7 @@ class KeyContent extends Component {
   static propTypes = {
     keyName: PropTypes.string,
     type: PropTypes.string,
-    theme: PropTypes.object.isRequired,
-    redis: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired
   };
 
   _renderContent() {
@@ -59,5 +58,13 @@ class KeyContent extends Component {
   }
 }
 
+const mapStateToProps = ({ keys }) => {
+  return {
+    keyName: keys.selectedKeyName,
+    type: keys.selectedKeyType
+  };
+};
 
-export default withTheme(withRedis(KeyContent));
+export default connect(
+  mapStateToProps  
+)(withTheme(KeyContent));

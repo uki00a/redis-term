@@ -1,150 +1,67 @@
+// @ts-check
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRedis } from '../contexts/redis-context';
 import SetContent from '../components/set-content';
 import Loader from '../components/loader';
+import { operations } from '../modules/redux/set';
 
 class SetContentContainer extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    redis: PropTypes.object.isRequired
+    members: PropTypes.array,
+    isLoading: PropTypes.bool.isRequired,
+    addMemberToSet: PropTypes.func.isRequired,
+    updateSetMember: PropTypes.func.isRequired,
+    deleteMemberFromSet: PropTypes.func.isRequired,
+    filterSetMembers: PropTypes.func.isRequired
   };
-
-  state = { members: [], isLoading: false, lastPattern: '' };
 
   _addMember = async newMember => {
     if (!newMember) {
       return;
     }
-
-    await this._addMemberToDb(newMember);
-    this._addMemberToState(newMember);
+    this.props.addMemberToSet(newMember);
   };
 
-  async _addMemberToDb(newMember) {
-    const { keyName, redis } = this.props;
-
-    await redis.sadd(keyName, newMember);
-  }
-
-  _addMemberToState = newMember => {
-    const newMembers = [newMember].concat(this.state.members);
-
-    this.setState({ members: newMembers });
+  _reload = () => {
+    this.props.filterSetMembers(this.props.pattern);
   };
-
-  _saveMember = async (oldValue, newValue) => {
-    if (await this._checkIfValueExistsInDb(newValue)) {
-      return;
-    }
-
-    await this._saveChangesToDb(oldValue, newValue);
-    this._saveChangesToState(oldValue, newValue);
-  };
-
-  async _checkIfValueExistsInDb(value) {
-    const { redis, keyName } = this.props;
-    return await redis.sismember(keyName, value);
-  }
-
-  async _saveChangesToDb(oldValue, newValue) {
-    const { redis, keyName } = this.props;
-
-    await redis
-      .multi()
-      .srem(keyName, oldValue)
-      .sadd(keyName, newValue)
-      .exec();
-  }
-
-  _saveChangesToState(oldValue, newValue) {
-    const oldValueIndex = this.state.members.indexOf(oldValue);
-    const newMembers = this._updateMemberAt(oldValueIndex, newValue);
-
-    this.setState({ members: newMembers });
-  }
-
-  _updateMemberAt(index, newValue) {
-    const newMembers = this.state.members.slice(0);
-    newMembers[index] = newValue;
-    return newMembers;
-  }
-
-  _removeMember = async memberToRemove => {
-    await this._deleteMemberFromDb(memberToRemove); 
-    this._removeMemberFromState(memberToRemove);
-  };
-
-  async _deleteMemberFromDb(memberToDelete) {
-    const { redis, keyName } = this.props;
-    await redis.srem(keyName, memberToDelete);
-  }
-
-  _removeMemberFromState(memberToRemove) {
-    const index = this.state.members.indexOf(memberToRemove);
-    const newMembers = this.state.members.slice(0);
-    newMembers.splice(index, 1);
-    this.setState({ members: newMembers });
-  }
-
-  async _scanMembersStartWith(pattern) {
-    const { redis, keyName } = this.props;
-    const cursor = 0;
-    const count = 1000;
-    const [newCursor, members] = await redis.sscan(
-      keyName,
-      cursor,
-      'MATCH',
-      pattern.endsWith('*') ? pattern : `${pattern}*`,
-      'COUNT',
-      count
-    );
-    return members;
-  }
-
-  _loadSet = () => this._filterMembers();
-
-  _filterMembers = async (pattern = '') => {
-    this._showLoader();
-    try {
-      const members = await this._scanMembersStartWith(pattern);  
-      this.setState({ members, lastPattern: pattern });
-    } finally {
-      this._hideLoader();
-    }
-  };
-
-  _showLoader() {
-    this.setState({ isLoading: true });
-  }
-
-  _hideLoader() {
-    this.setState({ isLoading: false });
-  }
 
   async componentDidMount() {
-    this._loadSet();
+    this.props.filterSetMembers();
   }
 
   render() {
-    if (this.state.isLoading) {
+    if (this.props.isLoading) {
       return <Loader />;
     } else {
       return (
         <SetContent
           keyName={this.props.keyName}
-          members={this.state.members}
+          members={this.props.members}
           addRow={this._addMember}
-          reload={this._loadSet}
-          filterMembers={this._filterMembers}
-          saveMember={this._saveMember}
-          removeRow={this._removeMember}
-          lastPattern={this.state.lastPattern}
+          reload={this._reload}
+          filterMembers={this.props.filterSetMembers}
+          saveMember={this.props.updateSetMember}
+          removeRow={this.props.deleteMemberFromSet}
+          lastPattern={this.props.pattern}
         />
       );
     }
   }
 }
 
-export default withRedis(SetContentContainer);
+const mapStateToProps = ({ set }) => set;
+const mapDispatchToProps = {
+  addMemberToSet: operations.addMemberToSet,
+  updateSetMember: operations.updateSetMember,
+  deleteMemberFromSet: operations.deleteMemberFromSet,
+  filterSetMembers: operations.filterSetMembers
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SetContentContainer);
 

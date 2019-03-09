@@ -1,23 +1,25 @@
+// @ts-check
 import React, { Component } from 'react';
 import { withRouter, Route } from 'react-router';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withTheme } from '../contexts/theme-context';
 import ConfigForm from './config-form';
 import Database from './database';
 import MessageDialog from '../components/message-dialog';
+import { operations } from '../modules/redux/database';
 
 class RedisTerm extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
     connectToRedis: PropTypes.func.isRequired,
-    error: PropTypes.any
+    error: PropTypes.any,
+    database: PropTypes.object.isRequired
   };
 
-  _connectToRedis = async config => {
-    const { connectToRedis, history } = this.props;
-    await connectToRedis(config);
-    history.push('/database');
+  _connectToRedis = config => {
+    this.props.connectToRedis(config);
   };
 
   _notifyError() {
@@ -35,6 +37,11 @@ class RedisTerm extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.error) {
       this._notifyError();
+    }
+
+    // TODO
+    if (this.props.database.succeeded && prevProps.database.succeeded !== this.props.database.succeeded) {
+      this.props.history.push('/database');
     }
   }
 
@@ -63,4 +70,10 @@ class RedisTerm extends Component {
   }
 }
 
-export default withRouter(withTheme(RedisTerm));
+const mapStateToProps = state => ({ database: state.database });
+const mapDispatchToProps = { connectToRedis: operations.connectToRedis };
+
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(withRouter(withTheme(RedisTerm)));

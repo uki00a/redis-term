@@ -26,7 +26,7 @@ class ZsetContent extends Component {
   state = { selectedMemberIndex: null };
 
   _addRow = (score, value) => {
-    this.props.addRow(score, value);
+    this.props.addRow(value, score);
   };
 
   _removeRow = () => {

@@ -16,7 +16,6 @@ class StringContent extends Component {
 
   _save = () => {
     const value = this.refs.editor.value();
-
     this.props.save(value);
   };
 

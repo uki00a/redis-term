@@ -1,110 +1,61 @@
+// @ts-check
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRedis } from '../contexts/redis-context';
 import HashContent from '../components/hash-content';
 import Loader from '../components/loader';
-import { plistToHash } from '../modules/utils';
+import { operations } from '../modules/redux/hash';
 
 class HashContentContainer extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    redis: PropTypes.object.isRequired
+    hash: PropTypes.object,
+    isLoading: PropTypes.bool.isRequired,
+    pattern: PropTypes.string.isRequired,
+    setHashField: PropTypes.func.isRequired,
+    deleteFieldFromHash: PropTypes.func.isRequired,
+    filterHashFields: PropTypes.func.isRequired
   };
 
-  state = { hash: {}, isLoading: false, lastPattern: '' };
-
-  _saveField = async (field, newValue) => {
-    await this._saveFieldToDb(field, newValue);
-    this._saveFieldToState(field, newValue);
-  };
-
-  async _saveFieldToDb(field, newValue) {
-    const { redis, keyName } = this.props;
-    await redis.hset(keyName, field, newValue);
-  }
-
-  _saveFieldToState(field, value) {
-    const newHash = {
-      ...this.state.hash,
-      [field]: value
-    };
-
-    this.setState({ hash: newHash });
-  }
-
-  _removeField = async fieldToRemove => {
-    await this._deleteFieldFromDb(fieldToRemove);
-    this._removeFieldFromState(fieldToRemove);
-  };
-
-  async _deleteFieldFromDb(fieldToDelete) {
-    const { redis, keyName } = this.props;
-    await redis.hdel(keyName, fieldToDelete);
-  }
-
-  _removeFieldFromState(fieldToRemove) {
-    const newHash = { ...this.state.hash };
-    delete newHash[fieldToRemove];
-    this.setState({ hash: newHash });
-  }
-
-  _loadHash = () => this._filterFields();
-
-  _filterFields = async (pattern = '') => {
-    this._showLoader();
-    try {
-      const hash = await this._scanFieldsStartWith(pattern);
-      this.setState({ hash, lastPattern: pattern });
-    } finally {
-      this._hideLoader();
-    }
-  };
-
-  async _scanFieldsStartWith(pattern) {
-    const { redis, keyName } = this.props;
-    const cursor = 0;
-    const count = 1000;
-    const [newCursor, result] = await redis.hscan(
-      keyName, 
-      cursor,
-      'MATCH',
-      pattern.endsWith('*') ? pattern : `${pattern}*`,
-      'COUNT',
-      count
-    );
-    return plistToHash(result);
-  }
-
-  _showLoader() {
-    this.setState({ isLoading: true });
-  }
-
-  _hideLoader() {
-    this.setState({ isLoading: false });
-  }
+  _loadHash = () => this.props.filterHashFields(this.props.pattern);
 
   componentDidMount() {
-    this._loadHash();
+    this.props.filterHashFields();
   }
 
   render() {
-    if (this.state.isLoading) {
+    if (this.props.isLoading) {
       return <Loader />;
     } else {
       return (
         <HashContent
           keyName={this.props.keyName}
-          hash={this.state.hash}
-          addRow={this._saveField}
-          removeRow={this._removeField}
-          saveField={this._saveField}
+          hash={this.props.hash}
+          addRow={this.props.setHashField}
+          removeRow={this.props.deleteFieldFromHash}
+          saveField={this.props.setHashField}
           reload={this._loadHash}
-          filterFields={this._filterFields}
-          lastPattern={this.state.lastPattern}
+          filterFields={this.props.filterHashFields}
+          lastPattern={this.props.pattern}
         />
       );
     }
   }
 }
 
-export default withRedis(HashContentContainer);
+const mapStateToProps = ({ hash }) => ({
+  hash: hash.value,
+  isLoading: hash.isLoading,
+  pattern: hash.pattern
+});
+
+const mapDispatchToProps = {
+  deleteFieldFromHash: operations.deleteFieldFromHash,
+  filterHashFields: operations.filterHashFields,
+  setHashField: operations.setHashField
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HashContentContainer);

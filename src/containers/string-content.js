@@ -1,73 +1,42 @@
+// @ts-check
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import StringContent from '../components/string-content';
 import Loader from '../components/loader';
 import MessageDialog from '../components/message-dialog';
-import { withRedis } from '../contexts/redis-context';
-
-class Message extends Component {
-  componentDidMount() {
-    this.refs.message.error('error occurred!!!');
-  }
-  render() {
-    return <message ref='message' />
-  }
-}
+import { operations } from '../modules/redux/string';
 
 class StringContentContainer extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
-    redis: PropTypes.object.isRequired
+    value: PropTypes.string,
+    isLoading: PropTypes.bool.isRequired,
+    saveString: PropTypes.func.isRequired,
+    loadString: PropTypes.func.isRequired
   };
 
-  state = {
-    value: '',
-    isLoading: false
-  };
-
-  _save = async newValue => {
-    this._saveChangeToDb(newValue);
-    this.setState({ value: newValue });
+  _save = newValue => {
+    this.props.saveString(newValue);
+    // TODO fix display timing
     this.refs.messageDialog.open();
   };
 
-  async _saveChangeToDb(newValue) {
-    const { keyName, redis } = this.props;
-    await redis.set(keyName, newValue);
-  }
-
-  _loadString = async () => {
-    this._showLoader();
-    const { keyName, redis } = this.props;
-    const value = await redis.get(keyName);
-
-    this.setState({ value });
-    this._hideLoader();
-  };
-
-  _showLoader() {
-    this.setState({ isLoading: true });
-  }
-
-  _hideLoader() {
-    this.setState({ isLoading: false });
-  }
-
   componentDidMount() {
-    this._loadString();
+    this.props.loadString();
   }
 
   render() {
-    if (this.state.isLoading) {
+    if (this.props.isLoading) {
       return <Loader />;
     } else {
       return (
         <box>
           <StringContent
             keyName={this.props.keyName}
-            value={this.state.value}
+            value={this.props.value}
             save={this._save}
-            reload={this._loadString}
+            reload={this.props.loadString}
           />
           <MessageDialog
             position={{ height: 8, left: 'center', top: 'center' }}
@@ -79,4 +48,16 @@ class StringContentContainer extends Component {
   }
 }
 
-export default withRedis(StringContentContainer);
+const mapStateToProps = ({ string }) => ({
+  isLoading: string.isLoading, 
+  value: string.value
+});
+const mapDispatchToProps = {
+  saveString: operations.saveString,
+  loadString: operations.loadString
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(StringContentContainer);

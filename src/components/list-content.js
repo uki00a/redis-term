@@ -39,7 +39,7 @@ class ListContent extends Component {
     const index = this.state.selectedIndex;
     const value = this.refs.editor.value();
 
-    this.props.save(value, index);
+    this.props.save(index, value);
   };
 
   _onSelect = (item, index) => {
