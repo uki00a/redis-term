@@ -4,7 +4,7 @@ import { withRouter, Route } from 'react-router';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withTheme } from '../contexts/theme-context';
-import ConfigForm from './config-form';
+import ConnectionForm from './connection-form';
 import Database from './database';
 import MessageDialog from '../components/message-dialog';
 import { operations } from '../modules/redux/database';
@@ -54,7 +54,7 @@ class RedisTerm extends Component {
           <Route
             path='/connection'
             render={props => (
-              <ConfigForm {...props} connectToRedis={this._connectToRedis} />
+              <ConnectionForm {...props} connectToRedis={this._connectToRedis} />
             )} />
           <Route
             path='/database'
