@@ -17,9 +17,13 @@ class ConfigForm extends Component {
   };
 
   _handleSubmit = options => {
-    const normalizedOptions = this._normalizeTLSOptions(options);
+    const normalizedOptions = this._normalizeOptions(options);
     this.props.onSubmit(normalizedOptions);
   };
+
+  _normalizeOptions(options) {
+    return this._normalizeSSHOptions(this._normalizeTLSOptions(options));
+  }
 
   _normalizeTLSOptions(options) {
     if (this._containsTLSOptions(options)) {
@@ -38,6 +42,35 @@ class ConfigForm extends Component {
   _containsTLSOptions(options) {
     const tlsOptions = ['tlskey', 'tlscert', 'tlsca'];
     return tlsOptions.some(option => options[option]);
+  }
+
+  _normalizeSSHOptions(options) {
+    if (this._containsSSHOptions(options)) {
+      // TODO cleanup
+      const {
+        sshhost,
+        sshport,
+        sshuser,
+        sshprivateKeyPath,
+        sshpassword,
+        ...restOptions
+      } = options;
+      restOptions.ssh = {
+        host: sshhost,
+        port: sshport,
+        username: sshuser,
+        privateKey: this._readIfExists(sshprivateKeyPath),
+        password: sshpassword
+      };
+      return restOptions;
+    } else  {
+      return options;
+    }
+  }
+
+  _containsSSHOptions(options) {
+    const sshOptions = ['sshhost', 'sshport', 'sshuser', 'sshprivateKeyPath', 'sshpassword'];
+    return sshOptions.some(option => options[option]);
   }
 
   _readIfExists(path) {
@@ -76,7 +109,7 @@ class ConfigForm extends Component {
     );
   }
 
-  _renderSSLInput(index, label, name) {
+  _renderTLSInput(index, label, name) {
     const boxHeight = 2;
     const boxOffset = boxHeight * index;
     return (
@@ -96,6 +129,38 @@ class ConfigForm extends Component {
           position={{ left: 30, height: 1, width: 4 }}
           onPress={() => this._openFileManager(name)}>
         </ThemedButton>
+      </box>
+    );
+  }
+
+  _renderSSHInput(index, label, name, withFileManager = false) {
+    const boxHeight = 2;
+    const boxOffset = boxHeight * index;
+    const buttonWidth = 4;
+    const inputWidth = 16 + (withFileManager ? 0 : buttonWidth);
+    return (
+      <box position={{ left: 0, top: boxOffset, height: boxHeight }} style={this.props.theme.box}>
+        <text
+          content={label}
+          style={this.props.theme.box}
+          position={{ left: 0 }}>
+        </text>
+        <Textbox
+          ref={name}
+          name={name}
+          value=''
+          position={{ left: 14, height: 1, width: inputWidth }}>
+        </Textbox>
+        {
+          withFileManager
+            ? (
+              <ThemedButton
+                position={{ left: 30, height: 1, width: buttonWidth }}
+                onPress={() => this._openFileManager(name)}>
+              </ThemedButton>
+            )
+            : null
+        }
       </box>
     );
   }
@@ -132,17 +197,30 @@ class ConfigForm extends Component {
         <box
           label='SSL'
           border='line'        
-          position={{ left: 36, top: 0, height: 14 }}
+          position={{ left: 36, top: 0, height: 10 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
-            {this._renderSSLInput(0, 'Private Key:', 'tlskey')}
-            {this._renderSSLInput(1, 'Certificate:', 'tlscert')}
-            {this._renderSSLInput(2, 'CA:', 'tlsca')}
+            {this._renderTLSInput(0, 'Private Key:', 'tlskey')}
+            {this._renderTLSInput(1, 'Certificate:', 'tlscert')}
+            {this._renderTLSInput(2, 'CA:', 'tlsca')}
+          </box>
+        </box>
+        <box
+          label='SSH'
+          border='line'
+          position={{ left: 36, top: 10, height: 14 }}
+          style={theme.box}>
+          <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
+            {this._renderSSHInput(0, 'Host:', 'sshhost')}
+            {this._renderSSHInput(1, 'Port:', 'sshport')}
+            {this._renderSSHInput(2, 'User:', 'sshuser')}
+            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', true)}
+            {this._renderSSHInput(4, 'Password:', 'sshpassword')}
           </box>
         </box>
         <box 
           border='line'
-          position={{ left: 36, top: 14, height: 4 }}
+          position={{ left: 36, top: 24, height: 4 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
             <ThemedButton

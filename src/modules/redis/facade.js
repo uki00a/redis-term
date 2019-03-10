@@ -1,6 +1,6 @@
 // @ts-check
-import Redis from 'ioredis';
 import { plistToHash, partitionByParity } from '../utils';
+import connectToRedis from './connect-to-redis';
 
 /**
  * @typedef {'string'|'list'|'hash'|'set'|'zset'} RedisType
@@ -18,26 +18,7 @@ class RedisFacade {
   }
 
   connect(options) {
-    const redis = new Redis(options);
-    
-    return new Promise((resolve, reject) => {
-      const onError = error => {
-        cleanupListeners();
-        redis.disconnect();
-        reject(error);
-      };
-      const onReady = () => {
-        cleanupListeners();
-        resolve(redis);
-      };
-      const cleanupListeners = () => {
-        redis.removeListener('error', onError);
-        redis.removeListener('ready', onReady);
-      };
-    
-      redis.once('error', onError); 
-      redis.once('ready', onReady);
-    }).then(redis => {
+    return connectToRedis(options).then(redis => {
       this._redis = redis;
     });
   }
