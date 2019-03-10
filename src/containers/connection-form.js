@@ -1,14 +1,18 @@
 import * as fs from 'fs';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ConnectionForm from '../components/connection-form';
+import { operations } from '../modules/redux/database';
 
 class ConnectionFormContainer extends Component {
   static propTypes = {
-    connectToRedis: PropTypes.func.isRequired
+    connectToRedis: PropTypes.func.isRequired,
+    database: PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired
   };
 
-  onSubmit = options => {
+  _handleSubmit = options => {
     const normalizedOptions = this._normalizeOptions(options);
     this.props.connectToRedis(normalizedOptions);
   };
@@ -71,9 +75,21 @@ class ConnectionFormContainer extends Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.props.database.succeeded) {
+      this.props.history.push('/database');
+    }
+  }
+
   render() {
-    return <ConnectionForm onSubmit={this.onSubmit}></ConnectionForm>;
+    return <ConnectionForm onSubmit={this._handleSubmit}></ConnectionForm>;
   }
 }
 
-export default ConnectionFormContainer;
+const mapStateToProps = ({ database }) => ({ database });
+const mapDispatchToProps = { connectToRedis: operations.connectToRedis };
+
+export default connect(
+  mapStateToProps,  
+  mapDispatchToProps
+)(ConnectionFormContainer);
