@@ -114,8 +114,10 @@ class ConfigForm extends Component {
         keys
         ref='form'
         border='line'
+        shadow
+        draggable
         style={boxStyle}
-        position={{ left: 1, right: 1, top: 0, bottom: 0 }}
+        position={{ left: 'center', top: 'center', height: 32 }}
         onSubmit={this._handleSubmit}>
         <FileManager
           ref='fileManager'
