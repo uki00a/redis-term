@@ -9,7 +9,7 @@ class ConnectionFormContainer extends Component {
   static propTypes = {
     connectToRedis: PropTypes.func.isRequired,
     database: PropTypes.object.isRequired,
-    router: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired
   };
 
   _handleSubmit = options => {
