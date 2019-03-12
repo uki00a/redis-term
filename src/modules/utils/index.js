@@ -15,4 +15,6 @@ export const plistToHash = plist => {
   return hash;
 };
 
+export const isEmptyArray = array => array == null || array.length === 0;
+
 export const noop = () => {};

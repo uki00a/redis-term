@@ -46,7 +46,12 @@ const theme = {
     bold: true
   },
   header: { fg: yellow, bg: blue, bold: true },
-  main: { bg: lightGray }
+  main: { bg: lightGray },
+  activeKeyboardBindings: {
+    fg: yellow,
+    bg: blue,
+    bold: true
+  }
 };
 theme.loader = theme.box;
 theme.editor = theme.box;

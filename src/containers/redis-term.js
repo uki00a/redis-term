@@ -6,6 +6,7 @@ import { withTheme } from '../contexts/theme-context';
 import ConnectionForm from './connection-form';
 import Database from './database';
 import MessageDialog from '../components/message-dialog';
+import ActiveKeyboardBindings from './active-keyboard-bindings';
 
 class RedisTerm extends Component {
   static propTypes = {
@@ -33,7 +34,7 @@ class RedisTerm extends Component {
   }
 
   render() {
-    const { theme, error } = this.props;
+    const { theme, keyboardBindings, error } = this.props;
     return (
       <box position={{ top: 0, left: 0, bottom: 0, right: 0 }} style={theme.header}>
         <text style={theme.header} content="redis-term" />
@@ -47,6 +48,7 @@ class RedisTerm extends Component {
             path='/database'
             component={Database} />
         </box>
+        <ActiveKeyboardBindings />
         <MessageDialog
           position={{ left: 'center', top: 'center', width: '80%' }}
           title='{red-fg}Error{/red-fg}'

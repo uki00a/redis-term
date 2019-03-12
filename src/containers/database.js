@@ -58,11 +58,10 @@ class Database extends Component {
       { key: 'C-n', handler: this._openAddNewKeyDialog, description: 'Add New Key' },
       { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Selected Key' }
     ];
-    const hoverText = makeHoverText(keyboardBindings);
+
     return (
       <KeyboardBindings bindings={keyboardBindings}>
         <KeyList
-          hoverText={hoverText}
           label='keys'
           ref='keyList'
           keys={this.props.keys}
@@ -110,10 +109,6 @@ class Database extends Component {
     );
   }
 }
-
-const makeHoverText = bindings => {
-  return bindings.map(x => `${x.key}: ${x.description}`).join('\n');
-};
 
 const mapStateToProps = ({ keys }) => {
   return {

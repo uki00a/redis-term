@@ -1,6 +1,8 @@
 import React, { Component, cloneElement } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { noop } from '../modules/utils';
+import { actions } from '../modules/redux/keyboard-bindings';
 
 class KeyboardBindings extends Component {
   static propTypes = {
@@ -8,11 +10,13 @@ class KeyboardBindings extends Component {
       key: PropTypes.string.isRequired, 
       handler: PropTypes.func.isRequired
     })).isRequired,
-    children: PropTypes.node
+    children: PropTypes.node,
+    enableKeyboardBindings: PropTypes.func.isRequired
   };
 
   _handleFocus = () => {
     this._focused = true;
+    this.props.enableKeyboardBindings(this.props.bindings);
   };
 
   _handleBlur = () => {
@@ -43,4 +47,10 @@ class KeyboardBindings extends Component {
   }
 }
 
-export default KeyboardBindings;
+const mapStateToProps = ({ keyboardBindings }) => ({});
+const mapDispatchToProps = { enableKeyboardBindings: actions.enableKeyboardBindings };
+
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(KeyboardBindings);
