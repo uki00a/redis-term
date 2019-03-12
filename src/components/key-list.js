@@ -11,7 +11,7 @@ class KeyList extends Component {
   };
 
   selected() {
-    return this.refs.keyList.selected;
+    return this.refs.keyList.selected();
   }
 
   focus() {
