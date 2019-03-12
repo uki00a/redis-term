@@ -11,8 +11,7 @@ class RedisTerm extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
-    error: PropTypes.any,
-    database: PropTypes.object.isRequired
+    error: PropTypes.any
   };
 
   _notifyError() {
