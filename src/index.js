@@ -13,7 +13,7 @@ const setupScreen = () => {
     debug: isDevMode
   });
 
-  screen.key(['escape'], (ch, key) => {
+  screen.key(['C-c'], (ch, key) => {
     process.exit(0);
   });
 

@@ -1,6 +1,6 @@
 // @ts-check
 import React, { Component } from 'react';
-import { Route } from 'react-router';
+import { Route, withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import ConnectionForm from './connection-form';
@@ -33,10 +33,16 @@ class RedisTerm extends Component {
     }
   }
 
+  componentDidMount() {
+    this.refs.redisTerm.screen.key(['escape'], () => {
+      this.props.history.goBack();
+    });
+  }
+
   render() {
     const { theme, keyboardBindings, error } = this.props;
     return (
-      <box position={{ top: 0, left: 0, bottom: 0, right: 0 }} style={theme.header}>
+      <box ref='redisTerm' position={{ top: 0, left: 0, bottom: 0, right: 0 }} style={theme.header}>
         <text style={theme.header} content="redis-term" />
         <box position={{ top: 1, left: 0, right: 0, bottom: 2 }} style={theme.main}>
           <Route
@@ -59,4 +65,4 @@ class RedisTerm extends Component {
   }
 }
 
-export default withTheme(RedisTerm);
+export default withRouter(withTheme(RedisTerm));

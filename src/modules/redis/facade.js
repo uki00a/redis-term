@@ -18,9 +18,16 @@ class RedisFacade {
   }
 
   connect(options) {
+    this.disconnectIfConnected();
     return connectToRedis(options).then(redis => {
       this._redis = redis;
     });
+  }
+
+  disconnectIfConnected() {
+    if (this._redis) {
+      this.disconnect();
+    }
   }
 
   disconnect() {
@@ -323,6 +330,10 @@ class RedisFacade {
       count
     );
     return partitionByParity(values);
+  }
+
+  flushdb() {
+    this._getRedis().flushdb();
   }
 
   _getRedis() {
