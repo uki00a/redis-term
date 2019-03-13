@@ -35,8 +35,18 @@ class RedisTerm extends Component {
 
   componentDidMount() {
     this.refs.redisTerm.screen.key(['escape'], () => {
-      this.props.history.goBack();
+      this._goToPreviousViewIfPossible();
     });
+  }
+
+  _goToPreviousViewIfPossible() {
+    if (this.props.history.canGo(-1)) {
+      this._goToPreviousPage();
+    }
+  }
+
+  _goToPreviousPage() {
+    this.props.history.goBack();
   }
 
   render() {
