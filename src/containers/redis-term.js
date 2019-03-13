@@ -41,11 +41,11 @@ class RedisTerm extends Component {
 
   _goToPreviousViewIfPossible() {
     if (this.props.history.canGo(-1)) {
-      this._goToPreviousPage();
+      this._goToPreviousView();
     }
   }
 
-  _goToPreviousPage() {
+  _goToPreviousView() {
     this.props.history.goBack();
   }
 
