@@ -1,24 +1,42 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+class Button extends Component {
+  static propTypes = { disabled: PropTypes.bool };
 
-const Button = ({ disabled, onClick, style, ...restProps }) => {
-  const props = {
-    keys: true,
-    mouse: true,
-    clickable: true,
-    onClick: disabled ? null : onClick,
-    ...restProps
+  click() {
+    this.refs.button.emit('click');
+  }
+
+  focus() {
+    this.refs.button.focus();
+  }
+
+  _handleKeypress = (ch, key) => {
+    if (key.full === 'enter') {
+      this.click();
+    }
   };
 
-  return (
-    <button
-      style={Object.assign({ transparent: Boolean(disabled) }, style)}
-      {...props}
-    />
-  );
-};
+  render() {
+    const { disabled, onClick, style, ...restProps } = this.props;
+    const props = {
+      keys: true,
+      mouse: true,
+      clickable: true,
+      onClick: disabled ? null : onClick,
+      ...restProps
+    };
 
-Button.propTypes = { disabled: PropTypes.bool };
+    return (
+      <button
+        onKeypress={this._handleKeypress}
+        ref='button'
+        style={Object.assign({ transparent: Boolean(disabled) }, style)}
+        {...props}
+      />
+    );
+  }
+}
 
 export default Button;

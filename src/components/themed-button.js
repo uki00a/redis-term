@@ -1,15 +1,30 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import Button from './button';
 
-const ThemedButton = withTheme(({ theme, ...restProps }) => (
-  <Button
-    style={theme.button}
-    {...restProps}
-  />
-));
+class ThemedButton extends Component {
+  static propTypes = { theme: PropTypes.object.isRequired }
 
-ThemedButton.propTypes = { theme: PropTypes.object.isRequired };
+  click() {
+    this.refs.button.press();
+  }
 
-export default ThemedButton;
+  focus() {
+    this.refs.button.focus();
+  }
+
+  render () {
+    const { theme, ...restProps } = this.props;
+
+    return (
+      <Button
+        ref='button'
+        style={theme.button}
+        {...restProps}
+      />
+    );
+  }
+}
+
+export default withTheme(ThemedButton);

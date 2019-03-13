@@ -13,7 +13,7 @@ class MessageDialog extends Component {
   state = { isOpened: false };
 
   open() {
-    this.setState({ isOpened: true });
+    this.setState({ isOpened: true }, () => setImmediate(() => this.refs.okButton.focus()));
   }
 
   close = () => {
@@ -40,6 +40,7 @@ class MessageDialog extends Component {
           tags
         />
         <ThemedButton
+          ref='okButton'
           position={{ top: buttonOffset, height: 1, right: 2, width: 4 }}
           content='OK'
           align='center'
