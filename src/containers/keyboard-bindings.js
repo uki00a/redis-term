@@ -15,6 +15,13 @@ class KeyboardBindings extends Component {
     disableKeyboardBindings: PropTypes.func.isRequired
   };
 
+  componentWillUnmount() {
+    if (this._focused) {
+      this._disableKeyboardBindings();
+    }
+    this._focused = false;
+  }
+
   _handleFocus = () => {
     this._focused = true;
     this.props.enableKeyboardBindings(this.props.bindings);
@@ -22,8 +29,12 @@ class KeyboardBindings extends Component {
 
   _handleBlur = () => {
     this._focused = false;
-    this.props.disableKeyboardBindings(this.props.bindings);
+    this._disableKeyboardBindings();
   };
+
+  _disableKeyboardBindings() {
+    this.props.disableKeyboardBindings(this.props.bindings);
+  }
 
   _handleKeypressIfFocused = (ch, key) => {
     if (!this._focused) return;
