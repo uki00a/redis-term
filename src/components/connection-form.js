@@ -12,7 +12,9 @@ class ConfigForm extends Component {
   };
 
   onConnectButtonClicked = () => {
+    if (this.refs.form) { // FIXME - Workaround for `TypeError: Cannot read property 'submit' of undefined`
     this.refs.form.submit();
+    }
   };
 
   _handleSubmit = options => {
