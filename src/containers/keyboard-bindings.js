@@ -11,7 +11,8 @@ class KeyboardBindings extends Component {
       handler: PropTypes.func.isRequired
     })).isRequired,
     children: PropTypes.node,
-    enableKeyboardBindings: PropTypes.func.isRequired
+    enableKeyboardBindings: PropTypes.func.isRequired,
+    disableKeyboardBindings: PropTypes.func.isRequired
   };
 
   _handleFocus = () => {
@@ -21,6 +22,7 @@ class KeyboardBindings extends Component {
 
   _handleBlur = () => {
     this._focused = false;
+    this.props.disableKeyboardBindings(this.props.bindings);
   };
 
   _handleKeypressIfFocused = (ch, key) => {
@@ -47,8 +49,11 @@ class KeyboardBindings extends Component {
   }
 }
 
-const mapStateToProps = ({ keyboardBindings }) => ({});
-const mapDispatchToProps = { enableKeyboardBindings: actions.enableKeyboardBindings };
+const mapStateToProps = (state) => ({});
+const mapDispatchToProps = {
+  enableKeyboardBindings: actions.enableKeyboardBindings,
+  disableKeyboardBindings: actions.disableKeyboardBindings
+};
 
 export default connect(
   mapStateToProps, 
