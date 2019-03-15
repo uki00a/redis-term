@@ -32,7 +32,7 @@ class ConfigForm extends Component {
     this._ref = null;
   };
 
-  _renderInputGroup(index, label, name, initialValue = '') {
+  _renderInputGroup(index, label, name, initialValue = '', secure = false) {
     const boxHeight = 2;
     const boxOffset = boxHeight * index;
     return (
@@ -43,6 +43,7 @@ class ConfigForm extends Component {
           position={{ left: 0 }}>
         </text>
         <Textbox
+          censor={secure}
           name={name}
           value={initialValue}
           position={{ left: 10, height: 1, width: 16 }}>
@@ -75,7 +76,7 @@ class ConfigForm extends Component {
     );
   }
 
-  _renderSSHInput(index, label, name, withFileManager = false) {
+  _renderSSHInput(index, label, name, { withFileManager = false, secure = false } = {}) {
     const boxHeight = 2;
     const boxOffset = boxHeight * index;
     const buttonWidth = 4;
@@ -88,6 +89,7 @@ class ConfigForm extends Component {
           position={{ left: 0 }}>
         </text>
         <Textbox
+          censor={secure}
           ref={name}
           name={name}
           value=''
@@ -135,7 +137,7 @@ class ConfigForm extends Component {
             {this._renderInputGroup(0, 'Name:', 'name', 'FIXME')}
             {this._renderInputGroup(1, 'Host:', 'host', '127.0.0.1')}
             {this._renderInputGroup(2, 'Port:', 'port', '6379')}
-            {this._renderInputGroup(3, 'Password:', 'password')}
+            {this._renderInputGroup(3, 'Password:', 'password', '', true)}
           </box>
         </box>
         <box
@@ -158,8 +160,8 @@ class ConfigForm extends Component {
             {this._renderSSHInput(0, 'Host:', 'sshhost')}
             {this._renderSSHInput(1, 'Port:', 'sshport')}
             {this._renderSSHInput(2, 'User:', 'sshuser')}
-            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', true)}
-            {this._renderSSHInput(4, 'Password:', 'sshpassword')}
+            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', { withFileManager: true })}
+            {this._renderSSHInput(4, 'Password:', 'sshpassword', { secure: true })}
           </box>
         </box>
         <box 
