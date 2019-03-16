@@ -25,6 +25,16 @@ class Editor extends Component {
     // Workaround for: `TypeError: Cannot read property 'height' of null`
     // `<textarea ... value={this.state.value} />`
     this.refs.textarea.setValue(this.props.defaultValue || '');
+
+    this.refs.textarea.on('keypress', (ch, key) => {
+      if (key.full === 'tab') {
+        this.refs.textarea.screen.focusNext();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.refs.textarea.removeAllListeners('keypress');
   }
 
   value() {

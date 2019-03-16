@@ -28,6 +28,16 @@ class Textbox extends Component {
       // `<textarea ... value={this.state.value} />`
       this.refs.textbox.setValue(this.props.defaultValue);
     }
+
+    this.refs.textbox.on('keypress', (ch, key) => {
+      if (key.full === 'tab') {
+        this.refs.textbox.screen.focusNext();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.refs.textbox.removeAllListeners('keypress');
   }
 
   focus() {
