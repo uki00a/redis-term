@@ -2,7 +2,9 @@
 import * as api from '../../connections';
 
 const LOAD_CONNECTIONS_SUCCESS = 'redis-term/connections/LOAD_CONNECTIONS_SUCCESS';
+const ADD_CONNECTION_REQUEST = 'redis-term/connections/ADD_CONNECTION_REQUEST';
 const ADD_CONNECTION_SUCCESS = 'redis-term/connections/ADD_CONNECTION_SUCCESS';
+const UPDATE_CONNECTION_REQUEST = 'redis-term/connections/UPDATE_CONNECTION_REQUEST';
 const UPDATE_CONNECTION_SUCCESS = 'redis-term/connections/UPDATE_CONNECTION_SUCCESS';
 const DELETE_CONNECTION_SUCCESS = 'redis-term/connections/DELETE_CONNECTION_SUCCESS';
 const EDIT_CONNECTION = 'redis-term/connections/EDIT_CONNECTION';
@@ -20,6 +22,9 @@ const loadConnections = () => async dispatch => { // eslint-disable-line no-unus
 /**
  * @returns {import('../store').Thunk}
  */
+const addConnection = connection => async (dispatch, getState) => {
+  if (getState().connections.isSaving) return;
+  dispatch(addConnectionRequest());
   const id = await api.addConnection(connection);
   dispatch(addConnectionSuccess({ ...connection, id }));
 };
@@ -27,7 +32,9 @@ const loadConnections = () => async dispatch => { // eslint-disable-line no-unus
 /**
  * @returns {import('../store').Thunk}
  */
-const updateConnection = connection => async dispatch => {
+const updateConnection = connection => async (dispatch, getState) => {
+  if (getState().connections.isSaving) return;
+  dispatch(updateConnectionRequest());
   await api.updateConnection(connection);
   dispatch(updateConnectionSuccess(connection));
 };
@@ -55,10 +62,14 @@ const loadConnectionsSuccess = connections => ({
   payload: { connections }
 });
 
+const addConnectionRequest = () => ({ type: ADD_CONNECTION_REQUEST });
+
 const addConnectionSuccess = connection => ({
   type: ADD_CONNECTION_SUCCESS,
   payload: { connection }
 });
+
+const updateConnectionRequest = () => ({ type: UPDATE_CONNECTION_REQUEST });
 
 const updateConnectionSuccess = connection => ({
   type: UPDATE_CONNECTION_SUCCESS,
@@ -102,10 +113,11 @@ export const actions = {
  * @typedef {object} ConnectionsState
  * @prop {import('../../connections').Connection[]} list
  * @prop {import('../../connections').Connection} editingConnection
+ * @prop {boolean} isSaving
  */
 const initialState = {
   list: [],
-  activeConnection: null,
+  isSaving: false,
   editingConnection: null
 };
 
@@ -125,9 +137,13 @@ export default function reducer(state = initialState, action) {
       ...state,
       list: action.payload.connections
     };
+  case ADD_CONNECTION_REQUEST:
+  case UPDATE_CONNECTION_REQUEST:
+    return { ...state, isSaving: true };
   case ADD_CONNECTION_SUCCESS:
     return {
       ...state,
+      isSaving: false,
       list: state.list.concat(action.payload.connection)
     };
   case UPDATE_CONNECTION_SUCCESS:
@@ -136,6 +152,7 @@ export default function reducer(state = initialState, action) {
       const newList = state.list.map((x, index) => index === connectionIndex ? action.payload.connection : x);
       return {
         ...state,
+        isSaving: false,
         editingConnection: null,
         list: newList
       };
