@@ -10,7 +10,7 @@ const MASK = 'x';
 
 /**
  * @typedef {object} Connection
- * @prop {string} [id]
+ * @prop {ConnectionId} [id]
  * @prop {string} name
  * @prop {string} host
  * @prop {string} port
@@ -19,20 +19,24 @@ const MASK = 'x';
  * @prop {(connection: Connection) => Promise} addConnection
  * @prop {(connection: Connection) => Promise} updateConnection
  * @prop {() => Promise<Connection[]>} getConnections
- * @prop {(id: string) => Promise<Connection>} readConnectionById
+ * @prop {(id: ConnectionId) => Promise<Connection>} readConnectionById
  * @prop {(connection: Connection) => Promise} deleteConnection
  * @prop {() => string} nextIdentifier
  * 
  * @typedef {object} CredentialManager
- * @prop {(connectionId: string, field: string) => Promise<string>} getCredential
- * @prop {(connectionId: string, field: string, password: string) => Promise} saveCredential
- * @prop {(connectionId: string, field: string) => Promise} deleteCredential
+ * @prop {(connectionId: ConnectionId, field: string) => Promise<string>} getCredential
+ * @prop {(connectionId: ConnectionId, field: string, password: string) => Promise} saveCredential
+ * @prop {(connectionId: ConnectionId, field: string) => Promise} deleteCredential
+ * 
+ * @typedef {string|number} ConnectionId
  */
 
  /**
   * @param {Connection} connection
   * @param {ConnectionsStore} connectionsStore
   * @param {CredentialManager} credentialManager
+  * @returns {Promise<ConnectionId>}
+  * 
   */
 export async function addConnection(connection, connectionsStore, credentialManager) {
   assert.ok(!connection.id);
@@ -41,6 +45,7 @@ export async function addConnection(connection, connectionsStore, credentialMana
   const maskedConnection = maskConnection(connection);
   maskedConnection.id = connectionId;
   await connectionsStore.addConnection(maskedConnection);
+  return connectionId;
 }
 
 /**
@@ -56,7 +61,7 @@ export async function updateConnection(connection, connectionsStore, credentialM
 }
 
 /**
- * @param {string} connectionId 
+ * @param {ConnectionId} connectionId 
  * @param {ConnectionsStore} connectionsStore 
  * @param {CredentialManager} credentialManager 
  */
@@ -81,7 +86,7 @@ export async function loadConnections(connectionsStore, credentialManager) {
 /**
  * @param {CredentialManager} credentialManager 
  * @param {Connection} connection 
- * @param {string} connectionId 
+ * @param {ConnectionId} connectionId 
  * @returns {Promise}
  */
 function saveSecretFields(credentialManager, connection, connectionId = connection.id) {
@@ -94,7 +99,7 @@ function saveSecretFields(credentialManager, connection, connectionId = connecti
 /**
  * @param {CredentialManager} credentialManager 
  * @param {Connection} connection
- * @param {string} connectionId
+ * @param {ConnectionId} connectionId
  * @returns {Promise}
  */
 function deleteSecretFields(credentialManager, connection, connectionId = connection.id) {

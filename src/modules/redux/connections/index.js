@@ -20,9 +20,8 @@ const loadConnections = () => async dispatch => { // eslint-disable-line no-unus
 /**
  * @returns {import('../store').Thunk}
  */
-const addConnection = connection => async dispatch => {
-  await api.addConnection(connection);
-  dispatch(addConnectionSuccess(connection));
+  const id = await api.addConnection(connection);
+  dispatch(addConnectionSuccess({ ...connection, id }));
 };
 
 /**
