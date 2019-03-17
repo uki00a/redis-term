@@ -10,7 +10,6 @@ class TextboxLike extends Component {
   // FIXME: Workaround for TypeError when inputOnFocus is set.
   // `TypeError: done is not a function`
   _onFocus = () => {
-    this.refs.textbox.screen.debug(this.props.disabled)
     if (this.props.disabled) {
       return;
     }
