@@ -24,7 +24,6 @@ class ConnectionList extends Component {
         <List
           ref='list' 
           items={connections.map(x => x.name)}
-          onSelect={() => {}}
           { ...restProps }
         />
       </ScrollableBox>
