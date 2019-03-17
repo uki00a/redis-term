@@ -42,7 +42,9 @@ class ConnectionListContainer extends Component {
 
   _deleteSelectedConnection = () => {
     const connection = this._getSelectedConnection();
-    this.props.deleteConnection(connection);
+    if (connection) {
+      this.props.deleteConnection(connection);
+    }
   };
 
   _getSelectedConnection() {
