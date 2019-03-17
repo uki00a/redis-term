@@ -10,6 +10,8 @@ class ConnectionListContainer extends Component {
     connections: PropTypes.array.isRequired,
     loadConnections: PropTypes.func.isRequired,
     editConnection: PropTypes.func.isRequired,
+    deleteConnection: PropTypes.func.isRequired,
+    connectToRedis: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired
   };
 
@@ -36,12 +38,22 @@ class ConnectionListContainer extends Component {
     this.props.history.push('/connections/new');
   };
 
-  _editConnection = () => {
-    const connectionIndex = this.refs.list.selected();
-    const connection = this.props.connections[connectionIndex];
+  _editSelectedConnection = () => {
+    const connection = this._getSelectedConnection();
     this.props.editConnection(connection);
     this.props.history.push(`/connections/${connection.id}/edit`);
   };
+
+  _deleteSelectedConnection = () => {
+    const connection = this._getSelectedConnection();
+    this.props.deleteConnection(connection);
+  };
+
+  _getSelectedConnection() {
+    const connectionIndex = this.refs.list.selected();
+    const connection = this.props.connections[connectionIndex];
+    return connection;
+  }
 
   _handleConnectionSelect = (item, connectionIndex) => {
     const connection = this.props.connections[connectionIndex];
@@ -50,8 +62,9 @@ class ConnectionListContainer extends Component {
 
   render() {
     const keyboardBindings = [
-      { key: 'C-a', description: 'Add', handler: this._addConnection },
-      { key: 'C-e', description: 'Edit', handler: this._editConnection }
+      { key: 'a', description: 'Add', handler: this._addConnection },
+      { key: 'e', description: 'Edit', handler: this._editSelectedConnection },
+      { key: 'd', description: 'Delete', handler: this._deleteSelectedConnection }
     ];
 
     return (
@@ -74,6 +87,7 @@ const mapStateToProps = ({ connections }) => ({
 const mapDispatchToProps = {
   loadConnections: operations.loadConnections,
   editConnection: actions.editConnection,
+  deleteConnection: operations.deleteConnection,
   connectToRedis: operations.connectToRedis
 };
 

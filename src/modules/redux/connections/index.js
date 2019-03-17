@@ -34,6 +34,14 @@ const updateConnection = connection => async dispatch => {
 };
 
 /**
+ * @returns {import('../store').Thunk}
+ */
+const deleteConnection = connection => async dispatch => {
+  await api.deleteConnection(connection);
+  dispatch(deleteConnectionSuccess(connection));
+};
+
+/**
  * @param {object} connection
  * @returns {import('../store').Thunk}
  */
@@ -79,6 +87,7 @@ export const operations = {
   loadConnections,
   addConnection,
   updateConnection,
+  deleteConnection,
   connectToRedis
 };
 
