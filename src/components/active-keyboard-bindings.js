@@ -20,7 +20,7 @@ ActiveKeyboardBindings.propTypes = {
 };
 
 const formatKeyboardBindings = keyboardBindings => {
-  return keyboardBindings.map(x => `{bold}${x.key}{/bold}-${x.description}`).join(', ');
+  return keyboardBindings.map(x => `{bold}${x.key}{/bold}:${x.description}`).join(', ');
 };
 
 export default withTheme(ActiveKeyboardBindings);
