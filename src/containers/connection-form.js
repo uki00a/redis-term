@@ -19,10 +19,15 @@ class ConnectionFormContainer extends Component {
 
   _handleSubmit = options => {
     const normalizedOptions = this._normalizeOptions(options);
+    this._addOrUpdateConnection(normalizedOptions)
+      .then(() => this.props.history.push('/connections'));
+  };
+
+  _addOrUpdateConnection = options => {
     if (this.props.isNew) {
-      this.props.addConnection(normalizedOptions);
+      return this.props.addConnection(options);
     } else {
-      this.props.updateConnection(normalizedOptions);
+      return this.props.updateConnection(options);
     }
   };
 
