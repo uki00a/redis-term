@@ -35,6 +35,7 @@ class ConnectionFormContainer extends Component {
     const normalizedOptions = this._normalizeSSHOptions(this._normalizeTLSOptions(options));
     this._removeUnnecessaryOptions(normalizedOptions);
     normalizedOptions.id = this.props.connection && this.props.connection.id;
+    normalizedOptions.name = normalizedOptions.name || `${normalizedOptions.host}:${normalizedOptions.port}`;
     
     return normalizedOptions;
   }
