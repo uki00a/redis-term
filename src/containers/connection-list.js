@@ -21,11 +21,7 @@ class ConnectionListContainer extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.activeConnection) {
-      this.props.history.push('/database');
-    } else {
-      this.refs.list.focus();
-    }
+    this.refs.list.focus();
   }
 
   _loadConnectionsIfNotLoaded() {
@@ -57,7 +53,8 @@ class ConnectionListContainer extends Component {
 
   _handleConnectionSelect = (item, connectionIndex) => {
     const connection = this.props.connections[connectionIndex];
-    this.props.connectToRedis(connection);
+    this.props.connectToRedis(connection)
+      .then(() => this.props.history.push('/database'));
   };
 
   render() {
