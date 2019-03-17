@@ -1,3 +1,4 @@
+// @ts-check
 export const partitionByParity = array => [
   array.filter((_, index) => isEven(index)),
   array.filter((_, index) => isOdd(index))
@@ -17,4 +18,11 @@ export const plistToHash = plist => {
 
 export const isEmptyArray = array => array == null || array.length === 0;
 
+/**
+ * @param {string} string 
+ * @returns {boolean}
+ */
+export const isBlank = string => string == null || string.trim().length === 0;
+
 export const noop = () => {};
+

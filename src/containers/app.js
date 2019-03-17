@@ -36,7 +36,7 @@ class App extends Component {
     return (
       <StoreProvider store={store}>
         <ThemeProvider>
-          <MemoryRouter initialEntries={['/connection']}>
+          <MemoryRouter initialEntries={['/connections']}>
             <RedisTerm
               error={this.state.error}
             />

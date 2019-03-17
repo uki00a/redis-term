@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import ConnectionForm from './connection-form';
 import Database from './database';
+import ConnectionList from './connection-list';
 import MessageDialog from '../components/message-dialog';
 import ActiveKeyboardBindings from './active-keyboard-bindings';
 
@@ -56,9 +57,17 @@ class RedisTerm extends Component {
         <text style={theme.header} content="redis-term" />
         <box position={{ top: 1, left: 0, right: 0, bottom: 2 }} style={theme.main}>
           <Route
-            path='/connection'
+            path='/connections'
+            component={ConnectionList} />
+          <Route
+            path='/connections/new'
             render={props => (
-              <ConnectionForm {...props} connectToRedis={this._connectToRedis} />
+              <ConnectionForm {...props} isNew={true} connectToRedis={this._connectToRedis} />
+            )} />
+          <Route
+            path='/connections/:id/edit'
+            render={props => (
+              <ConnectionForm {...props} isNew={false} connectToRedis={this._connectToRedis} />
             )} />
           <Route
             path='/database'

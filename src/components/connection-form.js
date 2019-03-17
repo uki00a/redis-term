@@ -1,23 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import FileManager from './file-manager';
 import { withTheme } from '../contexts/theme-context';
 
-class ConfigForm extends Component {
+class ConnectionForm extends Component {
   static propTypes = {
+    connection: PropTypes.object,
     theme: PropTypes.object.isRequired,
     onSubmit: PropTypes.func.isRequired
   };
 
-  onConnectButtonClicked = () => {
+  componentDidMount() {
+    this.refs.form.focusNext();
+  }
+
+  _onSaveButtonClicked = () => {
     if (this.refs.form) { // FIXME - Workaround for `TypeError: Cannot read property 'submit' of undefined`
-    this.refs.form.submit();
+      this.refs.form.submit();
     }
   };
 
   _handleSubmit = options => {
+    delete options.button;
+    delete options['file-manager'];
     this.props.onSubmit(options);
   };
 
@@ -52,7 +60,7 @@ class ConfigForm extends Component {
     );
   }
 
-  _renderTLSInput(index, label, name) {
+  _renderTLSInput(index, label, name, defaultValue = '') {
     const boxHeight = 2;
     const boxOffset = boxHeight * index;
     return (
@@ -65,7 +73,7 @@ class ConfigForm extends Component {
         <Textbox
           ref={name}
           name={name}
-          value=''
+          defaultValue={defaultValue}
           position={{ left: 14, height: 1, width: 16 }}>
         </Textbox>
         <ThemedButton
@@ -76,7 +84,7 @@ class ConfigForm extends Component {
     );
   }
 
-  _renderSSHInput(index, label, name, { withFileManager = false, secure = false } = {}) {
+  _renderSSHInput(index, label, name, { defaultValue = '', withFileManager = false, secure = false } = {}) {
     const boxHeight = 2;
     const boxOffset = boxHeight * index;
     const buttonWidth = 4;
@@ -92,7 +100,7 @@ class ConfigForm extends Component {
           censor={secure}
           ref={name}
           name={name}
-          value=''
+          defaultValue={defaultValue}
           position={{ left: 14, height: 1, width: inputWidth }}>
         </Textbox>
         {
@@ -110,7 +118,8 @@ class ConfigForm extends Component {
   }
 
   render() {
-    const { theme } = this.props;
+    const theme = this.props.theme;
+    const connection = this.props.connection || {};
     const boxStyle = Object.assign({}, theme.box, theme.box.focus);
 
     return (
@@ -119,7 +128,6 @@ class ConfigForm extends Component {
         ref='form'
         border='line'
         shadow
-        draggable
         style={boxStyle}
         position={{ left: 'center', top: 'center', height: 32 }}
         onSubmit={this._handleSubmit}>
@@ -134,10 +142,10 @@ class ConfigForm extends Component {
           width={36}
           height={18}>
           <box position={{ left: 1, right: 1, top: 1, bottom: 1 }} style={theme.box}>
-            {this._renderInputGroup(0, 'Name:', 'name', 'FIXME')}
-            {this._renderInputGroup(1, 'Host:', 'host', '127.0.0.1')}
-            {this._renderInputGroup(2, 'Port:', 'port', '6379')}
-            {this._renderInputGroup(3, 'Password:', 'password', '', true)}
+            {this._renderInputGroup(0, 'Name:', 'name', connection.name || '')}
+            {this._renderInputGroup(1, 'Host:', 'host', connection.host || '127.0.0.1')}
+            {this._renderInputGroup(2, 'Port:', 'port', connection.port || '6379')}
+            {this._renderInputGroup(3, 'Password:', 'password', connection.password || '', true)}
           </box>
         </box>
         <box
@@ -146,9 +154,9 @@ class ConfigForm extends Component {
           position={{ left: 36, top: 0, height: 10 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
-            {this._renderTLSInput(0, 'Private Key:', 'tlskey')}
-            {this._renderTLSInput(1, 'Certificate:', 'tlscert')}
-            {this._renderTLSInput(2, 'CA:', 'tlsca')}
+            {this._renderTLSInput(0, 'Private Key:', 'tlskey', get(connection, 'tls.key', ''))}
+            {this._renderTLSInput(1, 'Certificate:', 'tlscert', get(connection, 'tls.cert', ''))}
+            {this._renderTLSInput(2, 'CA:', 'tlsca', get(connection, 'tls.ca', ''))}
           </box>
         </box>
         <box
@@ -157,11 +165,17 @@ class ConfigForm extends Component {
           position={{ left: 36, top: 10, height: 14 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
-            {this._renderSSHInput(0, 'Host:', 'sshhost')}
-            {this._renderSSHInput(1, 'Port:', 'sshport')}
-            {this._renderSSHInput(2, 'User:', 'sshuser')}
-            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', { withFileManager: true })}
-            {this._renderSSHInput(4, 'Password:', 'sshpassword', { secure: true })}
+            {this._renderSSHInput(0, 'Host:', 'sshhost', { defaultValue: get(connection, 'ssh.host', '')})}
+            {this._renderSSHInput(1, 'Port:', 'sshport', { defaultValue: get(connection, 'ssh.port', '') })}
+            {this._renderSSHInput(2, 'User:', 'sshuser', { defaultValue: get(connection, 'ssh.user', '') })}
+            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', {
+              withFileManager: true,
+              defaultValue: get(connection, 'ssh.privateKeyPath', '')
+            })}
+            {this._renderSSHInput(4, 'Password:', 'sshpassword', {
+              secure: true,
+              defaultValue: get(connection, 'ssh.password', '')
+            })}
           </box>
         </box>
         <box 
@@ -171,8 +185,8 @@ class ConfigForm extends Component {
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
             <ThemedButton
               position={{ height: 1, width: 16 }}
-              content=' Connect '
-              onPress={this.onConnectButtonClicked}>
+              content=' Save '
+              onPress={this._onSaveButtonClicked}>
             </ThemedButton>
           </box>
         </box>
@@ -181,4 +195,4 @@ class ConfigForm extends Component {
   }
 }
 
-export default withTheme(ConfigForm);
+export default withTheme(ConnectionForm);

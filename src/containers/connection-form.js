@@ -3,22 +3,40 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ConnectionForm from '../components/connection-form';
-import { operations } from '../modules/redux/database';
+import { operations } from '../modules/redux/connections';
+
+const TLS_OPTIONS = ['tlskey', 'tlscert', 'tlsca'];
+const SSH_OPTIONS = ['sshhost', 'sshport', 'sshuser', 'sshprivateKeyPath', 'sshpassword'];
 
 class ConnectionFormContainer extends Component {
   static propTypes = {
-    connectToRedis: PropTypes.func.isRequired,
-    database: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    isNew: PropTypes.bool.isRequired,
+    addConnection: PropTypes.func.isRequired,
+    updateConnection: PropTypes.func.isRequired,
+    connection: PropTypes.object,
   };
 
   _handleSubmit = options => {
     const normalizedOptions = this._normalizeOptions(options);
-    this.props.connectToRedis(normalizedOptions);
+    if (this.props.isNew) {
+      this.props.addConnection(normalizedOptions);
+    } else {
+      this.props.updateConnection(normalizedOptions);
+    }
   };
 
   _normalizeOptions(options) {
-    return this._normalizeSSHOptions(this._normalizeTLSOptions(options));
+    const normalizedOptions = this._normalizeSSHOptions(this._normalizeTLSOptions(options));
+    this._removeUnnecessaryOptions(normalizedOptions);
+    normalizedOptions.id = this.props.connection && this.props.connection.id;
+    
+    return normalizedOptions;
+  }
+
+  _removeUnnecessaryOptions(options) {
+    TLS_OPTIONS.forEach(key => delete options[key]);
+    SSH_OPTIONS.forEach(key => delete options[key]);
   }
 
   _normalizeTLSOptions(options) {
@@ -36,8 +54,7 @@ class ConnectionFormContainer extends Component {
   }
 
   _containsTLSOptions(options) {
-    const tlsOptions = ['tlskey', 'tlscert', 'tlsca'];
-    return tlsOptions.some(option => options[option]);
+    return TLS_OPTIONS.some(option => options[option]);
   }
 
   _normalizeSSHOptions(options) {
@@ -65,8 +82,7 @@ class ConnectionFormContainer extends Component {
   }
 
   _containsSSHOptions(options) {
-    const sshOptions = ['sshhost', 'sshport', 'sshuser', 'sshprivateKeyPath', 'sshpassword'];
-    return sshOptions.some(option => options[option]);
+    return SSH_OPTIONS.some(option => options[option]);
   }
 
   _readIfExists(path) {
@@ -75,19 +91,23 @@ class ConnectionFormContainer extends Component {
     }
   }
 
-  componentDidUpdate() {
-    if (this.props.database.succeeded) {
-      this.props.history.push('/database');
-    }
-  }
-
   render() {
-    return <ConnectionForm onSubmit={this._handleSubmit}></ConnectionForm>;
+    return (
+      <ConnectionForm
+        connection={this.props.isNew ? {} : this.props.connection}
+        onSubmit={this._handleSubmit}>
+      </ConnectionForm>
+    );
   }
 }
 
-const mapStateToProps = ({ database }) => ({ database });
-const mapDispatchToProps = { connectToRedis: operations.connectToRedis };
+const mapStateToProps = ({ connections }) => ({
+  connection: connections.editingConnection
+});
+const mapDispatchToProps = {
+  addConnection: operations.addConnection,
+  updateConnection: operations.updateConnection
+};
 
 export default connect(
   mapStateToProps,  

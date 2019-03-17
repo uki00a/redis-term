@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "ioredis": "^4.2.0",
+    "keytar": "^4.4.1",
+    "lodash": "^4.17.11",
+    "mkdirp": "^0.5.1",
     "neo-blessed": "^0.2.0",
     "prop-types": "^15.6.2",
     "react": "^16.8.1",
@@ -28,7 +31,8 @@
     "react-router": "^4.3.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "ssh2": "^0.8.2"
+    "ssh2": "^0.8.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
