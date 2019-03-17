@@ -57,9 +57,9 @@ class TextboxLike extends Component {
   }
 
   render() {
-    const { onFocus, renderElement, disabled, style, ...props } = this.props;
+    const { onFocus, renderElement, disabled, style, ...restProps } = this.props;
 
-    return renderElement({
+    const props = ({
       style: Object.assign({ transparent: Boolean(disabled) }, style),
       keyable: true,
       clickable: true,
@@ -67,8 +67,10 @@ class TextboxLike extends Component {
       mouse: true,
       onFocus: this._onFocus,
       ref: 'textbox',
-      ...props
+      ...restProps
     });
+
+    return disabled ? <box {...props} /> : renderElement(props);
   }
 }
 
