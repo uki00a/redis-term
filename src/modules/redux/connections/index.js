@@ -102,7 +102,6 @@ export const actions = {
 /**
  * @typedef {object} ConnectionsState
  * @prop {import('../../connections').Connection[]} list
- * @prop {import('../../connections').Connection} activeConnection
  * @prop {import('../../connections').Connection} editingConnection
  */
 const initialState = {
@@ -119,9 +118,9 @@ const initialState = {
 export default function reducer(state = initialState, action) {
   switch (action.type) {
   case CONNECT_TO_REDIS_REQUEST:
-    return { ...state, activeConnection: null };
+    return state;
   case CONNECT_TO_REDIS_SUCCESS:
-    return { ...state, activeConnection: action.payload.connection };
+    return state;
   case LOAD_CONNECTIONS_SUCCESS:
     return {
       ...state,

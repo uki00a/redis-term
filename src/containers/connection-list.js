@@ -78,8 +78,7 @@ class ConnectionListContainer extends Component {
 }
 
 const mapStateToProps = ({ connections }) => ({
-  connections: connections.list,
-  activeConnection: connections.activeConnection
+  connections: connections.list
 });
 const mapDispatchToProps = {
   loadConnections: operations.loadConnections,
