@@ -6,6 +6,7 @@ import Editor from './editor';
 import Prompt from './prompt';
 import ThemedButton from './themed-button';
 import ScrollableBox from './scrollable-box';
+import ConfirmationDialog from './confirmation-dialog';
 import { withTheme } from '../contexts/theme-context';
 
 class SetContent extends Component {
@@ -64,6 +65,10 @@ class SetContent extends Component {
     this._unselectMember();
   };
 
+  _openConfirmationDialog = () => {
+    this.refs.confirmationDialog.open();
+  };
+
   _hasSelectedMember() {
     return this.state.selectedMemberIndex != null;
   }
@@ -104,7 +109,7 @@ class SetContent extends Component {
           disabled={!hasSelectedMember}
           position={{ height: 1, width: 11, right: 14 }}
           tags
-          onClick={this._removeRow}
+          onClick={this._openConfirmationDialog}
           content='{center}Remove Row{/center}' />
         <ThemedButton
           position={{ height: 1, width: 8, right: 5 }}
@@ -140,6 +145,11 @@ class SetContent extends Component {
           title='Add Row'
           onOk={this._addRow}
           onCancel={this._closeAddRowPrompt}
+        />
+        <ConfirmationDialog
+          text='Are you sure you want to delete this member'
+          onOk={this._removeRow}
+          ref='confirmationDialog'
         />
       </box>
     );
