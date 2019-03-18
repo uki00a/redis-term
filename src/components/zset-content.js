@@ -145,6 +145,7 @@ class ZsetContent extends Component {
           />
         </ScrollableBox>
         <AddZsetMemberDialog
+          position={{ height: 20 }}
           ref='addZsetMemberDialog'
           onOk={this._addRow}
         />
