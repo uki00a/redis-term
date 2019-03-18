@@ -29,7 +29,7 @@ class Prompt extends Component {
 
   open() {
     this.setState({ isOpened: true });
-    this.refs.input.focus();
+    this.refs.dialog.focus();
   }
 
   close() {
@@ -37,10 +37,14 @@ class Prompt extends Component {
   }
 
   render() {
+    const { title, onOk, onCancel, ...restProps } = this.props;
+
     return (
       <Dialog
+        ref='dialog'
         isOpened={this.state.isOpened}
-        title={this.props.title}>
+        title={title}
+        { ...restProps }>
         <Textbox
           position={{ top: 3, height: 1, left: 2, right: 2 }}
           bg='black'
