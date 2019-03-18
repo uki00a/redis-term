@@ -133,6 +133,7 @@ class HashContent extends Component {
             content='{center}Save{/center}' />
         </ScrollableBox>
         <AddHashFieldDialog
+          position={{ height: 20 }}
           ref='addHashFieldDialog'
           onOk={this._addRow}
         />
