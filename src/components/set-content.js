@@ -135,6 +135,7 @@ class SetContent extends Component {
           />
         </ScrollableBox>
         <Prompt
+          position={{ height: 20 }}
           ref='addRowPrompt'
           title='Add Row'
           onOk={this._addRow}
