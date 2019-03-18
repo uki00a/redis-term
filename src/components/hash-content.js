@@ -6,6 +6,7 @@ import AddHashFieldDialog from './add-hash-field-dialog';
 import ScrollableBox from './scrollable-box';
 import FilterableList from './filterable-list';
 import ThemedButton from './themed-button';
+import CofnfirmationDialog from './confirmation-dialog';
 import { withTheme } from '../contexts/theme-context';
 
 class HashContent extends Component {
@@ -27,6 +28,10 @@ class HashContent extends Component {
 
   _openAddHashFieldDialog = () => {
     this.refs.addHashFieldDialog.open();
+  };
+
+  _openConfirmationDialog = () => {
+    this.refs.confirmationDialog.open();
   };
 
   _removeRow = () => {
@@ -103,7 +108,7 @@ class HashContent extends Component {
           disabled={!hasSelectedField}
           position={{ height: 1, width: 11, right: 14 }}
           tags
-          onClick={this._removeRow}
+          onClick={this._openConfirmationDialog}
           content='{center}Remove Row{/center}' />
         <ThemedButton
           position={{ height: 1, width: 8, right: 5 }}
@@ -136,6 +141,11 @@ class HashContent extends Component {
           position={{ height: 20 }}
           ref='addHashFieldDialog'
           onOk={this._addRow}
+        />
+        <CofnfirmationDialog
+          text='Are you sure you want to delete this field'
+          onOk={this._removeRow}
+          ref='confirmationDialog' 
         />
       </form>
     );
