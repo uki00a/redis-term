@@ -29,7 +29,6 @@ class Prompt extends Component {
 
   open() {
     this.setState({ isOpened: true });
-    this.refs.dialog.focus();
   }
 
   close() {
@@ -41,7 +40,6 @@ class Prompt extends Component {
 
     return (
       <Dialog
-        ref='dialog'
         isOpened={this.state.isOpened}
         title={title}
         { ...restProps }>

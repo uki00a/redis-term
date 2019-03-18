@@ -14,6 +14,12 @@ class Dialog extends Component {
     setImmediate(() => this.refs.dialog.focusNext());
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.isOpened !== this.props.isOpened && this.props.isOpened) {
+      this.focus();
+    }
+  }
+
   render() {
     const {
       isOpened,
