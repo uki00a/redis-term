@@ -32,13 +32,16 @@ class AddZsetMemberDialog extends Component {
   }
 
   render() {
+    const { title, theme, ...restProps } = this.props;
+
     return (
       <Dialog
-        title={this.props.title}
-        isOpened={this.state.isOpened}>
+        title={title}
+        isOpened={this.state.isOpened}
+        { ...restProps }>
         <text
           content='Score:'
-          style={this.props.theme.box}
+          style={theme.box}
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
         <Textbox
@@ -50,7 +53,7 @@ class AddZsetMemberDialog extends Component {
         />
         <text
           content='Value:'
-          style={this.props.theme.box}
+          style={theme.box}
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
         <Textbox
