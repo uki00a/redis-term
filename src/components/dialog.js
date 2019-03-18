@@ -2,33 +2,46 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 
-const Dialog = ({
-  isOpened,
-  theme,
-  title,
-  children,
-  ...restProps
-}) => (
-  <form
-    hidden={!isOpened}
-    style={theme.dialog}
-    content={title}
-    border='line'
-    draggable
-    keys
-    tags
-    {...restProps}>
-    {
-      children
-    }
-  </form>
-);
+class Dialog extends Component {
+  static propTypes = {
+    isOpened: PropTypes.bool.isRequired,
+    theme: PropTypes.object.isRequired,
+    title: PropTypes.string,
+    children: PropTypes.node.isRequired
+  };
 
-Dialog.propTypes = {
-  isOpened: PropTypes.bool.isRequired,
-  theme: PropTypes.object.isRequired,
-  title: PropTypes.string,
-  children: PropTypes.node.isRequired
-};
+  focus() {
+    setImmediate(() => this.refs.dialog.focusNext());
+  }
+
+  render() {
+    const {
+      isOpened,
+      theme,
+      title,
+      children,
+      ...restProps
+    } = this.props;
+
+    return (
+      <form
+        ref='dialog'
+        hidden={!isOpened}
+        style={theme.dialog}
+        content={title}
+        border='line'
+        draggable
+        keys
+        keyable
+        tags
+        {...restProps}>
+        {
+          children
+        }
+      </form>
+    );
+  }
+
+} 
 
 export default withTheme(Dialog);
