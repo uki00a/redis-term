@@ -7,6 +7,7 @@ import ScrollableBox from './scrollable-box';
 import AddZsetMemberDialog from './add-zset-member-dialog';
 import FilterableList from './filterable-list';
 import ThemedButton from './themed-button';
+import ConfirmationDialog from './confirmation-dialog';
 import { withTheme } from '../contexts/theme-context';
 
 class ZsetContent extends Component {
@@ -40,6 +41,10 @@ class ZsetContent extends Component {
 
   _openAddZsetMemberDialog = () => {
     this.refs.addZsetMemberDialog.open();
+  };
+
+  _openConfirmationDialog = () => {
+    this.refs.confirmationDialog.open();
   };
 
   _hasSelectedMember() {
@@ -106,7 +111,7 @@ class ZsetContent extends Component {
           disabled={!hasSelectedMember}
           position={{ height: 1, width: 11, right: 14 }}
           tags
-          onClick={this._removeRow}
+          onClick={this._openConfirmationDialog}
           content='{center}Remove Row{/center}' />
         <ThemedButton
           position={{ width: 8, height: 1, right: 5 }}
@@ -148,6 +153,11 @@ class ZsetContent extends Component {
           position={{ height: 20 }}
           ref='addZsetMemberDialog'
           onOk={this._addRow}
+        />
+        <ConfirmationDialog
+          text='Are you sure you want to delete this member'
+          onOk={this._removeRow}
+          ref='confirmationDialog'
         />
       </box>
     );
