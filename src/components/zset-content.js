@@ -18,24 +18,28 @@ class ZsetContent extends Component {
     reload: PropTypes.func.isRequired,
     filterMembers: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired,
-    addRow: PropTypes.func.isRequired,
-    removeRow: PropTypes.func.isRequired,
+    addMember: PropTypes.func.isRequired,
+    removeMember: PropTypes.func.isRequired,
     lastPattern: PropTypes.string,
     theme: PropTypes.object.isRequired
   };
 
   state = { selectedMemberIndex: null };
 
-  _addRow = (score, value) => {
-    this.props.addRow(value, score);
+  _addMember = (score, value) => {
+    this.props.addMember(value, score);
   };
 
-  _removeRow = () => {
+  _removeMemberIfSelectedMemberExists = () => {
     if (!this._hasSelectedMember()) {
       return;
     }
+    this._removeMember();
+  };
+
+  _removeMember() {
     const memberToRemove = this._editingMember();
-    this.props.removeRow(memberToRemove);
+    this.props.removeMember(memberToRemove);
     this._unselectMember();
   };
 
@@ -106,13 +110,13 @@ class ZsetContent extends Component {
           position={{ height: 1, width: 8, right: 26 }}
           tags
           onClick={this._openAddZsetMemberDialog}
-          content='{center}Add Row{/center}' />
+          content='{center}Add{/center}' />
         <ThemedButton
           disabled={!hasSelectedMember}
           position={{ height: 1, width: 11, right: 14 }}
           tags
           onClick={this._openConfirmationDialog}
-          content='{center}Remove Row{/center}' />
+          content='{center}Remove{/center}' />
         <ThemedButton
           position={{ width: 8, height: 1, right: 5 }}
           tags
@@ -152,11 +156,11 @@ class ZsetContent extends Component {
         <AddZsetMemberDialog
           position={{ height: 20 }}
           ref='addZsetMemberDialog'
-          onOk={this._addRow}
+          onOk={this._addMember}
         />
         <ConfirmationDialog
           text='Are you sure you want to delete this member'
-          onOk={this._removeRow}
+          onOk={this._removeMemberIfSelectedMemberExists}
           ref='confirmationDialog'
         />
       </box>

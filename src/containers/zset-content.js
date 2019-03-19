@@ -36,8 +36,8 @@ class ZsetContentContainer extends Component {
           scores={this.props.scores}
           reload={this._loadZset}
           filterMembers={this.props.filterZsetMembers}
-          addRow={this.props.addMemberToZset}
-          removeRow={this.props.deleteMemberFromZset}
+          addMember={this.props.addMemberToZset}
+          removeMember={this.props.deleteMemberFromZset}
           saveMember={this.props.updateZsetMember}
           lastPattern={this.props.pattern}
         />
