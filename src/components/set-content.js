@@ -13,8 +13,8 @@ class SetContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     members: PropTypes.array.isRequired,
-    addRow: PropTypes.func.isRequired,
-    removeRow: PropTypes.func.isRequired,
+    addMember: PropTypes.func.isRequired,
+    removeMember: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
     filterMembers: PropTypes.func.isRequired,
     saveMember: PropTypes.func.isRequired,
@@ -24,17 +24,17 @@ class SetContent extends Component {
 
   state = { selectedMemberIndex: null };
 
-  _openAddRowPrompt = () => {
-    this.refs.addRowPrompt.open();
+  _openAddMemberPrompt = () => {
+    this.refs.addMemberPrompt.open();
   };
 
-  _closeAddRowPrompt = () => {
-    this.refs.addRowPrompt.close();
+  _closeAddMemberPrompt = () => {
+    this.refs.addMemberPrompt.close();
   };
 
-  _addRow = value => {
-    this._closeAddRowPrompt();
-    this.props.addRow(value);
+  _addMember = value => {
+    this._closeAddMemberPrompt();
+    this.props.addMember(value);
   };
 
   _onMemberSelected = (item, index) => {
@@ -56,12 +56,12 @@ class SetContent extends Component {
     this.props.saveMember(oldValue, newValue);
   };
 
-  _removeRow = () => {
+  _removeMember = () => {
     if (!this._hasSelectedMember()) {
       return;
     }
     const memberToRemove = this.props.members[this.state.selectedMemberIndex];
-    this.props.removeRow(memberToRemove);
+    this.props.removeMember(memberToRemove);
     this._unselectMember();
   };
 
@@ -103,14 +103,14 @@ class SetContent extends Component {
         <ThemedButton
           position={{ height: 1, width: 8, right: 26  }}
           tags
-          onClick={this._openAddRowPrompt}
-          content='{center}Add Row{/center}' />
+          onClick={this._openAddMemberPrompt}
+          content='{center}Add{/center}' />
         <ThemedButton
           disabled={!hasSelectedMember}
           position={{ height: 1, width: 11, right: 14 }}
           tags
           onClick={this._openConfirmationDialog}
-          content='{center}Remove Row{/center}' />
+          content='{center}Remove{/center}' />
         <ThemedButton
           position={{ height: 1, width: 8, right: 5 }}
           tags
@@ -141,14 +141,14 @@ class SetContent extends Component {
         </ScrollableBox>
         <Prompt
           position={{ height: 20 }}
-          ref='addRowPrompt'
-          title='Add Row'
-          onOk={this._addRow}
-          onCancel={this._closeAddRowPrompt}
+          ref='addMemberPrompt'
+          title='Add Member'
+          onOk={this._addMember}
+          onCancel={this._closeAddMemberPrompt}
         />
         <ConfirmationDialog
           text='Are you sure you want to delete this member'
-          onOk={this._removeRow}
+          onOk={this._removeMember}
           ref='confirmationDialog'
         />
       </box>

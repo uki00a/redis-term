@@ -40,11 +40,11 @@ class SetContentContainer extends Component {
         <SetContent
           keyName={this.props.keyName}
           members={this.props.members}
-          addRow={this._addMember}
+          addMember={this._addMember}
           reload={this._reload}
           filterMembers={this.props.filterSetMembers}
           saveMember={this.props.updateSetMember}
-          removeRow={this.props.deleteMemberFromSet}
+          removeMember={this.props.deleteMemberFromSet}
           lastPattern={this.props.pattern}
         />
       );
