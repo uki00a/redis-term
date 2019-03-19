@@ -31,8 +31,8 @@ class HashContentContainer extends Component {
         <HashContent
           keyName={this.props.keyName}
           hash={this.props.hash}
-          addRow={this.props.setHashField}
-          removeRow={this.props.deleteFieldFromHash}
+          addField={this.props.setHashField}
+          removeField={this.props.deleteFieldFromHash}
           saveField={this.props.setHashField}
           reload={this._loadHash}
           filterFields={this.props.filterHashFields}

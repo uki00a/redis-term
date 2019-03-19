@@ -13,8 +13,8 @@ class HashContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     hash: PropTypes.object.isRequired,
-    addRow: PropTypes.func.isRequired,
-    removeRow: PropTypes.func.isRequired,
+    addField: PropTypes.func.isRequired,
+    removeField: PropTypes.func.isRequired,
     saveField: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
     filterFields: PropTypes.func.isRequired,
@@ -24,7 +24,7 @@ class HashContent extends Component {
 
   state = { selectedFieldIndex: null };
 
-  _addRow = (field, value) => this.props.addRow(field, value);
+  _addField = (field, value) => this.props.addField(field, value);
 
   _openAddHashFieldDialog = () => {
     this.refs.addHashFieldDialog.open();
@@ -34,12 +34,16 @@ class HashContent extends Component {
     this.refs.confirmationDialog.open();
   };
 
-  _removeRow = () => {
+  _removeSelectedFieldIfExists = () => {
     if (!this._hasSelectedField()) {
       return;
     }
+    this._removeSelectedField();
+  };
+
+  _removeSelectedField = () => {
     const fieldToRemove = this._selectedField();
-    this.props.removeRow(fieldToRemove);
+    this.props.removeField(fieldToRemove);
     this._unselectField();
   };
 
@@ -103,13 +107,13 @@ class HashContent extends Component {
           position={{ height: 1, width: 8, right: 26 }}
           tags
           onClick={this._openAddHashFieldDialog}
-          content='{center}Add Row{/center}' />
+          content='{center}Add{/center}' />
         <ThemedButton
           disabled={!hasSelectedField}
           position={{ height: 1, width: 11, right: 14 }}
           tags
           onClick={this._openConfirmationDialog}
-          content='{center}Remove Row{/center}' />
+          content='{center}Remove{/center}' />
         <ThemedButton
           position={{ height: 1, width: 8, right: 5 }}
           tags
@@ -140,11 +144,11 @@ class HashContent extends Component {
         <AddHashFieldDialog
           position={{ height: 20 }}
           ref='addHashFieldDialog'
-          onOk={this._addRow}
+          onOk={this._addField}
         />
         <CofnfirmationDialog
           text='Are you sure you want to delete this field'
-          onOk={this._removeRow}
+          onOk={this._removeSelectedFieldIfExists}
           ref='confirmationDialog' 
         />
       </form>
