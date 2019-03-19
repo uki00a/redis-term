@@ -11,7 +11,7 @@ class ListContent extends Component {
   static propTypes = {
     keyName: PropTypes.string.isRequired,
     elements: PropTypes.array.isRequired,
-    addRow: PropTypes.func.isRequired,
+    addElement: PropTypes.func.isRequired,
     save: PropTypes.func.isRequired,
     reload: PropTypes.func.isRequired,
     theme: PropTypes.object.isRequired
@@ -19,17 +19,17 @@ class ListContent extends Component {
 
   state = { selectedIndex: null };
 
-  _openAddRowPrompt = () => {
-    this.refs.addRowPrompt.open();
+  _openAddElementPrompt = () => {
+    this.refs.addElementPrompt.open();
   };
 
-  _closeAddRowPrompt = () => {
-    this.refs.addRowPrompt.close();
+  _closeAddElementPrompt = () => {
+    this.refs.addElementPrompt.close();
   };
 
-  _addRow = element => {
-    this._closeAddRowPrompt();
-    this.props.addRow(element);
+  _addElement = element => {
+    this._closeAddElementPrompt();
+    this.props.addElement(element);
   };
 
   _save = () => {
@@ -64,8 +64,8 @@ class ListContent extends Component {
         <ThemedButton
           position={{ height: 1, width: 8, right: 14 }}
           tags
-          onClick={this._openAddRowPrompt}
-          content='{center}Add Row{/center}' />
+          onClick={this._openAddElementPrompt}
+          content='{center}Add{/center}' />
         <ThemedButton
           position={{ height: 1, width: 8, right: 5 }}
           tags
@@ -93,10 +93,10 @@ class ListContent extends Component {
             content='{center}Save{/center}' />
         </ScrollableBox>
         <Prompt
-          ref='addRowPrompt'
-          title='Add Row'
-          onOk={this._addRow}
-          onCancel={this._closeAddRowPrompt}
+          ref='addElementPrompt'
+          title='Add Element'
+          onOk={this._addElement}
+          onCancel={this._closeAddElementPrompt}
          />
       </box>
     );

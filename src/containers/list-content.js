@@ -28,7 +28,7 @@ class ListContentContainer extends Component {
         <ListContent
           keyName={this.props.keyName}
           elements={this.props.elements}
-          addRow={this.props.addElementToList}
+          addElement={this.props.addElementToList}
           save={this.props.updateListElement}
           reload={this.props.loadListElements}
         />
