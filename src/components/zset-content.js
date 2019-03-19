@@ -30,14 +30,14 @@ class ZsetContent extends Component {
     this.props.addMember(value, score);
   };
 
-  _removeMemberIfSelectedMemberExists = () => {
+  _removeSelectedMemberIfExists = () => {
     if (!this._hasSelectedMember()) {
       return;
     }
-    this._removeMember();
+    this._removeSelectedMember();
   };
 
-  _removeMember() {
+  _removeSelectedMember() {
     const memberToRemove = this._editingMember();
     this.props.removeMember(memberToRemove);
     this._unselectMember();
@@ -160,7 +160,7 @@ class ZsetContent extends Component {
         />
         <ConfirmationDialog
           text='Are you sure you want to delete this member'
-          onOk={this._removeMemberIfSelectedMemberExists}
+          onOk={this._removeSelectedMemberIfExists}
           ref='confirmationDialog'
         />
       </box>
