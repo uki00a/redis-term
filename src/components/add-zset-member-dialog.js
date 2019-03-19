@@ -24,7 +24,6 @@ class AddZsetMemberDialog extends Component {
 
   open() {
     this.setState({ isOpened: true });
-    this.refs.scoreInput.focus();
   }
 
   close() {
