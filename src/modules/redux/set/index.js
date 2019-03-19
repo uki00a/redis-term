@@ -124,7 +124,9 @@ export default function reducer(state = initialState, action) {
   case ADD_MEMBER_TO_SET_SUCCESS:
     return {
       ...state,
-      members: state.members.concat(action.payload.newMember)
+      members: state.members.indexOf(action.payload.newMember) === -1
+        ? state.members.concat(action.payload.newMember)
+        : state.members
     };
   case UPDATE_SET_MEMBER_SUCCESS:
     {
