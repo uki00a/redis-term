@@ -69,16 +69,18 @@ class ConnectionFormContainer extends Component {
       const {
         sshhost,
         sshport,
-        sshuser,
-        sshprivateKeyPath,
+        sshusername,
+        sshprivateKey,
         sshpassword,
+        sshpassphrase,
         ...restOptions
       } = options;
       restOptions.ssh = {
         host: sshhost,
         port: sshport,
-        username: sshuser,
-        privateKey: sshprivateKeyPath,
+        username: sshusername,
+        privateKey: sshprivateKey,
+        passphrase: sshpassphrase,
         password: sshpassword
       };
       return restOptions;

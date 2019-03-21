@@ -162,17 +162,21 @@ class ConnectionForm extends Component {
         <box
           label='SSH'
           border='line'
-          position={{ left: 36, top: 10, height: 14 }}
+          position={{ left: 36, top: 10, height: 15 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
             {this._renderSSHInput(0, 'Host:', 'sshhost', { defaultValue: get(connection, 'ssh.host', '')})}
             {this._renderSSHInput(1, 'Port:', 'sshport', { defaultValue: get(connection, 'ssh.port', '') })}
-            {this._renderSSHInput(2, 'User:', 'sshuser', { defaultValue: get(connection, 'ssh.user', '') })}
-            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKeyPath', {
+            {this._renderSSHInput(2, 'User:', 'sshusername', { defaultValue: get(connection, 'ssh.username', '') })}
+            {this._renderSSHInput(3, 'Private Key:', 'sshprivateKey', {
               withFileManager: true,
-              defaultValue: get(connection, 'ssh.privateKeyPath', '')
+              defaultValue: get(connection, 'ssh.privateKey', '')
             })}
-            {this._renderSSHInput(4, 'Password:', 'sshpassword', {
+            {this._renderSSHInput(4, 'Passphrase:', 'sshpassphrase', {
+              secure: true,
+              defaultValue: get(connection, 'ssh.passphrase', '')
+            })}
+            {this._renderSSHInput(5, 'Password:', 'sshpassword', {
               secure: true,
               defaultValue: get(connection, 'ssh.password', '')
             })}
@@ -180,7 +184,7 @@ class ConnectionForm extends Component {
         </box>
         <box 
           border='line'
-          position={{ left: 36, top: 24, height: 4 }}
+          position={{ left: 36, top: 25, height: 4 }}
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
             <ThemedButton
