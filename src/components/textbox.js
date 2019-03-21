@@ -5,9 +5,9 @@ import TextboxLike from './textbox-like';
 const Textbox = forwardRef((props, ref) => (
   <TextboxLike
     ref={ref}
-    renderElement={props => <textbox { ...props } />}
-    { ...props }
-  />
+    { ...props }>
+    {props => <textbox { ...props } />}
+  </TextboxLike>
 ));
 
 Textbox.propTypes = {

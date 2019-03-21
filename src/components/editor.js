@@ -7,11 +7,11 @@ const Editor = forwardRef((props, ref) => (
   <TextboxLike
     ref={ref}
     style={props.theme.editor}
-    renderElement={props => <textarea {...props} />}
     border='line'
     input
-    { ...props }
-  />
+    { ...props }>
+    {props => <textarea {...props} />}
+  </TextboxLike>
 ));
 
 Editor.propTypes = {

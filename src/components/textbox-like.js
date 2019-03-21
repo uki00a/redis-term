@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class TextboxLike extends Component {
   static propTypes = { 
     defaultValue: PropTypes.string,
-    renderElement: PropTypes.func.isRequired,
+    children: PropTypes.func.isRequired,
     disabled: PropTypes.bool
   };
   // FIXME: Workaround for TypeError when inputOnFocus is set.
@@ -57,7 +57,7 @@ class TextboxLike extends Component {
   }
 
   render() {
-    const { onFocus, renderElement, disabled, style, ...restProps } = this.props;
+    const { onFocus, children, disabled, style, ...restProps } = this.props;
 
     const props = ({
       style: Object.assign({ transparent: Boolean(disabled) }, style),
@@ -70,7 +70,7 @@ class TextboxLike extends Component {
       ...restProps
     });
 
-    return renderElement(props);
+    return children(props);
   }
 }
 
