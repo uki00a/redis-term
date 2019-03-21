@@ -68,7 +68,7 @@ class TextboxLike extends Component {
     const props = ({
       style: Object.assign({ transparent: Boolean(disabled) }, style),
       keyable: true,
-      clickable: true,
+      clickable: false, // FIXME when set this to true, `TypeError: done is not a function` occurred
       keys: !disabled,
       mouse: true,
       onFocus: this._onFocus,
