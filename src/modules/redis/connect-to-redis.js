@@ -62,6 +62,7 @@ function makeSSHOptions(options) {
   };
   if (options.ssh.privateKey) {
     sshOptions.privateKey = options.ssh.privateKey;
+    sshOptions.passphrase = options.ssh.passphrase;
   } else {
     sshOptions.password = options.ssh.password;
   }

@@ -135,7 +135,8 @@ async function resolveConnections(passwordSaver, connections) {
 function resolveSecretFields(connection, passwordSaver) {
   const secretFields = extractSecretFields(connection);
   const promises = secretFields.map(async field => {
-    connection[field] = await passwordSaver.getCredential(connection.id, field); 
+    const credential = await passwordSaver.getCredential(connection.id, field); 
+    set(connection, field, credential);
   });
   return Promise.all(promises);
 }
