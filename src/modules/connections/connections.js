@@ -19,7 +19,7 @@ const MASK = 'x';
  * @prop {(connection: Connection) => Promise} addConnection
  * @prop {(connection: Connection) => Promise} updateConnection
  * @prop {() => Promise<Connection[]>} getConnections
- * @prop {(id: ConnectionId) => Promise<Connection>} readConnectionById
+ * @prop {(id: ConnectionId) => Promise<Connection>} getConnectionById
  * @prop {(connection: Connection) => Promise} deleteConnection
  * @prop {() => string} nextIdentifier
  * 
@@ -67,7 +67,7 @@ export async function updateConnection(connection, connectionsStore, credentialM
  */
 export async function deleteConnection(connectionId, connectionsStore, credentialManager) {
   assert.ok(connectionId != null);
-  const connectionToDelete = await connectionsStore.readConnectionById(connectionId);
+  const connectionToDelete = await connectionsStore.getConnectionById(connectionId);
   await deleteSecretFields(credentialManager, connectionToDelete, connectionId);
   await connectionsStore.deleteConnection(connectionToDelete);
 }

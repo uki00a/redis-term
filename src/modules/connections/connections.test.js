@@ -1,8 +1,5 @@
 import assert from 'assert';
-import cloneDeep from 'lodash/cloneDeep';
-import get from 'lodash/get';
-import set from 'lodash/set';
-import unset from 'lodash/unset';
+import td from 'testdouble';
 import { addConnection, updateConnection, deleteConnection, loadConnections } from './connections';
 
 describe('/modules/connections/connections', () => {
@@ -14,28 +11,32 @@ describe('/modules/connections/connections', () => {
 
     before(() => {
       connectionId = 1;
-      connectionsStore = new FakeConnectionsStore([], connectionId); 
-      credentialManager = new FakeCredentialManager();
+      connectionsStore = td.object(['nextIdentifier', 'addConnection']),
+      credentialManager = td.object(['saveCredential']);
 
       const connection = createConnectionWithSecretFields();
+
+      td.when(connectionsStore.nextIdentifier()).thenReturn(connectionId);
 
       return addConnection(connection, connectionsStore, credentialManager);
     });
 
     it('should add connection with secret fields masked', async () => {
-      const connections = await connectionsStore.getConnections();
-
-      assert.equal(connections.length, 1);
-      assert.equal(connections[0].id, 1, 'id should be assigned')
-      assert.equal(connections[0].password, 'x', 'password should be masked');
-      assert.equal(connections[0].ssh.password, 'x', 'ssh.password should be masked');
-      assert.equal(connections[0].ssh.passphrase, 'x', 'ssh.passphrase should be masked');
+      td.verify(connectionsStore.addConnection(td.matchers.contains({
+        id: connectionId,
+        name: 'local-redis',
+        password: 'x',
+        ssh: {
+          password: 'x',
+          passphrase: 'x'
+        }
+      })));
     });
 
     it('should save secret fields', async () => {
-      assert.equal(await credentialManager.getCredential(connectionId, 'password'), 'hoge', 'password should be saved');
-      assert.equal(await credentialManager.getCredential(connectionId, 'ssh.password'), 'fuga', 'ssh.password should be saved');
-      assert.equal(await credentialManager.getCredential(connectionId, 'ssh.passphrase'), 'piyo', 'ssh.passphrase should be saved');
+      td.verify(credentialManager.saveCredential(connectionId, 'password', 'hoge'), {times: 1});
+      td.verify(credentialManager.saveCredential(connectionId, 'ssh.password', 'fuga'), {times: 1});
+      td.verify(credentialManager.saveCredential(connectionId, 'ssh.passphrase', 'piyo'), {times: 1});
     });
   });
 
@@ -47,8 +48,8 @@ describe('/modules/connections/connections', () => {
 
     before(() => {
       connectionId = 1;
-      connectionsStore = new FakeConnectionsStore([createConnection({ id: connectionId })]);
-      credentialManager = new FakeCredentialManager();
+      connectionsStore = td.object(['updateConnection']);
+      credentialManager = td.object(['saveCredential']);
 
       const connection = createConnectionWithSecretFields({ id: connectionId });
 
@@ -56,18 +57,21 @@ describe('/modules/connections/connections', () => {
     });
 
     it('should update connection with secret fields masked', async () => {
-      const connections = await connectionsStore.getConnections();
-      assert.equal(connections.length, 1);
-      assert.equal(connections[0].id, connectionId, 'id should not be updated');
-      assert.equal(connections[0].password, 'x', 'password should be masked');
-      assert.equal(connections[0].ssh.password, 'x', 'ssh.password should be masked');
-      assert.equal(connections[0].ssh.passphrase, 'x', 'ssh.passphrase should be masked');
+      td.verify(connectionsStore.updateConnection(td.matchers.contains({
+        id: connectionId,
+        name: 'local-redis',
+        password: 'x',
+        ssh: {
+          password: 'x',
+          passphrase: 'x'
+        }
+      })));
     });
 
     it('should save secret fields', async () => {
-      assert.equal(await credentialManager.getCredential(connectionId, 'password'), 'hoge');
-      assert.equal(await credentialManager.getCredential(connectionId, 'ssh.password'), 'fuga');
-      assert.equal(await credentialManager.getCredential(connectionId, 'ssh.passphrase'), 'piyo');
+      td.verify(credentialManager.saveCredential(connectionId, 'password', 'hoge'), {times: 1});
+      td.verify(credentialManager.saveCredential(connectionId, 'ssh.password', 'fuga'), {times: 1});
+      td.verify(credentialManager.saveCredential(connectionId, 'ssh.passphrase', 'piyo'), {times: 1});
     });
   });
 
@@ -75,16 +79,17 @@ describe('/modules/connections/connections', () => {
     it('should delete connection and secret fields', async () => {
       const connectionId = 1;
       const connectionToDelete = createConnectionWithSecretFields({ id: connectionId }); 
-      const connectionsStore = new FakeConnectionsStore([connectionToDelete]);
-      const credentialManager = new FakeCredentialManager();
+      const connectionsStore = td.object(['deleteConnection', 'getConnectionById']);
+      const credentialManager = td.object(['deleteCredential']);
+
+      td.when(connectionsStore.getConnectionById(connectionId)).thenReturn(connectionToDelete);
 
       await deleteConnection(connectionId, connectionsStore, credentialManager);
 
-      const connections = await connectionsStore.getConnections();
-      assert.equal(connections.length, 0);
-      assert.ok(!await credentialManager.getCredential(connectionId, 'password'));
-      assert.ok(!await credentialManager.getCredential(connectionId, 'ssh.password'));
-      assert.ok(!await credentialManager.getCredential(connectionId, 'ssh.passphrase'));
+      td.verify(connectionsStore.deleteConnection(connectionToDelete), {times: 1});
+      td.verify(credentialManager.deleteCredential(connectionId, 'password'), {times: 1});
+      td.verify(credentialManager.deleteCredential(connectionId, 'ssh.password'), {times: 1});
+      td.verify(credentialManager.deleteCredential(connectionId, 'ssh.passphrase'), {times: 1});
     });
   });
 
@@ -92,12 +97,13 @@ describe('/modules/connections/connections', () => {
     it('should resolve secret fields', async () => {
       const connectionId = 1;
       const connection = createConnectionWithSecretFields({ id: connectionId });
-      const connectionsStore = new FakeConnectionsStore([connection]);
-      const credentialManager = new FakeCredentialManager();
+      const connectionsStore = td.object(['getConnections']);
+      const credentialManager = td.object(['getCredential']);
 
-      credentialManager.saveCredential(connectionId, 'password', 'hoge');
-      credentialManager.saveCredential(connectionId, 'ssh.password', 'fuga');
-      credentialManager.saveCredential(connectionId, 'ssh.passphrase', 'piyo');
+      td.when(connectionsStore.getConnections()).thenResolve([connection]);
+      td.when(credentialManager.getCredential(connectionId, 'password')).thenResolve('hoge');
+      td.when(credentialManager.getCredential(connectionId, 'ssh.password')).thenResolve('fuga');
+      td.when(credentialManager.getCredential(connectionId, 'ssh.passphrase')).thenResolve('piyo');
 
       const result = await loadConnections(connectionsStore, credentialManager);
 
@@ -109,14 +115,14 @@ describe('/modules/connections/connections', () => {
     });
   });
 
-  const createConnection = (override = {}) => Object.freeze({
+  const createConnection = (override = {}) => ({
     name: 'local-redis',
     host: 'localhost',
     port: 6379,
     ...override
   });
 
-  const createConnectionWithSecretFields = (override = {}) => Object.freeze(createConnection({
+  const createConnectionWithSecretFields = (override = {}) => createConnection({
     password: 'hoge',
     ssh: {
       password: 'fuga',
@@ -126,58 +132,5 @@ describe('/modules/connections/connections', () => {
       port: 22
     },
     ...override
-  }));
-
-  class FakeConnectionsStore {
-    constructor(connections = [], initialId = 1) {
-      this.connections = connections;
-      this.id = initialId;
-    }
-
-    nextIdentifier() {
-      return this.id++;
-    }
-
-    addConnection(connection) {
-      this.connections.push(connection);
-    }
-
-    updateConnection(connection) {
-      const connectionIndex = this.connections.findIndex(x => x.id === connection.id);
-      this.connections[connectionIndex] = connection;
-    }
-
-    deleteConnection(connection) {
-      const connectionIndex = this.connections.findIndex(x => x.id === connection.id);
-      this.connections.splice(connectionIndex, 1);
-    }
-
-    getConnections() {
-      return Promise.resolve(cloneDeep(this.connections));
-    }
-
-    readConnectionById(id) {
-      return Promise.resolve(this.connections.find(x => x.id === id));
-    }
-  }
-
-  class FakeCredentialManager {
-    constructor() {
-      this.passwords = {};
-    }
-
-    saveCredential(connectionId, field, value) {
-      set(this.passwords, `${connectionId}.${field}`, value);
-      return Promise.resolve();
-    }
-
-    getCredential(connectionId, field) {
-      return Promise.resolve(get(this.passwords, `${connectionId}.${field}`));
-    }
-
-    deleteCredential(connectionId, field) {
-      unset(this.passwords, `${connectionId}.${field}`);
-      return Promise.resolve();
-    }
-  }
+  });
 });

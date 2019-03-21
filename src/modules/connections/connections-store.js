@@ -17,7 +17,7 @@ class ConnectionsStore {
     return uuidv1();
   }
 
-  async readConnectionById(id) {
+  async getConnectionById(id) {
     const connections = await this.getConnections();
     return connections.find(x => x.id === id);
   }
