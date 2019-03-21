@@ -2,9 +2,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ZsetContent from '../components/zset-content';
+import KeyboardBindings from './keyboard-bindings';
 import Loader from '../components/loader';
+import Editor from '../components/editor';
+import List from '../components/list';
+import ScrollableBox from '../components/scrollable-box';
+import AddZsetMemberDialog from '../components/add-zset-member-dialog';
+import FilterableList from '../components/filterable-list';
+import ThemedButton from '../components/themed-button';
+import ConfirmationDialog from '../components/confirmation-dialog';
 import { operations } from '../modules/redux/zset';
+import { withTheme } from '../contexts/theme-context';
 
 class ZsetContentContainer extends Component {
   static propTypes = {
@@ -19,7 +27,76 @@ class ZsetContentContainer extends Component {
     filterZsetMembers: PropTypes.func.isRequired
   };
 
-  _loadZset = () => this.props.filterZsetMembers(this.props.pattern);
+  state = { editingMemberIndex: null };
+
+  _onMemberSelected = (item, index) => {
+    this.setState({ editingMemberIndex: index });
+  };
+
+  _unselectMember() {
+    this.setState({ editingMemberIndex: null });
+  }
+
+  _loadZset = () => {
+    this.props.filterZsetMembers(this.props.pattern);
+    this._unselectMember();
+  };
+
+  _addMember = (score, value) => {
+    this.props.addMemberToZset(value, score);
+  };
+
+  _saveEditingMember = () => {
+    if (!this._hasEditingMember()) {
+      return;
+    }
+
+    const oldValue = this.props.members[this.state.editingMemberIndex];
+    const newValue = this.refs.valueEditor.value();
+    const newScore = this.refs.scoreEditor.value();
+    this.props.updateZsetMember(oldValue, newValue, newScore);
+  };
+
+  _removeHoveredMemberIfExists = () => {
+    const index = this._hoveredMemberIndex();
+    const memberToRemove = this.props.members[index];
+    if (memberToRemove) {
+      this._removeMember(memberToRemove);
+    }
+  };
+
+  _removeMember(memberToRemove) {
+    this.props.deleteMemberFromZset(memberToRemove);
+    this._unselectMember();
+  };
+
+  _openAddZsetMemberDialog = () => {
+    this.refs.addZsetMemberDialog.open();
+  };
+
+  _openConfirmationDialog = () => {
+    this.refs.confirmationDialog.open();
+  };
+
+  _hoveredMemberIndex() {
+    return this.refs.memberList.selected();
+  }
+
+  _hasEditingMember() {
+    return this.state.editingMemberIndex != null;
+  }
+
+  _editingMember() {
+    return this._hasEditingMember()
+      ? this.props.members[this.state.editingMemberIndex]
+      : '';
+  }
+
+  _editingScore() {
+    return this._hasEditingMember()
+      ? this.props.scores[this.state.editingMemberIndex]
+      : '';
+  }
 
   async componentDidMount() {
     this._loadZset();
@@ -28,21 +105,76 @@ class ZsetContentContainer extends Component {
   render() {
     if (this.props.isLoading) {
       return <Loader />;
-    } else {
-      return (
-        <ZsetContent
-          keyName={this.props.keyName}
-          members={this.props.members}
-          scores={this.props.scores}
-          reload={this._loadZset}
-          filterMembers={this.props.filterZsetMembers}
-          addMember={this.props.addMemberToZset}
-          removeMember={this.props.deleteMemberFromZset}
-          saveMember={this.props.updateZsetMember}
-          lastPattern={this.props.pattern}
-        />
-      );
     }
+
+    const hasEditingMember = this._hasEditingMember();
+    const editingMember = this._editingMember();
+    const editingScore = this._editingScore();
+    const memberList = (
+      <KeyboardBindings bindings={[
+        { key: 'C-r', handler: this._loadZset, description: 'Reload' },
+        { key: 'a', handler: this._openAddZsetMemberDialog, description: 'Add Member' },
+        { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Member' }
+      ]}>
+        <List
+          ref='memberList'
+          items={this.props.members}
+          onSelect={this._onMemberSelected}
+        />
+      </KeyboardBindings>
+    );
+
+    return (
+      <box style={this.props.theme.box}>
+        <box
+          style={this.props.theme.box}
+          content={this.props.keyName}
+          position={{ height: 1 }}
+          bold
+        />
+        <FilterableList
+          List={memberList}
+          filterList={this.props.filterZsetMembers}
+          defaultPattern={this.props.pattern}
+          position={{ width: '50%', top: 1 }}         
+        />
+        <ScrollableBox
+          style={this.props.theme.box}
+          position={{ left: '50%', top: 1, height: '90%' }}>
+          <Editor
+            ref='scoreEditor'
+            label='score'
+            position={{ height: 5, width: '95%' }}
+            defaultValue={editingScore}
+            disabled={!hasEditingMember}
+          />
+          <Editor
+            ref='valueEditor'
+            label='value'
+            position={{ top: 5, height: 20, width: '95%' }}
+            defaultValue={editingMember}
+            disabled={!hasEditingMember}
+          />
+          <ThemedButton
+            disabled={!hasEditingMember}
+            content='{center}Save{/center}'
+            tags
+            position={{ top: 25, left: 1, height: 1, width: 8 }}
+            onClick={this._saveEditingMember}
+          />
+        </ScrollableBox>
+        <AddZsetMemberDialog
+          position={{ height: 20 }}
+          ref='addZsetMemberDialog'
+          onOk={this._addMember}
+        />
+        <ConfirmationDialog
+          text='Are you sure you want to delete this member'
+          onOk={this._removeHoveredMemberIfExists}
+          ref='confirmationDialog'
+        />
+      </box>
+    );
   }
 }
 
@@ -57,4 +189,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps, 
   mapDispatchToProps
-)(ZsetContentContainer);
+)(withTheme(ZsetContentContainer));
