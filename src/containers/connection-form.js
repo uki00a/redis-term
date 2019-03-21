@@ -50,9 +50,9 @@ class ConnectionFormContainer extends Component {
       // TODO cleanup
       const { tlskey, tlscert, tlsca, ...restOptions } = options;
       restOptions.tls = {};
-      restOptions.tls.key = this._readIfExists(tlskey);
-      restOptions.tls.cert = this._readIfExists(tlscert);
-      restOptions.tls.ca = this._readIfExists(tlsca);
+      restOptions.tls.key = tlskey;
+      restOptions.tls.cert = tlscert;
+      restOptions.tls.ca = tlsca;
       return restOptions;
     } else {
       return options;
@@ -78,7 +78,7 @@ class ConnectionFormContainer extends Component {
         host: sshhost,
         port: sshport,
         username: sshuser,
-        privateKey: this._readIfExists(sshprivateKeyPath),
+        privateKey: sshprivateKeyPath,
         password: sshpassword
       };
       return restOptions;
@@ -93,7 +93,7 @@ class ConnectionFormContainer extends Component {
 
   _readIfExists(path) {
     if (fs.existsSync(path)) {
-      return fs.readFileSync(path);
+      return fs.readFileSync(path, { encoding: 'utf-8' });
     }
   }
 

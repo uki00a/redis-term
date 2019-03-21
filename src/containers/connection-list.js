@@ -1,6 +1,8 @@
+import * as fs from 'fs';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import cloneDeep from 'lodash/cloneDeep';
 import ConnectionList from '../components/connection-list';
 import KeyboardBindings from './keyboard-bindings';
 import { operations, actions } from '../modules/redux/connections';
@@ -54,10 +56,37 @@ class ConnectionListContainer extends Component {
   }
 
   _handleConnectionSelect = (item, connectionIndex) => {
-    const connection = this.props.connections[connectionIndex];
+    const connection = cloneDeep(this.props.connections[connectionIndex]);
+    this._resolvePaths(connection);
     this.props.connectToRedis(connection)
       .then(() => this.props.history.push('/database'));
   };
+
+  // TODO refactor
+  _resolvePaths(connection) {
+    this._resolveTLSPaths(connection);
+    this._resolveSSHPaths(connection);
+  }
+
+  _resolveTLSPaths(connection) {
+    if (connection.tls) {
+      connection.tls.key = this._readIfExists(connection.tls.key);
+      connection.tls.cert = this._readIfExists(connection.tls.cert);
+      connection.tls.ca = this._readIfExists(connection.tls.ca);
+    }
+  }
+
+  _resolveSSHPaths(connection) {
+    if (connection.ssh) {
+      connection.ssh.privateKey = this._readIfExists(connection.ssh.privateKey);
+    }
+  }
+
+  _readIfExists(path) {
+    if (path && fs.existsSync(path)) {
+      return fs.readFileSync(path, { encoding: 'utf-8' });
+    }
+  }
 
   render() {
     const keyboardBindings = [

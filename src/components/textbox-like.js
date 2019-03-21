@@ -13,7 +13,11 @@ class TextboxLike extends Component {
     if (this.props.disabled) {
       return;
     }
-    setImmediate(() => this.refs.textbox.readInput());
+    setImmediate(() => {
+      if (this.refs.textbox) { // TypeError: Cannot read property 'readInput' of undefined
+        this.refs.textbox.readInput();
+      }
+    });
   };
 
   componentDidUpdate(prevProps) {
@@ -21,7 +25,7 @@ class TextboxLike extends Component {
       // FIXME
       // Workaround for: `TypeError: Cannot read property 'height' of null`
       // `<textarea ... value={this.state.value} />`
-      this.refs.textbox.setValue(this.props.defaultValue);
+      this.setValue(this.props.defaultValue);
     }
   }
 
@@ -30,7 +34,7 @@ class TextboxLike extends Component {
       // FIXME
       // Workaround for: `TypeError: Cannot read property 'height' of null`
       // `<textarea ... value={this.state.value} />`
-      this.refs.textbox.setValue(this.props.defaultValue);
+      this.setValue(this.props.defaultValue);
     }
 
     this.refs.textbox.on('keypress', (ch, key) => {
@@ -49,7 +53,9 @@ class TextboxLike extends Component {
   }
 
   setValue(value) {
-    this.refs.textbox.setValue(value);
+    if (this.refs.textbox) {
+      this.refs.textbox.setValue(value);
+    }
   }
 
   value() {
