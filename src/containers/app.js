@@ -9,37 +9,12 @@ import configureStore from '../modules/redux/store';
 const store = configureStore();
 
 class App extends Component {
-  static propTypes = {
-    screen: PropTypes.object.isRequired
-  };
-
-  state = { error: null };
-
-  _handleError = error => {
-    this.props.screen.debug(error);
-    this.setState({ error });
-  };
-
-  componentDidCatch(err, info) { 
-    this._handleError(err);
-  }
-
-  componentDidMount() {
-    process.on('unhandledRejection', this._handleError);
-  }
-
-  componentWillUnmount() {
-    process.removeListener('unhandledRejection', this._handleError);
-  }
-
   render() {
     return (
       <StoreProvider store={store}>
         <ThemeProvider>
           <MemoryRouter initialEntries={['/connections']}>
-            <RedisTerm
-              error={this.state.error}
-            />
+            <RedisTerm />
           </MemoryRouter>
         </ThemeProvider>
       </StoreProvider>

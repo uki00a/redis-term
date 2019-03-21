@@ -12,9 +12,10 @@ import ActiveKeyboardBindings from './active-keyboard-bindings';
 class RedisTerm extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
-    theme: PropTypes.object.isRequired,
-    error: PropTypes.any
+    theme: PropTypes.object.isRequired
   };
+
+  state = { error: null };
 
   _notifyError() {
     this.refs.errorMessageDialog.open();
@@ -28,16 +29,33 @@ class RedisTerm extends Component {
     }
   }
 
+  _handleError = error => {
+    //this.props.screen.debug(error);
+    this.setState({ error: this._formatError(error) });
+  };
+
+  componentDidCatch(error, info) { 
+    this._handleError(error);
+  }
+
   componentDidUpdate(prevProps) {
-    if (this.props.error) {
+    if (this.state.error) {
       this._notifyError();
     }
   }
 
   componentDidMount() {
-    this.refs.redisTerm.screen.key(['M-left', 'backspace'], () => {
-      this._goToPreviousViewIfPossible();
+    setImmediate(() => {
+      this.refs.redisTerm.screen.key(['M-left', 'backspace'], () => {
+        this._goToPreviousViewIfPossible();
+      });
     });
+
+    process.on('unhandledRejection', this._handleError);
+  }
+
+  componentWillUnmount() {
+    process.removeListener('unhandledRejection', this._handleError);
   }
 
   _goToPreviousViewIfPossible() {
@@ -51,7 +69,7 @@ class RedisTerm extends Component {
   }
 
   render() {
-    const { theme, keyboardBindings, error } = this.props;
+    const { theme } = this.props;
     return (
       <box ref='redisTerm' position={{ top: 0, left: 0, bottom: 0, right: 0 }} style={theme.header}>
         <text style={theme.header} content="redis-term" />
@@ -78,7 +96,7 @@ class RedisTerm extends Component {
           position={{ left: 'center', top: 'center', width: '80%' }}
           title='{red-fg}Error{/red-fg}'
           ref='errorMessageDialog'
-          text={this._formatError(error)} />
+          text={this.state.error || ''} />
       </box>
     );
   }

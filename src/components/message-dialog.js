@@ -7,7 +7,8 @@ import { withTheme } from '../contexts/theme-context';
 class MessageDialog extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
-    theme: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired,
+    onClosed: PropTypes.func
   };
 
   state = { isOpened: false };
@@ -18,6 +19,7 @@ class MessageDialog extends Component {
 
   close = () => {
     this.setState({ isOpened: false });
+    this.props.onClosed();
   };
 
   render() {
