@@ -35,7 +35,7 @@ class RedisTerm extends Component {
   }
 
   componentDidMount() {
-    this.refs.redisTerm.screen.key(['escape'], () => {
+    this.refs.redisTerm.screen.key(['M-left', 'backspace'], () => {
       this._goToPreviousViewIfPossible();
     });
   }
