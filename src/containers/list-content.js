@@ -2,9 +2,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import ListContent from '../components/list-content';
 import Loader from '../components/loader';
+import Prompt from '../components/prompt';
+import Editor from '../components/editor';
+import List from '../components/list';
+import ScrollableBox from '../components/scrollable-box';
+import ThemedButton from '../components/themed-button';
+import KeyboardBindings from './keyboard-bindings';
+import { withTheme } from '../contexts/theme-context';
 import { operations } from '../modules/redux/list';
+
 
 class ListContentContainer extends Component {
   static propTypes = {
@@ -16,6 +23,39 @@ class ListContentContainer extends Component {
     updateListElement: PropTypes.func.isRequired
   };
 
+  state = { editingElementIndex: null };
+
+  _openAddElementPrompt = () => {
+    this.refs.addElementPrompt.open();
+  };
+
+  _closeAddElementPrompt = () => {
+    this.refs.addElementPrompt.close();
+  };
+
+  _onSelect = (item, index) => {
+    this.setState({ editingElementIndex: index });
+  };
+
+  _addElement = element => {
+    this.props.addElementToList(element);
+  };
+
+  _editingElementValue() {
+    return this.state.editingElementIndex == null
+      ? null
+      : this.props.elements[this.state.editingElementIndex];
+  }
+
+  _saveEditingElement = () => {
+    if (this.state.editingElementIndex == null) {
+      return;
+    }
+    const index = this.state.editingElementIndex;
+    const value = this.refs.editor.value();
+    this.props.updateListElement(index, value);
+  };
+
   async componentDidMount() {
     this.props.loadListElements();
   }
@@ -23,17 +63,50 @@ class ListContentContainer extends Component {
   render() {
     if (this.props.isLoading) {
       return <Loader />;
-    } else {
-      return (
-        <ListContent
-          keyName={this.props.keyName}
-          elements={this.props.elements}
-          addElement={this.props.addElementToList}
-          save={this.props.updateListElement}
-          reload={this.props.loadListElements}
-        />
-      );
     }
+    
+    return (
+      <box style={this.props.theme.box}>
+        <box
+          style={this.props.theme.box}
+          content={this.props.keyName}
+          position={{ height: 1 }}
+          bold
+        />
+        <KeyboardBindings bindings={[
+          { key: 'C-r', handler: this.props.loadListElements, description: 'Reload' },
+          { key: 'a', handler: this._openAddElementPrompt, description: 'Add Element' }
+        ]}>
+          <List
+            items={this.props.elements}
+            position={{ width: '50%', top: 1 }}
+            onSelect={this._onSelect}
+          />
+        </KeyboardBindings>
+        <ScrollableBox
+          style={this.props.theme.box}
+          position={{ left: '50%', top: 1, height: '90%' }}>
+          <Editor
+            ref='editor'
+            defaultValue={this._editingElementValue()}
+            disabled={this.state.editingElementIndex == null}
+            position={{ height: 30, width: '95%' }}
+          />
+          <ThemedButton
+            disabled={this.state.editingElementIndex == null}
+            position={{ top: 30, left: 1, height: 1, width: 8 }}
+            tags
+            onClick={this._saveEditingElement}
+            content='{center}Save{/center}' />
+        </ScrollableBox>
+        <Prompt
+          ref='addElementPrompt'
+          title='Add Element'
+          onOk={this._addElement}
+          onCancel={this._closeAddElementPrompt}
+         />
+      </box>
+    );   
   }
 }
 
@@ -47,4 +120,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ListContentContainer);
+)(withTheme(ListContentContainer));
