@@ -131,13 +131,23 @@ export default function reducer(state = initialState, action) {
   case UPDATE_SET_MEMBER_SUCCESS:
     {
       const { oldValue, newValue } = action.payload;
-      const oldValueIndex = state.members.indexOf(oldValue);
-      return {
-        ...state,
-        members: state.members.map((x, index) => index === oldValueIndex
-          ? newValue
-          : x)
-      };
+      if (state.members.indexOf(newValue) > -1) {
+        const newMembers = state.members.slice(0);
+        const oldValueIndex = state.members.indexOf(oldValue);
+        newMembers.splice(oldValueIndex, 1);
+        return {
+          ...state,
+          members: newMembers
+        };
+      } else {
+        const oldValueIndex = state.members.indexOf(oldValue);
+        return {
+          ...state,
+          members: state.members.map((x, index) => index === oldValueIndex
+            ? newValue
+            : x)
+        };
+      }
     }
   case DELETE_MEMBER_FROM_SET_SUCCESS:
     {

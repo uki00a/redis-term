@@ -140,17 +140,32 @@ export default function reducer(state = initialState, action) {
     };
   case UPDATE_ZSET_MEMBER_SUCCESS:
     {
+      // TODO refactor
       const { oldValue, newValue, newScore } = action.payload;
-      const oldValueIndex = state.members.indexOf(oldValue);
-      return {
-        ...state,
-        members: state.members.map((x, index) => index === oldValueIndex
-          ? newValue
-          : x),
-        scores: state.scores.map((x, index) => index === oldValueIndex
-          ? newScore
-          : x)
-      };
+      if (state.members.indexOf(newValue) > -1) {
+        const oldValueIndex = state.members.indexOf(oldValue);
+        const newMembers = state.members.slice(0);
+        const newScores = state.scores.slice(0);
+        newMembers.splice(oldValueIndex, 1);
+        newScores.splice(oldValueIndex, 1);
+        newScores[state.members.indexOf(newValue)] = newScore;
+        return {
+          ...state,
+          members: newMembers,
+          scores: newScores
+        };
+      } else {
+        const oldValueIndex = state.members.indexOf(oldValue);
+        return {
+          ...state,
+          members: state.members.map((x, index) => index === oldValueIndex
+            ? newValue
+            : x),
+          scores: state.scores.map((x, index) => index === oldValueIndex
+            ? newScore
+            : x)
+        };
+      }
     }
   case ADD_MEMBER_TO_ZSET_SUCCESS:
     {

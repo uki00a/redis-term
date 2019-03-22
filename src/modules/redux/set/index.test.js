@@ -12,19 +12,39 @@ describe('set duck', () => {
   });
 
   it('can handle ADD_MEMBER_TO_SET_SUCCESS', () => {
-    const previousState = { members: ['hoge', 'fuga'] };
-    const action = actions.addMemberToSetSuccess('piyo');
-    const result = reducer(previousState, action);
+    {
+      const previousState = { members: ['hoge', 'fuga'] };
+      const action = actions.addMemberToSetSuccess('piyo');
+      const result = reducer(previousState, action);
 
-    assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
+      assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
+    }
+
+    {
+      const previousState = { members: ['hoge', 'fuga'] };
+      const action = actions.addMemberToSetSuccess('fuga');
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['hoge', 'fuga'], 'duplicate members should not be added');
+    }
   });
 
   it('can handle UPDATE_SET_MEMBER_SUCCESS', () => {
-    const previousState = { members: ['hoge', 'piyo' ] };
-    const action = actions.updateSetMemberSuccess('piyo', 'fuga');
-    const result = reducer(previousState, action);
+    {
+      const previousState = { members: ['hoge', 'piyo' ] };
+      const action = actions.updateSetMemberSuccess('piyo', 'fuga');
+      const result = reducer(previousState, action);
 
-    assert.deepEqual(result.members, ['hoge', 'fuga']);
+      assert.deepEqual(result.members, ['hoge', 'fuga']);
+    }
+
+    {
+      const previousState = { members: ['hoge', 'piyo'] };
+      const action = actions.updateSetMemberSuccess('piyo', 'hoge');
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['hoge'], 'duplicate members should not be added');
+    }
   });
 
   it('can handle DELETE_MEMBER_FROM_SET_SUCCESS', () => {
