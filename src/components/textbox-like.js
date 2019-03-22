@@ -17,6 +17,10 @@ class TextboxLike extends Component {
       if (this.refs.textbox) { // TypeError: Cannot read property 'readInput' of undefined
         this.refs.textbox.readInput();
       }
+
+      if (this.props.onFocus) {
+        this.props.onFocus();
+      }
     });
   };
 

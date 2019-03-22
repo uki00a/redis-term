@@ -2,9 +2,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import StringContent from '../components/string-content';
+import KeyboardBindings from './keyboard-bindings';
 import Loader from '../components/loader';
 import MessageDialog from '../components/message-dialog';
+import Editor from '../components/editor';
+import ScrollableBox from '../components/scrollable-box';
+import ThemedButton from '../components/themed-button';
+import { withTheme } from '../contexts/theme-context';
 import { operations } from '../modules/redux/string';
 
 class StringContentContainer extends Component {
@@ -16,10 +20,15 @@ class StringContentContainer extends Component {
     loadString: PropTypes.func.isRequired
   };
 
-  _save = newValue => {
-    this.props.saveString(newValue);
-    // TODO fix display timing
-    this.refs.messageDialog.open();
+  _saveValue = () => {
+    const value = this.refs.editor.value();
+    this.props.saveString(value)
+      .then(() => this.refs.messageDialog.open());
+  };
+
+  _reload = () => {
+    this.refs.stringContent.focus();
+    this.props.loadString();
   };
 
   componentDidMount() {
@@ -31,13 +40,41 @@ class StringContentContainer extends Component {
       return <Loader />;
     } else {
       return (
-        <box>
-          <StringContent
-            keyName={this.props.keyName}
-            value={this.props.value}
-            save={this._save}
-            reload={this.props.loadString}
-          />
+        <box ref='stringContent'>
+          <box style={this.props.theme.box}>
+            <box
+              style={this.props.theme.box}
+              content={this.props.keyName}
+              position={{ height: '8%' }}
+              bold>
+            </box>
+            <ScrollableBox
+              style={this.props.theme.box}
+              position={{ top: '8%', height: '90%' }}>
+              <KeyboardBindings bindings={[
+                { key: 'C-r', handler: this._reload, description: 'Reload' }
+              ]}>
+                <Editor
+                  ref='editor'
+                  position={{
+                    height: 30,
+                    width: '95%'
+                  }}
+                  defaultValue={this.props.value} />
+              </KeyboardBindings>
+              <ThemedButton
+                onClick={this._saveValue}
+                content='{center}Save{/center}'
+                tags
+                position={{
+                  top: 30,
+                  left: 1,
+                  width: 8,
+                  height: 1
+                }}>
+              </ThemedButton>
+            </ScrollableBox>
+          </box>
           <MessageDialog
             position={{ height: 8, left: 'center', top: 'center' }}
             text='Value was updated!'
@@ -60,4 +97,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(StringContentContainer);
+)(withTheme(StringContentContainer));
