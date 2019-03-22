@@ -30,7 +30,6 @@ class RedisTerm extends Component {
   }
 
   _handleError = error => {
-    //this.props.screen.debug(error);
     this.setState({ error: this._formatError(error) });
   };
 
@@ -68,6 +67,10 @@ class RedisTerm extends Component {
     this.props.history.goBack();
   }
 
+  _onMessageDialogClosed = () => {
+    this.setState({ error: null })
+  };
+
   render() {
     const { theme } = this.props;
     return (
@@ -93,6 +96,7 @@ class RedisTerm extends Component {
         </box>
         <ActiveKeyboardBindings />
         <MessageDialog
+          onHide={this._onMessageDialogClosed}
           position={{ left: 'center', top: 'center', width: '80%' }}
           title='{red-fg}Error{/red-fg}'
           ref='errorMessageDialog'

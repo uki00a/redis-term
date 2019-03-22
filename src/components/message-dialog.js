@@ -8,7 +8,7 @@ class MessageDialog extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
     theme: PropTypes.object.isRequired,
-    onClosed: PropTypes.func
+    onHide: PropTypes.func
   };
 
   state = { isOpened: false };
@@ -19,11 +19,17 @@ class MessageDialog extends Component {
 
   close = () => {
     this.setState({ isOpened: false });
-    this.props.onClosed();
+  };
+
+  _onHide = () => {
+    this.setState({ isOpened: false });
+    if (this.props.onHide) {
+      this.props.onHide();
+    }
   };
 
   render() {
-    const { text, position = {}, theme, ...restProps } = this.props;
+    const { text, position = {}, theme, onHide, ...restProps } = this.props;
     const lineHeight = text.split('\n').length + 1;
     const boxOffset = 2;
     const buttonOffset = lineHeight + boxOffset;
@@ -34,6 +40,7 @@ class MessageDialog extends Component {
       <Dialog
         isOpened={this.state.isOpened}
         position={dialogPosition}
+        onHide={this._onHide}
         {...restProps}>
         <box
           style={theme.box}

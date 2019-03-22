@@ -15,10 +15,16 @@ class Dialog extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.isOpened !== this.props.isOpened && this.props.isOpened) {
+    if (this.props.isOpened) {
       this.focus();
     }
   }
+
+  _handleKeypress = (ch, key) => {
+    if (key.full === 'escape') {
+      this.refs.dialog.hide();
+    }
+  };
 
   render() {
     const {
@@ -31,6 +37,7 @@ class Dialog extends Component {
 
     return (
       <form
+        onKeypress={this._handleKeypress}
         ref='dialog'
         hidden={!isOpened}
         style={theme.dialog}
