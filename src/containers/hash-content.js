@@ -19,6 +19,7 @@ class HashContentContainer extends Component {
     keyName: PropTypes.string.isRequired,
     hash: PropTypes.object,
     isLoading: PropTypes.bool.isRequired,
+    isSaving: PropTypes.bool.isRequired,
     pattern: PropTypes.string.isRequired,
     setHashField: PropTypes.func.isRequired,
     deleteFieldFromHash: PropTypes.func.isRequired,
@@ -138,18 +139,21 @@ class HashContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <Editor
-            ref='editor'
-            position={{ height: 25, width: '95%' }}
-            defaultValue={editingFieldValue}
-            disabled={!hasEditingField}
+          <KeyboardBindings bindings={[
+            { key: 'C-s', handler: this._saveEditingField, description: 'Save' }
+          ]}>
+            <Editor
+              ref='editor'
+              position={{ height: 25, width: '95%' }}
+              defaultValue={editingFieldValue}
+              disabled={!hasEditingField}
+            />
+          </KeyboardBindings>
+          <Loader
+            text='saving...' 
+            hidden={!this.props.isSaving}
+            top={25}
           />
-          <ThemedButton
-            disabled={!hasEditingField}
-            position={{ top: 25, left: 1, height: 1, width: 8 }}
-            tags
-            onClick={this._saveEditingField}
-            content='{center}Save{/center}' />
         </ScrollableBox>
         <AddHashFieldDialog
           position={{ height: 20 }}
@@ -169,6 +173,7 @@ class HashContentContainer extends Component {
 const mapStateToProps = ({ hash }) => ({
   hash: hash.value,
   isLoading: hash.isLoading,
+  isSaving: hash.isSaving,
   pattern: hash.pattern
 });
 
