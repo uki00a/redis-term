@@ -19,6 +19,7 @@ class SetContentContainer extends Component {
     keyName: PropTypes.string.isRequired,
     members: PropTypes.array,
     isLoading: PropTypes.bool.isRequired,
+    isSaving: PropTypes.bool.isRequired,
     addMemberToSet: PropTypes.func.isRequired,
     updateSetMember: PropTypes.func.isRequired,
     deleteMemberFromSet: PropTypes.func.isRequired,
@@ -137,18 +138,20 @@ class SetContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <Editor
-            ref='editor'
-            position={{ height: 25, width: '95%' }}
-            defaultValue={this._editingValue()}
-            disabled={!hasSelectedMember}
-          />
-          <ThemedButton
-            disabled={!hasSelectedMember}
-            content='{center}Save{/center}'
-            tags
-            position={{ top: 25, left: 1, height: 1, width: 8 }}
-            onClick={this._saveEditingMember}
+          <KeyboardBindings bindings={[
+            { key: 'C-s', handler: this._saveEditingMember, description: 'Save' }
+          ]}>
+            <Editor
+              ref='editor'
+              position={{ height: 25, width: '95%' }}
+              defaultValue={this._editingValue()}
+              disabled={!hasSelectedMember}
+            />
+          </KeyboardBindings>
+          <Loader
+            text='saving...'
+            hidden={!this.props.isSaving}
+            top={25}
           />
         </ScrollableBox>
         <Prompt
