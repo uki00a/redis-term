@@ -49,6 +49,15 @@ describe('set duck', () => {
       assert.deepEqual(result.members, ['hoge'], 'duplicate members should not be added');
       assert.equal(result.isSaving, false);
     }
+
+    {
+      const previousState = { members: ['fuga'] };
+      const action = actions.updateSetMemberSuccess('fuga', 'fuga');
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['fuga']);
+      assert.equal(result.isSaving, false);
+    }
   });
 
   it('can handle DELETE_MEMBER_FROM_SET_SUCCESS', () => {

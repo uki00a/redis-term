@@ -25,11 +25,31 @@ describe('zset duck', () => {
 
     {
       const previousState = { members: ['a', 'b'], scores: [10, 20] };
+      const action = actions.updateZsetMemberSuccess('b', 'b', 30);
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['a', 'b'], 'updating only a score should correctly be handled');
+      assert.deepEqual(result.scores, [10, 30], 'updating only a score should correctly be handled');
+      assert.equal(result.isSaving, false);
+    }
+
+    {
+      const previousState = { members: ['a', 'b'], scores: [10, 20] };
       const action = actions.updateZsetMemberSuccess('b', 'a', 10);
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['a'], 'duplicate members should not be added');
       assert.deepEqual(result.scores, [10], 'duplicate members should not be added');
+      assert.equal(result.isSaving, false);
+    }
+
+    {
+      const previousState = { members: ['a'], scores: [1] };
+      const action = actions.updateZsetMemberSuccess('a', 'a', 2);
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['a']);
+      assert.deepEqual(result.scores, [2]);
       assert.equal(result.isSaving, false);
     }
   });

@@ -185,8 +185,10 @@ export default function reducer(state = initialState, action) {
     return { ...state, isSaving: true };
   case UPDATE_SET_MEMBER_SUCCESS:
     {
+      // TODO refactor
       const { oldValue, newValue } = action.payload;
-      if (state.members.indexOf(newValue) > -1) {
+      const duplicateMembersMayBeExist = state.members.indexOf(newValue) > -1 && state.members.length > 1;
+      if (duplicateMembersMayBeExist) {
         const newMembers = state.members.slice(0);
         const oldValueIndex = state.members.indexOf(oldValue);
         newMembers.splice(oldValueIndex, 1);

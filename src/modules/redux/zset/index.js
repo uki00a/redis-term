@@ -1,5 +1,6 @@
 // @ts-check
 import { getSelectedKey } from '../shared';
+import assert from 'assert';
 
 const FILTER_ZSET_MEMBERS_REQUEST = 'redis-term/zset/FILTER_ZSET_MEMBERS_REQUEST';
 const FILTER_ZSET_MEMBERS_SUCCESS = 'redis-term/zset/FILTER_ZSET_MEMBERS_SUCCESS';
@@ -194,30 +195,34 @@ export default function reducer(state = initialState, action) {
     {
       // TODO refactor
       const { oldValue, newValue, newScore } = action.payload;
-      if (state.members.indexOf(newValue) > -1) {
+      const canReplaceByIndex = state.members.indexOf(newValue) === -1;
+      if (canReplaceByIndex) {
         const oldValueIndex = state.members.indexOf(oldValue);
-        const newMembers = state.members.slice(0);
-        const newScores = state.scores.slice(0);
-        newMembers.splice(oldValueIndex, 1);
-        newScores.splice(oldValueIndex, 1);
-        newScores[state.members.indexOf(newValue)] = newScore;
         return {
           ...state,
           isSaving: false,
-          members: newMembers,
-          scores: newScores
+          scores: state.scores.map((x, index) => index === oldValueIndex ? newScore : x),
+          members: state.members.map((x, index) => index === oldValueIndex ? newValue : x)
         };
       } else {
-        const oldValueIndex = state.members.indexOf(oldValue);
+        // remove and update
+        const newMembers = state.members.slice(0);
+        const newScores = state.scores.slice(0);
+        const indexToRemove = state.members.indexOf(oldValue);
+        assert(indexToRemove > -1);
+        newMembers.splice(indexToRemove, 1);
+        newScores.splice(indexToRemove, 1);
+        const newValueIndex = newMembers.indexOf(newValue);
+        const indexToUpdate = newValueIndex === -1
+          ? indexToRemove
+          : newValueIndex;
+        newMembers[indexToUpdate] = newValue;
+        newScores[indexToUpdate] = newScore;
         return {
           ...state,
           isSaving: false,
-          members: state.members.map((x, index) => index === oldValueIndex
-            ? newValue
-            : x),
-          scores: state.scores.map((x, index) => index === oldValueIndex
-            ? newScore
-            : x)
+          scores: newScores,
+          members: newMembers
         };
       }
     }
