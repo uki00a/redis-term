@@ -17,6 +17,7 @@ describe('list duck', () => {
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.elements, ['hoge', 'fuga', 'piyo']);
+    assert(!result.isSaving);
   });
 
   it('can handle UPDATE_LIST_ELEMENT_SUCCESS', () => {
@@ -25,5 +26,6 @@ describe('list duck', () => {
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.elements, ['hoge', 'FUGAFUGA', 'piyo']);
+    assert(!result.isSaving);
   });
 });
