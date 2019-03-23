@@ -7,7 +7,7 @@ describe('hash duck', () => {
     const action = actions.filterHashFieldsSuccess({ a: 1 });
     const result = reducer(previousState, action);
 
-    assert(!result.isLoading);
+    assert.equal(result.isLoading, false);
     assert.deepEqual(result.value, { a: '1' });
   });
 
@@ -17,6 +17,7 @@ describe('hash duck', () => {
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.value, { a: '1', b: '33' });
+    assert.equal(result.isSaving, false);
   });
 
   it('can handle DELETE_FIELD_FROM_HASH_SUCCESS', () => {
@@ -25,5 +26,6 @@ describe('hash duck', () => {
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.value, { a: '100', c: '300' });
+    assert.equal(result.isSaving, false);
   });
 });
