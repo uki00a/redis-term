@@ -37,7 +37,10 @@ class ConnectionForm extends Component {
 
   _handleFileSelect = file => {
     this.refs[this._ref].setValue(file);
-    this._ref = null;
+  };
+
+  _onFileManagerHidden = () => {
+    this.refs[this._ref].focus();
   };
 
   _renderInputGroup(index, label, name, initialValue = '', secure = false) {
@@ -132,6 +135,7 @@ class ConnectionForm extends Component {
         position={{ left: 'center', top: 'center', height: 32 }}
         onSubmit={this._handleSubmit}>
         <FileManager
+          onHide={this._onFileManagerHidden}
           ref='fileManager'
           onFile={this._handleFileSelect} 
         />

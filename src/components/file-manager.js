@@ -23,6 +23,11 @@ class FileManager extends Component {
   close() {
     this.setState({ isOpened: false }, () => {
       this.refs.fileManager.setBack(); 
+
+      // FIXME Workaround for onHide does not work
+      if (this.props.onHide) {
+        this.props.onHide();
+      }
     });
   }
 
