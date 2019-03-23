@@ -70,8 +70,9 @@ class HashContentContainer extends Component {
   };
 
   _removeField = fieldToRemove => {
-    this.props.deleteFieldFromHash(fieldToRemove);
     this._unselectField();
+    this.props.deleteFieldFromHash(fieldToRemove)
+      .then(() => this._focusToFieldList());
   };
 
   _hoveredField() {
@@ -91,10 +92,27 @@ class HashContentContainer extends Component {
 
     const field = this._editingField();
     const newValue = this.refs.editor.value();
-    this.props.setHashField(field, newValue);
+    this.props.setHashField(field, newValue)
+      .then(() => this._focusToFieldList());
   };
 
-  _loadHash = () => this.props.filterHashFields(this.props.pattern);
+  _addField = (key, value) => {
+    this.props.setHashField(key, value).then(() => this._focusToFieldList());
+  };
+
+  _loadHash = () => {
+    this.props.filterHashFields(this.props.pattern)
+      .then(() => this._focusToFieldList());
+  };
+
+  _filterHash = pattern => {
+    this.props.filterHashFields(pattern)
+      .then(() => this._focusToFieldList());
+  }
+
+  _focusToFieldList() {
+    this.refs.fieldList.focus();
+  }
 
   componentDidMount() {
     this.props.filterHashFields();
@@ -132,7 +150,7 @@ class HashContentContainer extends Component {
         />
         <FilterableList
           List={fieldsList}
-          filterList={this.props.filterHashFields}
+          filterList={this._filterHash}
           position={{ width: '50%', top: 1 }}
           defaultPattern={this.props.pattern}
         />
@@ -158,7 +176,7 @@ class HashContentContainer extends Component {
         <AddHashFieldDialog
           position={{ height: 20 }}
           ref='addHashFieldDialog'
-          onOk={this.props.setHashField}
+          onOk={this._addField}
         />
         <CofnfirmationDialog
           text='Are you sure you want to delete this field'
