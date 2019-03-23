@@ -7,6 +7,7 @@ describe('connections duck', () => {
     const result = reducer(null, action);
 
     assert.deepEqual(result.list, [{ id: 1, host: 'localhost', port: 6379 }]);
+    assert.equal(result.isLoading, false);
   });
 
   it('can handle ADD_CONNECTION_SUCCESS', () => {
@@ -17,7 +18,8 @@ describe('connections duck', () => {
     assert.deepEqual(result.list, [
       { id: 1, host: '127.0.0.1', port: 6379 },
       { id: 2, host: 'localhost', port: 6379 }
-    ])
+    ]);
+    assert.equal(result.isSaving, false);
   });
 
   it('can handle UPDATE_CONNECTION_SUCCESS', () => {
@@ -34,6 +36,7 @@ describe('connections duck', () => {
       { id: 1, host: '127.0.0.1', port: 6379 },
       { id: 2, host: 'http://hoge.example.com', port: 6380 }
     ])
+    assert.equal(result.isSaving, false);
   });
 
   it('can handle DELETE_CONNECTION_SUCCESS', () => {
@@ -47,6 +50,7 @@ describe('connections duck', () => {
     const result = reducer(previousState, action);
     
     assert.deepEqual(result.list, [{ id: 1, host: '127.0.0.1', port: 6379 }]);
+    assert.equal(result.isSaving, false);
   });
 
   it('can handle EDIT_CONNECTION', () => {
