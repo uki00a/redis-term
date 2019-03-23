@@ -7,7 +7,7 @@ describe('set duck', () => {
     const action = actions.filterSetMembersSuccess(['hoge', 'piyo']);
     const result = reducer(previousState, action);
 
-    assert(!result.isLoading);
+    assert.equal(result.isLoading, false);
     assert.deepEqual(result.members, ['hoge', 'piyo']);
   });
 
@@ -18,6 +18,7 @@ describe('set duck', () => {
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
+      assert.equal(result.isSaving, false);
     }
 
     {
@@ -26,6 +27,7 @@ describe('set duck', () => {
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['hoge', 'fuga'], 'duplicate members should not be added');
+      assert.equal(result.isSaving, false);
     }
   });
 
@@ -36,6 +38,7 @@ describe('set duck', () => {
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['hoge', 'fuga']);
+      assert.equal(result.isSaving, false);
     }
 
     {
@@ -44,6 +47,7 @@ describe('set duck', () => {
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['hoge'], 'duplicate members should not be added');
+      assert.equal(result.isSaving, false);
     }
   });
 
@@ -53,5 +57,6 @@ describe('set duck', () => {
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.members, ['piyo', 'fuga']);
+    assert.equal(result.isSaving, false);
   });
 });
