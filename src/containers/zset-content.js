@@ -20,6 +20,7 @@ class ZsetContentContainer extends Component {
     members: PropTypes.array.isRequired,
     scores: PropTypes.array.isRequired,
     isLoading: PropTypes.bool.isRequired,
+    isSaving: PropTypes.bool.isRequired,
     pattern: PropTypes.string.isRequired,
     updateZsetMember: PropTypes.func.isRequired,
     addMemberToZset: PropTypes.func.isRequired,
@@ -123,6 +124,7 @@ class ZsetContentContainer extends Component {
         />
       </KeyboardBindings>
     );
+    const editorBindings = [{ key: 'C-s', handler: this._saveEditingMember, description: 'Save' }];
 
     return (
       <box style={this.props.theme.box}>
@@ -141,26 +143,28 @@ class ZsetContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <Editor
-            ref='scoreEditor'
-            label='score'
-            position={{ height: 5, width: '95%' }}
-            defaultValue={editingScore}
-            disabled={!hasEditingMember}
-          />
-          <Editor
-            ref='valueEditor'
-            label='value'
-            position={{ top: 5, height: 20, width: '95%' }}
-            defaultValue={editingMember}
-            disabled={!hasEditingMember}
-          />
-          <ThemedButton
-            disabled={!hasEditingMember}
-            content='{center}Save{/center}'
-            tags
-            position={{ top: 25, left: 1, height: 1, width: 8 }}
-            onClick={this._saveEditingMember}
+          <KeyboardBindings bindings={editorBindings}>
+            <Editor
+              ref='scoreEditor'
+              label='score'
+              position={{ height: 5, width: '95%' }}
+              defaultValue={editingScore}
+              disabled={!hasEditingMember}
+            />
+          </KeyboardBindings>
+          <KeyboardBindings bindings={editorBindings}>
+            <Editor
+              ref='valueEditor'
+              label='value'
+              position={{ top: 5, height: 20, width: '95%' }}
+              defaultValue={editingMember}
+              disabled={!hasEditingMember}
+            />
+          </KeyboardBindings>
+          <Loader
+            text='saving...'
+            hidden={!this.props.isSaving}
+            top={25} 
           />
         </ScrollableBox>
         <AddZsetMemberDialog
