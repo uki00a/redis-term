@@ -44,7 +44,8 @@ class ZsetContentContainer extends Component {
   };
 
   _addMember = (score, value) => {
-    this.props.addMemberToZset(value, score);
+    this.props.addMemberToZset(value, score)
+      .then(() => this._focusToMemberList());
   };
 
   _saveEditingMember = () => {
@@ -55,7 +56,9 @@ class ZsetContentContainer extends Component {
     const oldValue = this.props.members[this.state.editingMemberIndex];
     const newValue = this.refs.valueEditor.value();
     const newScore = this.refs.scoreEditor.value();
-    this.props.updateZsetMember(oldValue, newValue, newScore);
+    this.props.updateZsetMember(oldValue, newValue, newScore)
+      .then(() => this._unselectMember())
+      .then(() => this._focusToMemberList());
   };
 
   _removeHoveredMemberIfExists = () => {
@@ -67,8 +70,9 @@ class ZsetContentContainer extends Component {
   };
 
   _removeMember(memberToRemove) {
-    this.props.deleteMemberFromZset(memberToRemove);
     this._unselectMember();
+    this.props.deleteMemberFromZset(memberToRemove)
+      .then(() => this._focusToMemberList());
   };
 
   _openAddZsetMemberDialog = () => {
@@ -97,6 +101,10 @@ class ZsetContentContainer extends Component {
     return this._hasEditingMember()
       ? this.props.scores[this.state.editingMemberIndex]
       : '';
+  }
+
+  _focusToMemberList() {
+    this.refs.memberList.focus();
   }
 
   async componentDidMount() {

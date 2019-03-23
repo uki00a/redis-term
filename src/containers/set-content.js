@@ -6,7 +6,6 @@ import List from '../components/list';
 import FilterableList from '../components/filterable-list';
 import Editor from '../components/editor';
 import Prompt from '../components/prompt';
-import ThemedButton from '../components/themed-button';
 import ScrollableBox from '../components/scrollable-box';
 import ConfirmationDialog from '../components/confirmation-dialog';
 import Loader from '../components/loader';
@@ -44,7 +43,8 @@ class SetContentContainer extends Component {
     if (!newMember) {
       return;
     }
-    this.props.addMemberToSet(newMember);
+    this.props.addMemberToSet(newMember)
+      .then(() => this._focusToMemberList());
   };
 
   _reload = () => {
@@ -59,7 +59,9 @@ class SetContentContainer extends Component {
 
     const oldValue = this.props.members[this.state.editingMemberIndex];
     const newValue = this.refs.editor.value();
-    this.props.updateSetMember(oldValue, newValue);
+    this.props.updateSetMember(oldValue, newValue)
+      .then(() => this._unselectMember())
+      .then(() => this._focusToMemberList());
   };
 
   _removeHoveredMember = () => {
@@ -71,8 +73,9 @@ class SetContentContainer extends Component {
   };
 
   _removeMember(member) {
-    this.props.deleteMemberFromSet(member);
     this._unselectMember();
+    this.props.deleteMemberFromSet(member)
+      .then(() => this._focusToMemberList());
   }
 
   _hasEditingMember() {
@@ -95,6 +98,10 @@ class SetContentContainer extends Component {
 
   _hoveredMemberIndex() {
     return this.refs.memberList.selected();
+  }
+
+  _focusToMemberList() {
+    this.refs.memberList.focus();
   }
 
   async componentDidMount() {
