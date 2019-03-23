@@ -246,6 +246,8 @@ export default function reducer(state = initialState, action) {
         };
       }
     }
+  case ADD_MEMBER_TO_ZSET_FAILURE:
+    return { ...state, isSaving: false };
   case DELETE_MEMBER_FROM_ZSET_REQUEST:
     return { ...state, isSaving: true };
   case DELETE_MEMBER_FROM_ZSET_SUCCESS:
