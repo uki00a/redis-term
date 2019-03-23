@@ -7,7 +7,6 @@ import Loader from '../components/loader';
 import MessageDialog from '../components/message-dialog';
 import Editor from '../components/editor';
 import ScrollableBox from '../components/scrollable-box';
-import ThemedButton from '../components/themed-button';
 import { withTheme } from '../contexts/theme-context';
 import { operations } from '../modules/redux/string';
 
@@ -16,14 +15,14 @@ class StringContentContainer extends Component {
     keyName: PropTypes.string.isRequired,
     value: PropTypes.string,
     isLoading: PropTypes.bool.isRequired,
+    isSaving: PropTypes.bool.isRequired,
     saveString: PropTypes.func.isRequired,
     loadString: PropTypes.func.isRequired
   };
 
   _saveValue = () => {
     const value = this.refs.editor.value();
-    this.props.saveString(value)
-      .then(() => this.refs.messageDialog.open());
+    this.props.saveString(value);
   };
 
   _reload = () => {
@@ -45,14 +44,15 @@ class StringContentContainer extends Component {
             <box
               style={this.props.theme.box}
               content={this.props.keyName}
-              position={{ height: '8%' }}
+              position={{ height: 1 }}
               bold>
             </box>
             <ScrollableBox
               style={this.props.theme.box}
-              position={{ top: '8%', height: '90%' }}>
+              position={{ top: 1, height: 30 }}>
               <KeyboardBindings bindings={[
-                { key: 'C-r', handler: this._reload, description: 'Reload' }
+                { key: 'C-r', handler: this._reload, description: 'Reload' },
+                { key: 'C-s', handler: this._saveValue, description: 'Save' }
               ]}>
                 <Editor
                   ref='editor'
@@ -62,23 +62,12 @@ class StringContentContainer extends Component {
                   }}
                   defaultValue={this.props.value} />
               </KeyboardBindings>
-              <ThemedButton
-                onClick={this._saveValue}
-                content='{center}Save{/center}'
-                tags
-                position={{
-                  top: 30,
-                  left: 1,
-                  width: 8,
-                  height: 1
-                }}>
-              </ThemedButton>
             </ScrollableBox>
+            <Loader
+              text='saving...'
+              top={32}
+              hidden={!this.props.isSaving} />
           </box>
-          <MessageDialog
-            position={{ height: 8, left: 'center', top: 'center' }}
-            text='Value was updated!'
-            ref='messageDialog' />
         </box>
       );
     }
@@ -87,6 +76,7 @@ class StringContentContainer extends Component {
 
 const mapStateToProps = ({ string }) => ({
   isLoading: string.isLoading, 
+  isSaving: string.isSaving,
   value: string.value
 });
 const mapDispatchToProps = {
