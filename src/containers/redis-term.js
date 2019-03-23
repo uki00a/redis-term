@@ -1,6 +1,7 @@
 // @ts-check
 import React, { Component } from 'react';
 import { Route, withRouter } from 'react-router';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import ConnectionForm from './connection-form';
@@ -8,29 +9,23 @@ import Database from './database';
 import ConnectionList from './connection-list';
 import MessageDialog from '../components/message-dialog';
 import ActiveKeyboardBindings from './active-keyboard-bindings';
+import { actions as errorActions } from '../modules/redux/error';
 
 class RedisTerm extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
-    theme: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired,
+    errorMessage: PropTypes.string,
+    showError: PropTypes.func.isRequired,
+    clearError: PropTypes.func.isRequired
   };
-
-  state = { error: null };
 
   _notifyError() {
     this.refs.errorMessageDialog.open();
   }
 
-  _formatError(error) {
-    if (error) {
-      return `{red-fg}{bold}${error.stack}{/bold}{/red-fg}`;
-    } else {
-      return '';
-    }
-  }
-
   _handleError = error => {
-    this.setState({ error: this._formatError(error) });
+    this.props.showError(error);
   };
 
   componentDidCatch(error, info) { 
@@ -38,7 +33,7 @@ class RedisTerm extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.state.error) {
+    if (this.props.errorMessage) {
       this._notifyError();
     }
   }
@@ -68,8 +63,16 @@ class RedisTerm extends Component {
   }
 
   _onMessageDialogClosed = () => {
-    this.setState({ error: null })
+    this.props.clearError();
   };
+
+  _formattedErrorMessage() {
+    if (this.props.errorMessage) {
+      return `{red-fg}{bold}${this.props.errorMessage}{/bold}{/red-fg}`;
+    } else {
+      return '';
+    }
+  }
 
   render() {
     const { theme } = this.props;
@@ -100,10 +103,19 @@ class RedisTerm extends Component {
           position={{ left: 'center', top: 'center', width: '80%' }}
           title='{red-fg}Error{/red-fg}'
           ref='errorMessageDialog'
-          text={this.state.error} />
+          text={this._formattedErrorMessage()} />
       </box>
     );
   }
 }
 
-export default withRouter(withTheme(RedisTerm));
+const mapStateToProps = state => ({ errorMessage: state.error.message });
+const mapDispatchToProps = {
+  showError: errorActions.showError,
+  clearError: errorActions.clearError
+};
+
+export default withRouter(connect(
+   mapStateToProps, 
+   mapDispatchToProps
+)(withTheme(RedisTerm)));

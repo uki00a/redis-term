@@ -9,6 +9,8 @@ import hash from './hash';
 import keys from './keys';
 import keyboardBindings from './keyboard-bindings';
 import connections from './connections';
+import error from './error';
+import errorHandler from './middleware/error-handler';
 
 import { createFacade as createRedisFacade } from '../redis/facade';
 
@@ -24,6 +26,7 @@ import { createFacade as createRedisFacade } from '../redis/facade';
  * @prop {import('./keys').KeysState} keys
  * @prop {import('./keyboard-bindings').KeyboardBindingsState} keyboardBindings
  * @prop {import('./connections').ConnectionsState} connections
+ * @prop {import('./error').ErrorState} error
  * 
  * @typedef {(dispatch: import('redux').Dispatch, getState: () => State, extraArgument: ThunkDependencies) => any} Thunk
  */
@@ -36,12 +39,16 @@ const rootReducer = combineReducers({
   hash,
   keys,
   keyboardBindings,
-  connections
+  connections,
+  error
 });
 
-const createStoreWithMiddleware = applyMiddleware(thunk.withExtraArgument({
-  redis: createRedisFacade()
-}))(createStore);
+const createStoreWithMiddleware = applyMiddleware(
+  thunk.withExtraArgument({
+    redis: createRedisFacade()
+  }),
+  errorHandler()
+)(createStore);
 
 export default function configureStore (initialState) {
   return createStoreWithMiddleware(rootReducer, initialState);
