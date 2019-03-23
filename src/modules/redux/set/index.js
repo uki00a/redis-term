@@ -1,4 +1,5 @@
 // @ts-check
+import assert from 'assert';
 import { getSelectedKey } from '../shared';
 
 const FILTER_SET_MEMBERS_REQUEST = 'redis-term/set/FILTER_SET_MEMBERS_REQUEST';
@@ -187,25 +188,32 @@ export default function reducer(state = initialState, action) {
     {
       // TODO refactor
       const { oldValue, newValue } = action.payload;
-      const duplicateMembersMayBeExist = state.members.indexOf(newValue) > -1 && state.members.length > 1;
-      if (duplicateMembersMayBeExist) {
-        const newMembers = state.members.slice(0);
-        const oldValueIndex = state.members.indexOf(oldValue);
-        newMembers.splice(oldValueIndex, 1);
+      const canReplaceByIndex = state.members.indexOf(newValue) === -1;
+      if (canReplaceByIndex) {
+        const indexToReplace = state.members.indexOf(oldValue);
         return {
           ...state,
           isSaving: false,
-          members: newMembers
+          members: state.members.map((x, index) => index === indexToReplace ? newValue : x)
         };
       } else {
-        const oldValueIndex = state.members.indexOf(oldValue);
-        return {
-          ...state,
-          isSaving: false,
-          members: state.members.map((x, index) => index === oldValueIndex
-            ? newValue
-            : x)
-        };
+        // remove and update
+        // remove member
+        const newMembers = state.members.slice(0);
+        const indexToRemove = state.members.indexOf(oldValue);
+        assert(indexToRemove > -1);
+        newMembers.splice(indexToRemove, 1);
+
+        // update member
+        const newValueIndex = newMembers.indexOf(newValue);
+        const canUpdateByIndex = newValueIndex > -1;
+        const indexToUpdate = canUpdateByIndex ? newValueIndex : indexToRemove;
+        if (canUpdateByIndex) {
+          newMembers[indexToUpdate] = newValue;
+        } else {
+          newMembers.splice(indexToUpdate, 0, newValue);
+        }
+        return { ...state, isSaving: false, members: newMembers };
       }
     }
   case UPDATE_SET_MEMBER_FAILURE:

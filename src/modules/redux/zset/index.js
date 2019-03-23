@@ -197,27 +197,34 @@ export default function reducer(state = initialState, action) {
       const { oldValue, newValue, newScore } = action.payload;
       const canReplaceByIndex = state.members.indexOf(newValue) === -1;
       if (canReplaceByIndex) {
-        const oldValueIndex = state.members.indexOf(oldValue);
+        const indexToReplace = state.members.indexOf(oldValue);
         return {
           ...state,
           isSaving: false,
-          scores: state.scores.map((x, index) => index === oldValueIndex ? newScore : x),
-          members: state.members.map((x, index) => index === oldValueIndex ? newValue : x)
+          scores: state.scores.map((x, index) => index === indexToReplace ? newScore : x),
+          members: state.members.map((x, index) => index === indexToReplace ? newValue : x)
         };
       } else {
         // remove and update
+        // remove member
         const newMembers = state.members.slice(0);
         const newScores = state.scores.slice(0);
         const indexToRemove = state.members.indexOf(oldValue);
         assert(indexToRemove > -1);
         newMembers.splice(indexToRemove, 1);
         newScores.splice(indexToRemove, 1);
+
+        // update member
         const newValueIndex = newMembers.indexOf(newValue);
-        const indexToUpdate = newValueIndex === -1
-          ? indexToRemove
-          : newValueIndex;
-        newMembers[indexToUpdate] = newValue;
-        newScores[indexToUpdate] = newScore;
+        const canUpateByIndex = newValueIndex > -1;
+        const indexToUpdate = canUpateByIndex ?  newValueIndex : indexToRemove;
+        if (canUpateByIndex) {
+          newMembers[indexToUpdate] = newValue;
+          newScores[indexToUpdate] = newScore;
+        } else {
+          newMembers.splice(indexToUpdate, 0, newValue);
+          newScores.splice(indexToUpdate, 0, newScore);
+        }
         return {
           ...state,
           isSaving: false,

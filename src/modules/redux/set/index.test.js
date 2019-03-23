@@ -51,6 +51,15 @@ describe('set duck', () => {
     }
 
     {
+      const previousState = { members: ['hoge', 'fuga', 'piyo'] };
+      const action = actions.updateSetMemberSuccess('fuga', 'fuga');
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
+      assert.equal(result.isSaving, false);
+    }
+
+    {
       const previousState = { members: ['fuga'] };
       const action = actions.updateSetMemberSuccess('fuga', 'fuga');
       const result = reducer(previousState, action);

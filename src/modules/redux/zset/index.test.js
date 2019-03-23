@@ -44,6 +44,16 @@ describe('zset duck', () => {
     }
 
     {
+      const previousState = { members: ['a', 'b', 'c'], scores: [1, 2, 3] };
+      const action = actions.updateZsetMemberSuccess('b', 'b', 2);
+      const result = reducer(previousState, action);
+
+      assert.deepEqual(result.members, ['a', 'b', 'c']);
+      assert.deepEqual(result.scores, [1, 2, 3]);
+      assert.equal(result.isSaving, false);
+    }
+
+    {
       const previousState = { members: ['a'], scores: [1] };
       const action = actions.updateZsetMemberSuccess('a', 'a', 2);
       const result = reducer(previousState, action);
