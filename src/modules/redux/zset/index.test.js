@@ -7,7 +7,7 @@ describe('zset duck', () => {
     const action = actions.filterZsetMembersSuccess(['hoge', 'fuga'], [1, 2]);
     const result = reducer(previousState, action);
 
-    assert(!result.isLoading);
+    assert.equal(result.isLoading, false);
     assert.deepEqual(result.members, ['hoge', 'fuga']);
     assert.deepEqual(result.scores, [1, 2]);
   });
@@ -20,6 +20,7 @@ describe('zset duck', () => {
 
       assert.deepEqual(result.members, ['hoge', 'FUGA']);
       assert.deepEqual(result.scores, [1, 40]);
+      assert.equal(result.isSaving, false);
     }
 
     {
@@ -29,6 +30,7 @@ describe('zset duck', () => {
 
       assert.deepEqual(result.members, ['a'], 'duplicate members should not be added');
       assert.deepEqual(result.scores, [10], 'duplicate members should not be added');
+      assert.equal(result.isSaving, false);
     }
   });
 
@@ -40,6 +42,7 @@ describe('zset duck', () => {
 
       assert.deepEqual(result.members, ['HOGE', 'piyo']);
       assert.deepEqual(result.scores, [50, 100]);
+      assert.equal(result.isSaving, false);
     }
 
     {
@@ -49,6 +52,7 @@ describe('zset duck', () => {
 
       assert.deepEqual(result.members, ['a', 'b'], 'duplicate members should not be added');
       assert.deepEqual(result.scores, [100, 400], 'duplicate members should not be added');
+      assert.equal(result.isSaving, false);
     }
   });
 
@@ -59,5 +63,6 @@ describe('zset duck', () => {
 
     assert.deepEqual(result.members, ['piyo', 'hoge']);
     assert.deepEqual(result.scores, [1, 3]);
+    assert.equal(result.isSaving, false);
   });
 });
