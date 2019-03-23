@@ -48,8 +48,13 @@ class SetContentContainer extends Component {
   };
 
   _reload = () => {
-    this.props.filterSetMembers(this.props.pattern);
     this._unselectMember();
+    this.props.filterSetMembers(this.props.pattern).then(() => this._focusToMemberList());
+  };
+
+  _filterSetMembers = pattern => {
+    this._unselectMember();
+    this.props.filterSetMembers(pattern).then(() => this._focusToMemberList());
   };
 
   _saveEditingMember = () => {
@@ -139,7 +144,7 @@ class SetContentContainer extends Component {
         <FilterableList
           position={{ width: '50%', top: 1 }}
           List={memberList}
-          filterList={this.props.filterSetMembers}
+          filterList={this._filterSetMembers}
           defaultPattern={this.props.pattern}
         />
         <ScrollableBox

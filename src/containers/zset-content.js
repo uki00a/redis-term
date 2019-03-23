@@ -39,8 +39,15 @@ class ZsetContentContainer extends Component {
   }
 
   _loadZset = () => {
-    this.props.filterZsetMembers(this.props.pattern);
     this._unselectMember();
+    this.props.filterZsetMembers(this.props.pattern)
+      .then(() => this._focusToMemberList());
+  };
+
+  _filterZsetMembers = pattern => {
+    this._unselectMember();
+    this.props.filterZsetMembers(pattern)
+      .then(() => this._focusToMemberList());
   };
 
   _addMember = (score, value) => {
@@ -144,7 +151,7 @@ class ZsetContentContainer extends Component {
         />
         <FilterableList
           List={memberList}
-          filterList={this.props.filterZsetMembers}
+          filterList={this._filterZsetMembers}
           defaultPattern={this.props.pattern}
           position={{ width: '50%', top: 1 }}         
         />

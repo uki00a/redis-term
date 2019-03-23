@@ -101,11 +101,13 @@ class HashContentContainer extends Component {
   };
 
   _loadHash = () => {
+    this._unselectField();
     this.props.filterHashFields(this.props.pattern)
       .then(() => this._focusToFieldList());
   };
 
   _filterHash = pattern => {
+    this._unselectField();
     this.props.filterHashFields(pattern)
       .then(() => this._focusToFieldList());
   }
