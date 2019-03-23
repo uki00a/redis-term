@@ -39,7 +39,13 @@ class ListContentContainer extends Component {
   };
 
   _addElement = element => {
-    this.props.addElementToList(element);
+    this.props.addElementToList(element)
+      .then(() => this._focusToElementList());
+  };
+
+  _reload = () => {
+    this.props.loadListElements()
+      .then(() => this._focusToElementList());
   };
 
   _editingElementValue() {
@@ -54,8 +60,13 @@ class ListContentContainer extends Component {
     }
     const index = this.state.editingElementIndex;
     const value = this.refs.editor.value();
-    this.props.updateListElement(index, value);
+    this.props.updateListElement(index, value)
+      .then(() => this._focusToElementList());
   };
+
+  _focusToElementList() {
+    this.refs.elementList.focus();
+  }
 
   async componentDidMount() {
     this.props.loadListElements();
@@ -75,10 +86,11 @@ class ListContentContainer extends Component {
           bold
         />
         <KeyboardBindings bindings={[
-          { key: 'C-r', handler: this.props.loadListElements, description: 'Reload' },
+          { key: 'C-r', handler: this._reload, description: 'Reload' },
           { key: 'a', handler: this._openAddElementPrompt, description: 'Add Element' }
         ]}>
           <List
+            ref='elementList'
             items={this.props.elements}
             position={{ width: '50%', top: 1 }}
             onSelect={this._onSelect}
