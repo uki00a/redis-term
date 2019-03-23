@@ -85,14 +85,10 @@ class RedisTerm extends Component {
             component={ConnectionList} />
           <Route
             path='/connections/new'
-            render={props => (
-              <ConnectionForm {...props} isNew={true} connectToRedis={this._connectToRedis} />
-            )} />
+            render={props => <ConnectionForm {...props} isNew={true} />} />
           <Route
             path='/connections/:id/edit'
-            render={props => (
-              <ConnectionForm {...props} isNew={false} connectToRedis={this._connectToRedis} />
-            )} />
+            render={props => <ConnectionForm {...props} isNew={false} />} />
           <Route
             path='/database'
             component={Database} />
