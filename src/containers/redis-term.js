@@ -100,7 +100,7 @@ class RedisTerm extends Component {
           position={{ left: 'center', top: 'center', width: '80%' }}
           title='{red-fg}Error{/red-fg}'
           ref='errorMessageDialog'
-          text={this.state.error || ''} />
+          text={this.state.error} />
       </box>
     );
   }

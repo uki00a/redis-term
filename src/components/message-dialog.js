@@ -30,27 +30,23 @@ class MessageDialog extends Component {
 
   render() {
     const { text, position = {}, theme, onHide, ...restProps } = this.props;
-    const lineHeight = text.split('\n').length + 1;
-    const boxOffset = 2;
-    const buttonOffset = lineHeight + boxOffset;
-    const dialogHeight = buttonOffset * 2;
-    const dialogPosition = { height: dialogHeight, ...position };
+    const dialogPosition = { height: 'shrink', ...position };
 
     return (
       <Dialog
-        isOpened={this.state.isOpened}
+        isOpened={this.state.isOpened && Boolean(text)}
         position={dialogPosition}
         onHide={this._onHide}
         {...restProps}>
         <box
           style={theme.box}
-          position={{ top: boxOffset, height: lineHeight, left: 2, right: 2 }}
+          position={{ top: 2, left: 2, right: 2 }}
           content={text}
           tags
         />
         <ThemedButton
           ref='okButton'
-          position={{ top: buttonOffset, height: 1, right: 2, width: 4 }}
+          position={{ bottom: 1, height: 1, right: 2, width: 4 }}
           content='OK'
           align='center'
           onClick={this.close}
