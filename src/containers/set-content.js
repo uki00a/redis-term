@@ -132,7 +132,7 @@ class SetContentContainer extends Component {
           position={{ width: '50%', top: 1 }}
           List={memberList}
           filterList={this.props.filterSetMembers}
-          defaultPattern={this.props.lastPattern}
+          defaultPattern={this.props.pattern}
         />
         <ScrollableBox
           style={this.props.theme.box}
