@@ -46,7 +46,7 @@ const addMemberToSet = newMember => async (dispatch, getState, { redis }) => {
     await redis.addMemberToSet(selectedKey, newMember);
     dispatch(addMemberToSetSuccess(newMember));
   } catch (error) {
-    dispatch(addMemberToSetFailure());
+    dispatch(addMemberToSetFailure(error));
   }
 };
 
