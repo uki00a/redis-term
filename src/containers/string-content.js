@@ -27,8 +27,13 @@ class StringContentContainer extends Component {
 
   _reload = () => {
     this.refs.stringContent.focus();
-    this.props.loadString();
+    this.props.loadString()
+      .then(() => this._focusToEditor());
   };
+
+  _focusToEditor() {
+    this.refs.editor.focus();
+  }
 
   componentDidMount() {
     this.props.loadString();
