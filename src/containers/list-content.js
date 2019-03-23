@@ -18,6 +18,7 @@ class ListContentContainer extends Component {
     keyName: PropTypes.string.isRequired,
     elements: PropTypes.array,
     isLoading: PropTypes.bool.isRequired,
+    isSaving: PropTypes.bool.isRequired,
     addElementToList: PropTypes.func.isRequired,
     loadListElements: PropTypes.func.isRequired,
     updateListElement: PropTypes.func.isRequired
@@ -86,25 +87,28 @@ class ListContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <Editor
-            ref='editor'
-            defaultValue={this._editingElementValue()}
-            disabled={this.state.editingElementIndex == null}
-            position={{ height: 30, width: '95%' }}
+          <KeyboardBindings bindings={[
+            { key: 'C-s', handler: this._saveEditingElement, description: 'Save' }
+          ]}>
+            <Editor
+              ref='editor'
+              defaultValue={this._editingElementValue()}
+              disabled={this.state.editingElementIndex == null}
+              position={{ height: 30, width: '95%' }}
+            />
+          </KeyboardBindings>
+          <Loader
+            text='saving...'
+            top={30}
+            hidden={!this.props.isSaving}
           />
-          <ThemedButton
-            disabled={this.state.editingElementIndex == null}
-            position={{ top: 30, left: 1, height: 1, width: 8 }}
-            tags
-            onClick={this._saveEditingElement}
-            content='{center}Save{/center}' />
         </ScrollableBox>
         <Prompt
           ref='addElementPrompt'
           title='Add Element'
           onOk={this._addElement}
           onCancel={this._closeAddElementPrompt}
-         />
+        />
       </box>
     );   
   }
