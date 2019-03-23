@@ -6,7 +6,7 @@ import { withTheme } from '../contexts/theme-context';
 
 class MessageDialog extends Component {
   static propTypes = {
-    text: PropTypes.string.isRequired,
+    text: PropTypes.string,
     theme: PropTypes.object.isRequired,
     onHide: PropTypes.func
   };
