@@ -12,10 +12,17 @@ const LOAD_STRING_FAILURE = 'redis-term/string/LOAD_STRING_FAILURE';
  * @returns {import('../store').Thunk}
  */
 const loadString = () => async (dispatch, getState, { redis }) => {
+  if (isLoading(getState())) {
+    return Promise.resolve();
+  }
   const selectedKey = getSelectedKey(getState);
   dispatch(loadStringRequest());
-  const string = await redis.loadString(selectedKey);
-  dispatch(loadStringSuccess(string));
+  try {
+    const string = await redis.loadString(selectedKey);
+    dispatch(loadStringSuccess(string));
+  } catch (error) {
+    dispatch(loadStringFailure(error));
+  }
 };
 
 /**
@@ -23,7 +30,9 @@ const loadString = () => async (dispatch, getState, { redis }) => {
  * @returns {import('../store').Thunk}
  */
 const saveString = newValue => async (dispatch, getState, { redis }) => {
-  if (isSaving(getState())) return Promise.resolve();
+  if (isSaving(getState())) {
+    return Promise.resolve();
+  }
   dispatch(saveStringRequest());
   const selectedKey = getSelectedKey(getState);
   try {
@@ -39,6 +48,10 @@ const loadStringSuccess = string => ({
   type: LOAD_STRING_SUCCESS,
   payload: { string }
 });
+const loadStringFailure = error => ({
+  type: LOAD_STRING_FAILURE,
+  error
+});
 
 const saveStringRequest = () => ({ type: SAVE_STRING_REQUEST });
 const saveStringSuccess = newValue => ({
@@ -52,7 +65,7 @@ const saveStringFailure = error => ({ type: SAVE_STRING_FAILURE, error });
  * @prop {string} [value]
  * @prop {boolean} isLoading
  */
-const initialState = { value: null, isLoading: true, isSaving: false };
+const initialState = { value: null, isLoading: false, isSaving: false };
 
 export const operations = {
   loadString,
@@ -84,4 +97,5 @@ export default function reducer(state = initialState, action) {
   }
 }
 
+const isLoading = state => state.string.isLoading;
 const isSaving = state => state.string.isSaving;
