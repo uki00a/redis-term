@@ -57,7 +57,7 @@ class ConnectionForm extends Component {
           censor={secure}
           name={name}
           value={initialValue}
-          position={{ left: 10, height: 1, width: 16 }}>
+          position={{ left: 13, height: 1, width: 16 }}>
         </Textbox>
       </box>
     );
@@ -147,9 +147,10 @@ class ConnectionForm extends Component {
           height={18}>
           <box position={{ left: 1, right: 1, top: 1, bottom: 1 }} style={theme.box}>
             {this._renderInputGroup(0, 'Name:', 'name', connection.name || '')}
-            {this._renderInputGroup(1, 'Host:', 'host', connection.host || '127.0.0.1')}
-            {this._renderInputGroup(2, 'Port:', 'port', connection.port || '6379')}
-            {this._renderInputGroup(3, 'Password:', 'password', connection.password || '', true)}
+            {this._renderInputGroup(1, 'Host:', 'host', connection.host == null ? '127.0.0.1' : connection.host)}
+            {this._renderInputGroup(2, 'Port:', 'port', connection.port == null ? '6379' : connection.port)}
+            {this._renderInputGroup(3, 'Unix Socket:', 'path', connection.path || '')}
+            {this._renderInputGroup(4, 'Password:', 'password', connection.password || '', true)}
           </box>
         </box>
         <box
