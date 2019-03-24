@@ -2,7 +2,6 @@
   "name": "redis-term",
   "version": "0.0.1",
   "description": "a terminal client for Redis",
-  "main": "index.js",
   "repository": "https://github.com/uki00a/redis-term",
   "author": "uki00a",
   "license": "MIT",
