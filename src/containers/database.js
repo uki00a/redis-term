@@ -48,7 +48,7 @@ class Database extends Component {
   };
 
   _filterKeys = pattern => {
-    this.props.filterKeys(pattern);
+    this.props.filterKeys(pattern).then(() => this._focusToKeyList());
   };
 
   _renderKeyList() {
@@ -75,8 +75,12 @@ class Database extends Component {
     this.refs.confirmationDialog.open();
   };
 
-  async componentDidMount() {
+  _focusToKeyList() {
     this.refs.keyList.focus();
+  }
+
+  async componentDidMount() {
+    this._focusToKeyList();
     this._unselectKey();
     this._loadKeys();
   }
