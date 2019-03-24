@@ -7,7 +7,8 @@ import { withTheme } from '../contexts/theme-context';
 class ConfirmationDialog extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
-    onOk: PropTypes.func.isRequired
+    onOk: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
   };
 
   state = { isOpened: false };
@@ -22,7 +23,9 @@ class ConfirmationDialog extends Component {
   }
 
   close = () => {
-    this.setState({ isOpened: false });
+    this.setState({ isOpened: false }, () => {
+      setImmediate(() => this.props.onCancel());
+    });
   };
 
   render() {

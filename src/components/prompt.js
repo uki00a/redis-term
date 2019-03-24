@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
 import Textbox from './textbox';
+import { withTheme } from '../contexts/theme-context';
 
 class Prompt extends Component {
   static propTypes = {
     title: PropTypes.string,
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired
+    onCancel: PropTypes.func.isRequired,
+    theme: PropTypes.object.isRequired
   };
 
   state = {
@@ -23,20 +25,21 @@ class Prompt extends Component {
   };
 
   _onCancel = () => {
-    this.props.onCancel();
-    this.close();
+    this.close(() => this.props.onCancel());
   };
 
   open() {
     this.setState({ isOpened: true });
   }
 
-  close() {
-    this.setState({ isOpened: false });
+  close(callback) {
+    this.setState({ isOpened: false }, () => {
+      if (callback) setImmediate(callback);
+    });
   }
 
   render() {
-    const { title, onOk, onCancel, ...restProps } = this.props;
+    const { title, onOk, onCancel, theme, ...restProps } = this.props;
 
     return (
       <Dialog
@@ -44,6 +47,7 @@ class Prompt extends Component {
         title={title}
         { ...restProps }>
         <Textbox
+          style={theme.textbox}
           position={{ top: 3, height: 1, left: 2, right: 2 }}
           bg='black'
           hoverBg='blue'
@@ -66,4 +70,4 @@ class Prompt extends Component {
   }
 }
 
-export default Prompt;
+export default withTheme(Prompt);

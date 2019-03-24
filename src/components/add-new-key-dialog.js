@@ -8,7 +8,7 @@ import { withTheme } from '../contexts/theme-context';
 class AddNewKeyDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func,
+    onCancel: PropTypes.func.isRequired,
     theme: PropTypes.object.isRequired
   };
 
@@ -21,15 +21,19 @@ class AddNewKeyDialog extends Component {
     this.close();
   };
 
-  _onCancel = () => this.close();
+  _onCancel = () => {
+    this.close(() => this.props.onCancel());
+  };
 
   open() {
     this.setState({ isOpened: true });
     this.refs.keyInput.focus();
   }
 
-  close() {
-    this.setState({ isOpened: false });
+  close(callback) {
+    this.setState({ isOpened: false }, () => {
+      if (callback) setImmediate(callback);
+    });
   }
 
   _checkedType() {
@@ -75,6 +79,7 @@ class AddNewKeyDialog extends Component {
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
         <Textbox
+          style={this.props.theme.textbox}
           name='keyName'
           position={{ top: 4, height: 1, left: 2, right: 2 }}
           name='keyInput'

@@ -28,14 +28,18 @@ class Database extends Component {
   };
 
   _addNewKeyIfNotExists = (keyName, type) => {
-    this.props.addKey(keyName, type);
+    this.props.addKey(keyName, type).then(() => {
+      this._focusToKeyList();
+    });
   };
 
   _deleteHoveredKey = async () => {
     const hoveredKeyIndex = this.refs.keyList.selected();
     const hoveredKey = this.props.keys[hoveredKeyIndex];
     if (hoveredKey) {
-      this.props.deleteKey(hoveredKey);
+      this.props.deleteKey(hoveredKey).then(() => {
+        this._unselectKey();
+      });
     }
   };
 
@@ -75,9 +79,9 @@ class Database extends Component {
     this.refs.confirmationDialog.open();
   };
 
-  _focusToKeyList() {
+  _focusToKeyList = () => {
     this.refs.keyList.focus();
-  }
+  };
 
   async componentDidMount() {
     this._focusToKeyList();
@@ -104,10 +108,12 @@ class Database extends Component {
         <AddNewKeyDialog
           ref='addNewKeyDialog'
           onOk={this._addNewKeyIfNotExists} 
+          onCancel={this._focusToKeyList}
         />
         <ConfirmationDialog
           text='Are you sure you want to delete this key?'
           onOk={this._deleteHoveredKey}
+          onCancel={this._focusToKeyList}
           ref='confirmationDialog'
         />
       </box>

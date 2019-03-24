@@ -108,9 +108,9 @@ class ZsetContentContainer extends Component {
       : '';
   }
 
-  _focusToMemberList() {
+  _focusToMemberList = () => {
     this.refs.memberList.focus();
-  }
+  };
 
   async componentDidMount() {
     this._loadZset();
@@ -184,10 +184,12 @@ class ZsetContentContainer extends Component {
           position={{ height: 20 }}
           ref='addZsetMemberDialog'
           onOk={this._addMember}
+          onCancel={this._focusToMemberList}
         />
         <ConfirmationDialog
           text='Are you sure you want to delete this member'
           onOk={this._removeHoveredMemberIfExists}
+          onCancel={this._focusToMemberList}
           ref='confirmationDialog'
         />
       </box>

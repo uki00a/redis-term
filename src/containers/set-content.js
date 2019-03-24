@@ -32,6 +32,7 @@ class SetContentContainer extends Component {
 
   _closeAddMemberPrompt = () => {
     this.refs.addMemberPrompt.close();
+    this._focusToMemberList();
   };
 
   _openConfirmationDialog = () => {
@@ -92,9 +93,9 @@ class SetContentContainer extends Component {
     return this.refs.memberList.selected();
   }
 
-  _focusToMemberList() {
+  _focusToMemberList = () => {
     this.refs.memberList.focus();
-  }
+  };
 
   async componentDidMount() {
     this.props.filterSetMembers();
@@ -158,6 +159,7 @@ class SetContentContainer extends Component {
         <ConfirmationDialog
           text='Are you sure you want to delete this member'
           onOk={this._removeHoveredMember}
+          onCancel={this._focusToMemberList}
           ref='confirmationDialog'
         />
       </box>

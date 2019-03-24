@@ -32,6 +32,7 @@ class ListContentContainer extends Component {
 
   _closeAddElementPrompt = () => {
     this.refs.addElementPrompt.close();
+    this._focusToElementList();
   };
 
   _onSelect = (item, index) => {

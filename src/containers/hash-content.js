@@ -112,9 +112,9 @@ class HashContentContainer extends Component {
       .then(() => this._focusToFieldList());
   }
 
-  _focusToFieldList() {
+  _focusToFieldList = () => {
     this.refs.fieldList.focus();
-  }
+  };
 
   componentDidMount() {
     this.props.filterHashFields();
@@ -179,10 +179,12 @@ class HashContentContainer extends Component {
           position={{ height: 20 }}
           ref='addHashFieldDialog'
           onOk={this._addField}
+          onCancel={this._focusToFieldList}
         />
         <CofnfirmationDialog
           text='Are you sure you want to delete this field'
           onOk={this._removeHoveredFieldIfExists}
+          onCancel={this._focusToFieldList}
           ref='confirmationDialog' 
         />
       </form>

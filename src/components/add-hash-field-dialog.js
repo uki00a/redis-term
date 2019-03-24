@@ -8,7 +8,7 @@ import { withTheme } from '../contexts/theme-context';
 class AddHashFieldDialog extends Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func,
+    onCancel: PropTypes.func.isRequired,
     theme: PropTypes.object.isRequired
   };
 
@@ -22,14 +22,16 @@ class AddHashFieldDialog extends Component {
     this.close();
   };
 
-  _onCancel = () => this.close();
+  _onCancel = () => this.close(() => this.props.onCancel());
 
   open() {
     this.setState({ isOpened: true });
   }
 
-  close() {
-    this.setState({ isOpened: false });
+  close(callback) {
+    this.setState({ isOpened: false }, () => {
+      if (callback) setImmediate(callback);
+    });
   }
 
   render() {
@@ -46,6 +48,7 @@ class AddHashFieldDialog extends Component {
           position={{ top: 3, height: 1, left: 2, right: 2 }}
         />
         <Textbox
+          style={theme.textbox}
           position={{ top: 4, height: 1, left: 2, right: 2 }}
           name='keyInput'
           bg='black'
@@ -58,6 +61,7 @@ class AddHashFieldDialog extends Component {
           position={{ top: 6, height: 1, left: 2, right: 2 }}
         />
         <Textbox
+          style={theme.textbox}
           position={{ top: 7, height: 1, left: 2, right: 2 }}
           name='valueInput'
           bg='black'
