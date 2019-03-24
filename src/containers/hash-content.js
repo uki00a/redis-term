@@ -67,7 +67,7 @@ class HashContentContainer extends Component {
 
   _removeHoveredFieldIfExists = () => {
     const fieldToRemove = this._hoveredField();
-    if (fieldToRemove) {
+    if (fieldToRemove != null) {
       this._removeField(fieldToRemove);
     }
   };
