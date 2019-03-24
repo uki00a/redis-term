@@ -1,7 +1,7 @@
 // @ts-check
 import keytar from 'keytar';
 
-class CredentialManager {
+export default class CredentialManager {
   constructor() {
     this.serviceName = 'redis-term';
   }
@@ -22,7 +22,3 @@ class CredentialManager {
 function accountFor(connectionId, field) {
   return `${connectionId}:${field}`;
 }
-
-export const createCredentialManager = () => {
-  return new CredentialManager();
-};
