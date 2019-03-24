@@ -12,6 +12,7 @@ import { operations, actions } from '../modules/redux/keys';
 class Database extends Component {
   static propTypes = {
     keys: PropTypes.array.isRequired,    
+    pattern: PropTypes.string,
     isLoading: PropTypes.bool,
     selectedKey: PropTypes.string,
     selectedKeyType: PropTypes.string,
@@ -51,6 +52,10 @@ class Database extends Component {
     this.props.filterKeys('*');
   };
 
+  _reloadKeys = () => {
+    this.props.filterKeys(this.props.pattern);
+  };
+
   _filterKeys = pattern => {
     this.props.filterKeys(pattern).then(() => this._focusToKeyList());
   };
@@ -58,7 +63,7 @@ class Database extends Component {
   _renderKeyList() {
     const keyboardBindings = [
       { key: 'f5', handler: this._loadKeys, description: 'Reload Keys' },
-      { key: 'C-r', handler: this._loadKeys, description: 'Reload Keys' },
+      { key: 'C-r', handler: this._reloadKeys, description: 'Reload Keys' },
       { key: 'a', handler: this._openAddNewKeyDialog, description: 'Add New Key' },
       { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Selected Key' }
     ];
@@ -126,6 +131,7 @@ class Database extends Component {
 const mapStateToProps = ({ keys }) => {
   return {
     keys: keys.list,
+    pattern: keys.pattern,
     isLoading: keys.isLoading,
     selectedKey: keys.selectedKeyName,
     selectedKeyType: keys.selectedKeyType

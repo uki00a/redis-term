@@ -70,7 +70,7 @@ const addNewKeyIfNotExists = (keyName, type) => async (dispatch, getState, { red
  */
 const filterKeys = (pattern = '*') => async (dispatch, getState, { redis }) => {
   if (isLoading(getState())) return;
-  dispatch(filterKeysStarted());
+  dispatch(filterKeysStarted(pattern));
   try {
     const keys = await redis.filterKeysStartWith(pattern);
     dispatch(filterKeysSuccess(keys));
@@ -105,8 +105,9 @@ const addNewKeySuccess = key => ({
 
 const addNewKeyFailure = error => ({ type: ADD_NEW_KEY_FAILURE, error });
 
-const filterKeysStarted = () => ({
-  type: FILTER_KEYS_STARTED
+const filterKeysStarted = pattern => ({
+  type: FILTER_KEYS_STARTED,
+  payload: { pattern }
 });
 
 const filterKeysSuccess = keys => ({
@@ -144,6 +145,7 @@ export const actions = {
 /**
  * @typedef {object} KeysState
  * @prop {string[]} list
+ * @prop {string} pattern
  * @prop {boolean} isLoading
  * @prop {boolean} isSaving
  * @prop {string} [selectedKeyName]
@@ -151,6 +153,7 @@ export const actions = {
  */
 const initialState = {
   list: [],
+  pattern: null,
   isLoading: false,
   isSaving: false,
   selectedKeyName: null,
@@ -194,7 +197,7 @@ export default function reducer(state = initialState, action) {
     case ADD_NEW_KEY_FAILURE:
       return { ...state, isSaving: false };
     case FILTER_KEYS_STARTED:
-      return { ...state, isLoading: true };
+      return { ...state, pattern: action.payload.pattern, isLoading: true };
     case FILTER_KEYS_SUCCESS:
       return {
         ...state,
