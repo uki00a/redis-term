@@ -13,3 +13,9 @@ export class DuplicateMemberError extends ApplicationError {
     super(`The value already exists in ${type}`);
   }
 }
+
+export class DuplicateKeyError extends ApplicationError {
+  constructor(key) {
+    super(`The key '${key}' already exists`);
+  }
+}

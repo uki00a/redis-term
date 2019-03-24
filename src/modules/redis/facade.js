@@ -1,7 +1,7 @@
 // @ts-check
 import { plistToHash, partitionByParity } from '../utils';
 import connectToRedis from './connect-to-redis';
-import { DuplicateMemberError } from '../errors';
+import { DuplicateMemberError, DuplicateKeyError } from '../errors';
 
 const DEFAULT_SCORE = 0;
 
@@ -38,7 +38,7 @@ export default class RedisFacade {
     if (!keyExists) {
       await this.addNewKey(keyName, type);
     } else {
-      // TODO handle error
+      throw new DuplicateKeyError(keyName);
     }
   }
 
