@@ -76,7 +76,9 @@ class Database extends Component {
   
   _openAddNewKeyDialog = () => this.refs.addNewKeyDialog.open();
   _openConfirmationDialog = () => {
-    this.refs.confirmationDialog.open();
+    if (this.props.keys.length > 0) {
+      this.refs.confirmationDialog.open();
+    }
   };
 
   _focusToKeyList = () => {

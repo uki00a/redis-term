@@ -2,13 +2,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import isEmpty from 'lodash/isEmpty';
 import KeyboardBindings from './keyboard-bindings';
 import List from '../components/list';
 import Editor from '../components/editor';
 import AddHashFieldDialog from '../components/add-hash-field-dialog';
 import ScrollableBox from '../components/scrollable-box';
 import FilterableList from '../components/filterable-list';
-import ThemedButton from '../components/themed-button';
 import CofnfirmationDialog from '../components/confirmation-dialog';
 import Loader from '../components/loader';
 import { withTheme } from '../contexts/theme-context';
@@ -33,7 +33,9 @@ class HashContentContainer extends Component {
   };
 
   _openConfirmationDialog = () => {
-    this.refs.confirmationDialog.open();
+    if (!isEmpty(this.props.hash)) {
+      this.refs.confirmationDialog.open();
+    }
   };
 
   _onFieldSelected = (item, fieldIndex) => {

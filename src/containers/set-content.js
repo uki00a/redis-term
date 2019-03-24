@@ -36,7 +36,9 @@ class SetContentContainer extends Component {
   };
 
   _openConfirmationDialog = () => {
-    this.refs.confirmationDialog.open();
+    if (this.props.members.length > 0) {
+      this.refs.confirmationDialog.open();
+    }
   };
 
   _addMember = async newMember => {
