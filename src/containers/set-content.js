@@ -98,12 +98,12 @@ class SetContentContainer extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.keyName !== prevProps.keyName) {
-      this.props.filterSetMembers();
+      this.props.filterSetMembers('');
     }
   }
 
   componentDidMount() {
-    this.props.filterSetMembers();
+    this.props.filterSetMembers('');
   }
 
   render() {

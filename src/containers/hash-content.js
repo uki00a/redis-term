@@ -121,12 +121,12 @@ class HashContentContainer extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.keyName !== prevProps.keyName) {
-      this.prps.filterHashFields();
+      this.props.filterHashFields('');
     }
   }
 
   componentDidMount() {
-    this.props.filterHashFields();
+    this.props.filterHashFields('');
   }
 
   render() {

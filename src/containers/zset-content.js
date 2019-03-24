@@ -38,13 +38,13 @@ class ZsetContentContainer extends Component {
     this.setState({ editingMemberIndex: null });
   }
 
-  _loadZset = () => {
+  _loadZset = pattern => {
     this._unselectMember();
-    return this.props.filterZsetMembers(this.props.pattern);
+    return this.props.filterZsetMembers(pattern);
   };
 
   _reloadZset = () => {
-    this._loadZset().then(() => this._focusToMemberList());
+    this._loadZset(this.props.pattern).then(() => this._focusToMemberList());
   };
 
   _filterZsetMembers = pattern => {
@@ -119,12 +119,12 @@ class ZsetContentContainer extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.keyName !== prevProps.keyName) {
-      this._loadZset();
+      this._loadZset('');
     }
   }
 
   componentDidMount() {
-    this._loadZset();
+    this._loadZset('');
   }
 
   render() {
