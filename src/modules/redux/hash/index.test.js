@@ -11,6 +11,15 @@ describe('hash duck', () => {
     assert.deepEqual(result.value, { a: '1' });
   });
 
+  it('can handle ADD_FIELD_TO_HASH_SUCCESS', () => {
+    const previousState = { value: { a: '1', b: '2' } };
+    const action = actions.addFieldToHashSuccess('c', '3');
+    const result = reducer(previousState, action);
+
+    assert.deepEqual(result.value, { a: '1', b: '2', c: '3' });
+    assert.equal(result.isSaving, false);
+  });
+
   it('can handle SET_HASH_FIELD_SUCCESS', () => {
     const previousState = { value: { a: '1', b: '2' } };
     const action = actions.setHashFieldSuccess('b', '33');

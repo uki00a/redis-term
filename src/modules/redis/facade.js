@@ -1,7 +1,7 @@
 // @ts-check
 import { plistToHash, partitionByParity } from '../utils';
 import connectToRedis from './connect-to-redis';
-import { DuplicateMemberError, DuplicateKeyError } from '../errors';
+import { DuplicateMemberError, DuplicateKeyError, DuplicateFieldError } from '../errors';
 
 const DEFAULT_SCORE = 0;
 
@@ -88,6 +88,29 @@ export default class RedisFacade {
     const count = 1000;
     const [_, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', count); // eslint-disable-line no-unused-vars
     return keys;
+  }
+
+  /**
+   * @param {string} keyName 
+   * @param {string} fieldName 
+   * @param {string} value 
+   */
+  async addFieldToHashIfNotExists(keyName, fieldName, value) {
+    if (await (this.fieldExistsInHash(keyName, fieldName))) {
+      throw new DuplicateFieldError();
+    } else {
+      return this.updateHashField(keyName, fieldName, value);
+    }
+  }
+
+  /**
+   * @param {string} keyName 
+   * @param {string} fieldName 
+   * @returns {Promise<boolean>}
+   */
+  fieldExistsInHash(keyName, fieldName) {
+    const redis = this._getRedis();
+    return redis.hexists(keyName, fieldName);
   }
 
   /**

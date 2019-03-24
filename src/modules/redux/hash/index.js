@@ -4,6 +4,9 @@ import { getSelectedKey } from '../shared';
 const FILTER_HASH_FIELDS_REQUEST = 'redis-term/hash/FILTER_HASH_FIELDS_REQUEST';
 const FILTER_HASH_FIELDS_SUCCESS = 'redis-term/hash/FILTER_HASH_FIELDS_SUCCESS';
 const FILTER_HASH_FIELDS_FAILURE = 'redis-term/hash/FILTER_HASH_FIELDS_FAILURE';
+const ADD_FIELD_TO_HASH_REQUEST = 'redis-term/hash/ADD_FIELD_TO_HASH_REQUEST';
+const ADD_FIELD_TO_HASH_SUCCESS = 'redis-term/hash/ADD_FIELD_TO_HASH_SUCCESS';
+const ADD_FIELD_TO_HASH_FAILURE = 'redis-term/hash/ADD_FIELD_TO_HASH_FAILURE';
 const SET_HASH_FIELD_REQUEST = 'redis-term/hash/SET_HASH_FIELD_REQUEST';
 const SET_HASH_FIELD_SUCCESS = 'redis-term/hash/SET_HASH_FIELD_SUCCESS';
 const SET_HASH_FIELD_FAILURE = 'redis-term/hash/SET_HASH_FIELD_FAILURE';
@@ -26,6 +29,23 @@ const filterHashFields = (pattern = '') => async (dispatch, getState, { redis })
     dispatch(filterHashFieldsSuccess(hash));
   } catch (error) {
     dispatch(filterHashFieldsFailure(error));
+  }
+};
+
+/**
+ * @returns {import('../store').Thunk}
+ */
+const addFieldToHash = (fieldName, value) => async (dispatch, getState, { redis }) => {
+  if (isSaving(getState())) {
+    return;
+  }
+  const selectedKey = getSelectedKey(getState);
+  dispatch(addFieldToHashRequest());
+  try {
+    await redis.addFieldToHashIfNotExists(selectedKey, fieldName, value);
+    dispatch(addFieldToHashSuccess(fieldName, value));
+  } catch (error) {
+    dispatch(addFieldToHashFailure(error));
   }
 };
 
@@ -76,6 +96,15 @@ const filterHashFieldsSuccess = hash => ({
 
 const filterHashFieldsFailure = error => ({ type: FILTER_HASH_FIELDS_FAILURE, error });
 
+const addFieldToHashRequest = () => ({ type: ADD_FIELD_TO_HASH_REQUEST });
+
+const addFieldToHashSuccess = (fieldName, value) => ({
+  type: ADD_FIELD_TO_HASH_SUCCESS,
+  payload: { fieldName, value }
+});
+
+const addFieldToHashFailure = error => ({ type: ADD_FIELD_TO_HASH_FAILURE, error });
+
 const setHashFieldRequest = () => ({ type: SET_HASH_FIELD_REQUEST });
 
 const setHashFieldSuccess = (fieldName, newValue) => ({
@@ -96,6 +125,7 @@ const deleteFieldFromHashFailure = error => ({ type: DELETE_FIELD_FROM_HASH_FAIL
 
 export const operations = {
   filterHashFields,
+  addFieldToHash,
   setHashField,
   deleteFieldFromHash
 };
@@ -103,6 +133,7 @@ export const operations = {
 export const actions = {
   filterHashFieldsRequest,
   filterHashFieldsSuccess,
+  addFieldToHashSuccess,
   setHashFieldSuccess,
   deleteFieldFromHashSuccess
 };
@@ -141,6 +172,22 @@ export default function reducer(state = initialState, action) {
     };
   case FILTER_HASH_FIELDS_FAILURE:
     return { ...state, isLoading: false };
+  case ADD_FIELD_TO_HASH_REQUEST:
+    return { ...state, isSaving: true };
+  case ADD_FIELD_TO_HASH_SUCCESS:
+    {
+      const { fieldName, value } = action.payload;
+      return {
+        ...state,
+        isSaving: false,
+        value: {
+          ...state.value,
+          [fieldName]: value
+        }
+      }
+    }
+  case ADD_FIELD_TO_HASH_FAILURE:
+    return { ...state, isSaving: false };
   case SET_HASH_FIELD_REQUEST:
     return { ...state, isSaving: true };
   case SET_HASH_FIELD_SUCCESS:

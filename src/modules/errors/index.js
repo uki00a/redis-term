@@ -19,3 +19,9 @@ export class DuplicateKeyError extends ApplicationError {
     super(`The key '${key}' already exists`);
   }
 }
+
+export class DuplicateFieldError extends ApplicationError {
+  constructor() {
+    super('The field already exists in hash');
+  }
+}

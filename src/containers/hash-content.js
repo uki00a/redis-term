@@ -21,6 +21,7 @@ class HashContentContainer extends Component {
     isLoading: PropTypes.bool.isRequired,
     isSaving: PropTypes.bool.isRequired,
     pattern: PropTypes.string.isRequired,
+    addFieldToHash: PropTypes.func.isRequired,
     setHashField: PropTypes.func.isRequired,
     deleteFieldFromHash: PropTypes.func.isRequired,
     filterHashFields: PropTypes.func.isRequired
@@ -98,8 +99,8 @@ class HashContentContainer extends Component {
       .then(() => this._focusToFieldList());
   };
 
-  _addField = (key, value) => {
-    this.props.setHashField(key, value).then(() => this._focusToFieldList());
+  _addFieldToHash = (key, value) => {
+    this.props.addFieldToHash(key, value).then(() => this._focusToFieldList());
   };
 
   _loadHash = () => {
@@ -186,7 +187,7 @@ class HashContentContainer extends Component {
         <AddHashFieldDialog
           position={{ height: 20 }}
           ref='addHashFieldDialog'
-          onOk={this._addField}
+          onOk={this._addFieldToHash}
           onCancel={this._focusToFieldList}
         />
         <CofnfirmationDialog
@@ -210,6 +211,7 @@ const mapStateToProps = ({ hash }) => ({
 const mapDispatchToProps = {
   deleteFieldFromHash: operations.deleteFieldFromHash,
   filterHashFields: operations.filterHashFields,
+  addFieldToHash: operations.addFieldToHash,
   setHashField: operations.setHashField
 };
 
