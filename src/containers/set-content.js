@@ -42,9 +42,6 @@ class SetContentContainer extends Component {
   };
 
   _addMember = async newMember => {
-    if (!newMember) {
-      return;
-    }
     this.props.addMemberToSet(newMember)
       .then(() => this._focusToMemberList());
   };
@@ -62,7 +59,7 @@ class SetContentContainer extends Component {
   _removeHoveredMember = () => {
     const index = this._hoveredMemberIndex();    
     const memberToRemove = this.props.members[index];
-    if (memberToRemove) {
+    if (memberToRemove != null) {
       this._removeMember(memberToRemove);
     }
   };
