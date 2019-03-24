@@ -54,6 +54,7 @@ class ConnectionForm extends Component {
           position={{ left: 0 }}>
         </text>
         <Textbox
+          style={this.props.theme.textbox}
           censor={secure}
           name={name}
           value={initialValue}
@@ -74,6 +75,7 @@ class ConnectionForm extends Component {
           position={{ left: 0 }}>
         </text>
         <Textbox
+          style={this.props.theme.textbox}          
           ref={name}
           name={name}
           defaultValue={defaultValue}
@@ -100,6 +102,7 @@ class ConnectionForm extends Component {
           position={{ left: 0 }}>
         </text>
         <Textbox
+          style={this.props.theme.textbox}
           censor={secure}
           ref={name}
           name={name}

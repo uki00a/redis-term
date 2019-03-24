@@ -19,6 +19,10 @@ const lightGray = '#e7e7e7';
  * @prop {{ fg: string, bg: string }} label
  * @prop {{ border: { fg: string } }} focus
  * 
+ * @typedef {object} TextboxTheme
+ * @prop {string} [fg]
+ * @prop {string} [bg]
+ * 
  * @typedef {object} ListTheme
  * @prop {string} bg
  * @prop {string} fg
@@ -52,6 +56,7 @@ const lightGray = '#e7e7e7';
  * 
  * @typedef {object} Theme
  * @prop {BoxTheme} box
+ * @prop {TextboxTheme} textbox
  * @prop {ListTheme} list
  * @prop {ButtonTheme} button
  * @prop {DialogTheme} dialog
@@ -74,6 +79,10 @@ const themes = {
       focus: {
         border: { fg: red }
       }
+    },
+    textbox: {
+      bg: white,
+      fg: black
     },
     list: {
       bg: black,
@@ -121,6 +130,7 @@ const themes = {
         border: { fg: cyan }
       }
     },
+    textbox: {},
     list: {
       bg: blue,
       fg: yellow,
