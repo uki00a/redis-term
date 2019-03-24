@@ -86,6 +86,7 @@ const connectToRedis = connection => async (dispatch, getState, { redis }) => {
     dispatch(connectToRedisSuccess(connection));
   } catch (error) {
     dispatch(connectToRedisFailure(error));
+    throw new error; // FIXME
   }
 };
 

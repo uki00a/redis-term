@@ -6,6 +6,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import ConnectionList from '../components/connection-list';
 import KeyboardBindings from './keyboard-bindings';
 import { operations, actions } from '../modules/redux/connections';
+import { noop } from '../modules/utils';
 
 class ConnectionListContainer extends Component {
   static propTypes = {
@@ -59,7 +60,8 @@ class ConnectionListContainer extends Component {
     const connection = cloneDeep(this.props.connections[connectionIndex]);
     this._resolvePaths(connection);
     this.props.connectToRedis(connection)
-      .then(() => this.props.history.push('/database'));
+      .then(() => this.props.history.push('/database'))
+      .catch(noop);
   };
 
   // TODO refactor
