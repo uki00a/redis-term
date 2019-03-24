@@ -9,13 +9,23 @@ import * as os from 'os';
 import xdgBaseDir from 'xdg-basedir';
 import osenv from 'osenv';
 
-export function getPathToConnectionsJSON() {
+export function getPathToCacheDirectory() {
   if (xdgBaseDir.cache) {
-    return path.join(xdgBaseDir.cache, '/redis-term/connections.json');
+    return path.join(xdgBaseDir.cache, 'redis-term');
   } else {
     const tempdir = os.tmpdir || os.tmpDir
     const user = osenv.user();
-    return path.join(tempdir(), user, '.cache/redis-term/connections.json');
+    return path.join(tempdir(), user, '.cache/redis-term');
+  }
+}
+
+export function getPathToConfigDirectory() {
+  if (xdgBaseDir.config) {
+    return path.join(xdgBaseDir.config, 'redis-term');
+  } else {
+    const tempdir = os.tmpdir || os.tmpDir
+    const user = osenv.user();
+    return path.join(tempdir(), user, '.config/redis-term');
   }
 }
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { createBlessedRenderer } from 'react-blessed';
 import blessed from 'neo-blessed';
 import App from './containers/app';
+import { readSettingsJSON } from './modules/config';
 
 const setupScreen = () => {
   const isDevMode = process.env.NODE_ENV !== 'production';
@@ -24,7 +25,13 @@ const setupScreen = () => {
   return screen;
 };
 
-const screen = setupScreen();
-const render = createBlessedRenderer(blessed);
+const main = async () => {
+  const screen = setupScreen();
+  const render = createBlessedRenderer(blessed);
+  const settings = await readSettingsJSON();
 
-render(<App screen={screen} />, screen);
+  render(<App screen={screen} settings={settings} />, screen);
+};
+
+main();
+

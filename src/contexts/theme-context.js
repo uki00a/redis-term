@@ -1,11 +1,10 @@
-import React, { createContext, forwardRef, Component } from 'react';
-import PropTypes from 'prop-types';
-import theme from '../modules/theme'; 
+import React, { createContext, forwardRef } from 'react';
+import { initializeTheme } from '../modules/theme'; 
 
 const ThemeContext = createContext(null);
 
-export const ThemeProvider = ({ children }) => (
-  <ThemeContext.Provider value={theme}>
+export const ThemeProvider = ({ children, value }) => (
+  <ThemeContext.Provider value={initializeTheme(value)}>
     { children } 
   </ThemeContext.Provider>
 );

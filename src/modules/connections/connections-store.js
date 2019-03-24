@@ -1,10 +1,12 @@
 // @ts-check
 import uuidv1 from 'uuid/v1';
-import { fileExists, makeParentDirectory, readJSONFile, writeJSONFile, getPathToConnectionsJSON } from '../utils/file';
+import { fileExists, makeParentDirectory, readJSONFile, writeJSONFile, getPathToCacheDirectory } from '../utils/file';
+// @ts-ignore
+import * as path from 'path';
 
 export default class ConnectionsStore {
   constructor() {
-    this.path = getPathToConnectionsJSON();
+    this.path = path.join(getPathToCacheDirectory(), 'connections.json');
   }
 
   nextIdentifier() {

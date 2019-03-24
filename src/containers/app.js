@@ -9,10 +9,14 @@ import configureStore from '../modules/redux/store';
 const store = configureStore();
 
 class App extends Component {
+  static propTypes = {
+    settings: PropTypes.object.isRequired
+  };
+
   render() {
     return (
       <StoreProvider store={store}>
-        <ThemeProvider>
+        <ThemeProvider value={this.props.settings.colortheme}>
           <MemoryRouter initialEntries={['/connections']}>
             <RedisTerm />
           </MemoryRouter>
