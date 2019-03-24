@@ -72,7 +72,7 @@ class ZsetContentContainer extends Component {
   _removeHoveredMemberIfExists = () => {
     const index = this._hoveredMemberIndex();
     const memberToRemove = this.props.members[index];
-    if (memberToRemove) {
+    if (memberToRemove != null) {
       this._removeMember(memberToRemove);
     }
   };
