@@ -4,6 +4,20 @@ import mkdirp from 'mkdirp';
 import * as fs from 'fs'; 
 // @ts-ignore
 import * as path from 'path';
+// @ts-ignore
+import * as os from 'os';
+import xdgBaseDir from 'xdg-basedir';
+import osenv from 'osenv';
+
+export function getPathToConnectionsJSON() {
+  if (xdgBaseDir.cache) {
+    return path.join(xdgBaseDir.cache, '/redis-term/connections.json');
+  } else {
+    const tempdir = os.tmpdir || os.tmpDir
+    const user = osenv.user();
+    return path.join(tempdir(), user, '.cache/redis-term/connections.json');
+  }
+}
 
 export function makeParentDirectory(filename) {
   return new Promise((resolve, reject) => {

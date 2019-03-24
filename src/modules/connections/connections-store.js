@@ -1,16 +1,10 @@
 // @ts-check
 import uuidv1 from 'uuid/v1';
-// @ts-ignore
-import * as os from 'os';
-// @ts-ignore
-import * as path from 'path';
-import { fileExists, makeParentDirectory, readJSONFile, writeJSONFile } from '../utils/file';
-
-const DEFAULT_CONNECTIONS_PATH = path.join(os.homedir(), '/.cache/redis-term/connections.json');
+import { fileExists, makeParentDirectory, readJSONFile, writeJSONFile, getPathToConnectionsJSON } from '../utils/file';
 
 class ConnectionsStore {
   constructor() {
-    this.path = DEFAULT_CONNECTIONS_PATH;
+    this.path = getPathToConnectionsJSON();
   }
 
   nextIdentifier() {
