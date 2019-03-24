@@ -3,26 +3,32 @@ import StringContentContainer from '../../src/containers/string-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  renderWithRedis,
+  createStore,
+  render,
   waitForElement,
   fireEvent,
-  simulateInput
+  simulateInput,
+  nextTick,
+  wait
 } from '../helpers';
 import assert from 'assert';
 
 describe('<StringContentContainer>', () => {
   context('when save button clicked', () => {
+    /** @type {import('../../src/modules/redis/facade').default} */
     let redis;
 
     before(async () => {
       redis = await connectToRedis();
-      await redis.set(TEST_KEY, INITIAL_VALUE_FOR_TEST_KEY);
+      await redis.saveString(TEST_KEY, INITIAL_VALUE_FOR_TEST_KEY);
+
       const subject = await renderSubject();
       const textarea = findTextarea(subject);
-      const saveButton = findSaveButton(subject);
+      fireEvent.focus(textarea);
+      await nextTick();
       simulateInput(textarea, NEW_VALUE_FOR_TEST_KEY);
-      fireEvent.click(saveButton);
-      await waitForMessageDialog(subject);
+      fireEvent.keypress(textarea, null, { full: 'C-s' });
+      await wait(100); // TODO wait for loader
     });
 
     after(async () => {
@@ -31,7 +37,7 @@ describe('<StringContentContainer>', () => {
 
     it('should save input value to redis', async () => {
       const expected = NEW_VALUE_FOR_TEST_KEY;
-      const actual = await redis.get(TEST_KEY);
+      const actual = await redis.loadString(TEST_KEY);
       assert.equal(actual, expected);
     });
 
@@ -40,15 +46,17 @@ describe('<StringContentContainer>', () => {
     const NEW_VALUE_FOR_TEST_KEY = 'piyo';
 
     const renderSubject = async () => {
-      const subject = renderWithRedis(
+      const store = createStore({
+        state: { keys: { selectedKeyName: TEST_KEY, selectedKeyType: 'string' } },
+        extraArgument: { redis }
+      });
+      const subject = render(
         <StringContentContainer keyName={TEST_KEY} />,
-        redis
+        store
       );
       await waitForElement(() => subject.getAllByType('textarea'));
       return subject;
     };
     const findTextarea = subject => subject.getAllByType('textarea')[0];
-    const findSaveButton = subject => subject.getAllByContent(/Save/)[0];
-    const waitForMessageDialog = subject => waitForElement(() => subject.getAllByContent(/Value was updated/));
   });
 });

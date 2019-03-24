@@ -1,5 +1,5 @@
+import { EventEmitter } from 'events';
 import TestRenderer from 'react-test-renderer';
-import ShallowTestRenderer from 'react-test-renderer/shallow';
 
 export const waitForElement = (
   test,
@@ -8,8 +8,9 @@ export const waitForElement = (
 ) => {
   const startTime = Date.now();
   return new Promise((resolve, reject) => {
+    const wasTimedout = () => Date.now() - startTime >= timeout;
     const rejectOrWaitForElement = error => {
-      if (Date.now() - startTime >= timeout) {
+      if (wasTimedout()) {
         return reject(error);
       }
       setTimeout(checkElement, interval);
@@ -41,12 +42,13 @@ const findEventHandler = (element, eventName) => {
 };
 const makeEventFirer = eventName => (element, ...args) => {
   const handler = findEventHandler(element, eventName);
-  return handler(args);
+  return handler(...args);
 };
 
 export const fireEvent = {
   focus: makeEventFirer('focus'),
-  click: makeEventFirer('click')
+  click: makeEventFirer('click'),
+  keypress: makeEventFirer('keypress')
 };
 
 export const render = component => {
@@ -73,8 +75,9 @@ const createNodeMock = element => {
 };
 
 const noop = () => {};
-class NodeMock {
+class NodeMock extends EventEmitter {
   constructor(element) {
+    super();
     this._element = element;
   }
   get type() {

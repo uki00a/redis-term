@@ -43,13 +43,10 @@ const rootReducer = combineReducers({
   error
 });
 
-const createStoreWithMiddleware = applyMiddleware(
-  thunk.withExtraArgument({
-    redis: new RedisFacade()
-  }),
-  errorHandler()
-)(createStore);
-
-export default function configureStore (initialState) {
+export default function configureStore (initialState, extraArgument = { redis: new RedisFacade() }) {
+  const createStoreWithMiddleware = applyMiddleware(
+    thunk.withExtraArgument(extraArgument),
+    errorHandler()
+  )(createStore);
   return createStoreWithMiddleware(rootReducer, initialState);
 }
