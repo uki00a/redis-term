@@ -20,7 +20,6 @@ class SetContentContainer extends Component {
     isLoading: PropTypes.bool.isRequired,
     isSaving: PropTypes.bool.isRequired,
     addMemberToSet: PropTypes.func.isRequired,
-    updateSetMember: PropTypes.func.isRequired,
     deleteMemberFromSet: PropTypes.func.isRequired,
     filterSetMembers: PropTypes.func.isRequired
   };
@@ -55,18 +54,6 @@ class SetContentContainer extends Component {
   _filterSetMembers = pattern => {
     this._unselectMember();
     this.props.filterSetMembers(pattern).then(() => this._focusToMemberList());
-  };
-
-  _saveEditingMember = () => {
-    if (!this._hasEditingMember()) {
-      return;
-    }
-
-    const oldValue = this.props.members[this.state.editingMemberIndex];
-    const newValue = this.refs.editor.value();
-    this.props.updateSetMember(oldValue, newValue)
-      .then(() => this._unselectMember())
-      .then(() => this._focusToMemberList());
   };
 
   _removeHoveredMember = () => {
@@ -118,7 +105,6 @@ class SetContentContainer extends Component {
       return <Loader />;
     } 
 
-    const hasSelectedMember = this._hasEditingMember();
     const memberList = (
       <KeyboardBindings bindings={[
         { key: 'C-r', handler: this._reload, description: 'Reload' },
@@ -150,16 +136,12 @@ class SetContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <KeyboardBindings bindings={[
-            { key: 'C-s', handler: this._saveEditingMember, description: 'Save' }
-          ]}>
             <Editor
               ref='editor'
               position={{ height: 25, width: '95%' }}
               defaultValue={this._editingValue()}
-              disabled={!hasSelectedMember}
+              disabled={true}
             />
-          </KeyboardBindings>
           <Loader
             text='saving...'
             hidden={!this.props.isSaving}
@@ -186,7 +168,6 @@ class SetContentContainer extends Component {
 const mapStateToProps = ({ set }) => set;
 const mapDispatchToProps = {
   addMemberToSet: operations.addMemberToSet,
-  updateSetMember: operations.updateSetMember,
   deleteMemberFromSet: operations.deleteMemberFromSet,
   filterSetMembers: operations.filterSetMembers
 };

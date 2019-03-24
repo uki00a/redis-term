@@ -60,11 +60,9 @@ class ZsetContentContainer extends Component {
       return;
     }
 
-    const oldValue = this.props.members[this.state.editingMemberIndex];
-    const newValue = this.refs.valueEditor.value();
+    const member = this.props.members[this.state.editingMemberIndex];
     const newScore = this.refs.scoreEditor.value();
-    this.props.updateZsetMember(oldValue, newValue, newScore)
-      .then(() => this._unselectMember())
+    this.props.updateZsetMember(member, newScore)
       .then(() => this._focusToMemberList());
   };
 
@@ -139,7 +137,6 @@ class ZsetContentContainer extends Component {
         />
       </KeyboardBindings>
     );
-    const editorBindings = [{ key: 'C-s', handler: this._saveEditingMember, description: 'Save' }];
 
     return (
       <box style={this.props.theme.box}>
@@ -158,7 +155,9 @@ class ZsetContentContainer extends Component {
         <ScrollableBox
           style={this.props.theme.box}
           position={{ left: '50%', top: 1, height: '90%' }}>
-          <KeyboardBindings bindings={editorBindings}>
+          <KeyboardBindings bindings={[
+            { key: 'C-s', handler: this._saveEditingMember, description: 'Save' }
+          ]}>
             <Editor
               ref='scoreEditor'
               label='score'
@@ -167,15 +166,13 @@ class ZsetContentContainer extends Component {
               disabled={!hasEditingMember}
             />
           </KeyboardBindings>
-          <KeyboardBindings bindings={editorBindings}>
-            <Editor
-              ref='valueEditor'
-              label='value'
-              position={{ top: 5, height: 20, width: '95%' }}
-              defaultValue={editingMember}
-              disabled={!hasEditingMember}
-            />
-          </KeyboardBindings>
+          <Editor
+            ref='valueEditor'
+            label='value'
+            position={{ top: 5, height: 20, width: '95%' }}
+            defaultValue={editingMember}
+            disabled={true}
+          />
           <Loader
             text='saving...'
             hidden={!this.props.isSaving}

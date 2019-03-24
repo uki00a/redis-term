@@ -8,9 +8,6 @@ const FILTER_SET_MEMBERS_FAILURE = 'redis-term/set/FILTER_SET_MEMBERS_FAILURE';
 const ADD_MEMBER_TO_SET_REQUEST = 'redis-term/set/ADD_MEMBER_TO_SET_REQUEST';
 const ADD_MEMBER_TO_SET_SUCCESS = 'redis-term/set/ADD_MEMBER_TO_SET_SUCCESS';
 const ADD_MEMBER_TO_SET_FAILURE = 'redis-term/set/ADD_MEMBER_TO_SET_FAILURE';
-const UPDATE_SET_MEMBER_REQUEST = 'redis-term/set/UPDATE_SET_MEMBER_REQUEST';
-const UPDATE_SET_MEMBER_SUCCESS = 'redis-term/set/UPDATE_SET_MEMBER_SUCCESS';
-const UPDATE_SET_MEMBER_FAILURE = 'redis-term/set/UPDATE_SET_MEMBER_FAILURE';
 const DELETE_MEMBER_FROM_SET_REQUEST = 'redis-term/set/DELETE_MEMBER_FROM_SET_REQUEST';
 const DELETE_MEMBER_FROM_SET_SUCCESS = 'redis-term/set/DELETE_MEMBER_FROM_SET_SUCCESS';
 const DELETE_MEMBER_FROM_SET_FAILURE = 'redis-term/set/DELETE_MEMBER_FROM_SET_FAILURE';
@@ -44,29 +41,10 @@ const addMemberToSet = newMember => async (dispatch, getState, { redis }) => {
   const selectedKey = getSelectedKey(getState);
   dispatch(addMemberToSetRequest());
   try {
-    await redis.addMemberToSet(selectedKey, newMember);
+    await redis.addMemberToSetIfNotExists(selectedKey, newMember);
     dispatch(addMemberToSetSuccess(newMember));
   } catch (error) {
     dispatch(addMemberToSetFailure(error));
-  }
-};
-
-/**
- * @param {string} oldValue 
- * @param {string} newValue 
- * @returns {import('../store').Thunk}
- */
-const updateSetMember = (oldValue, newValue) => async (dispatch, getState, { redis }) => {
-  if (isSaving(getState())) {
-    return;
-  }
-  const selectedKey = getSelectedKey(getState);
-  dispatch(updateSetMemberRequest());
-  try {
-    await redis.updateSetMemberIfNotExists(selectedKey, oldValue, newValue);
-    dispatch(updateSetMemberSuccess(oldValue, newValue));
-  } catch (error) {
-    dispatch(updateSetMemberFailure(error));
   }
 };
 
@@ -105,13 +83,6 @@ const addMemberToSetSuccess = newMember => ({
 });
 const addMemberToSetFailure = error => ({ type: ADD_MEMBER_TO_SET_FAILURE, error });
 
-const updateSetMemberRequest = () => ({ type: UPDATE_SET_MEMBER_REQUEST });
-const updateSetMemberSuccess = (oldValue, newValue) => ({
-  type: UPDATE_SET_MEMBER_SUCCESS,
-  payload: { oldValue, newValue }
-});
-const updateSetMemberFailure = error => ({ type: UPDATE_SET_MEMBER_FAILURE, error });
-
 const deleteMemberFromSetRequest = () => ({ type: DELETE_MEMBER_FROM_SET_REQUEST });
 const deleteMemberFromSetSuccess = member => ({
   type: DELETE_MEMBER_FROM_SET_SUCCESS,
@@ -135,7 +106,6 @@ const initialState = {
 
 export const operations = {
   addMemberToSet,
-  updateSetMember,
   deleteMemberFromSet,
   filterSetMembers
 };
@@ -144,7 +114,6 @@ export const actions = {
   filterSetMembersRequest,
   filterSetMembersSuccess,
   addMemberToSetSuccess,
-  updateSetMemberSuccess,
   deleteMemberFromSetSuccess
 };
 
@@ -173,50 +142,13 @@ export default function reducer(state = initialState, action) {
   case ADD_MEMBER_TO_SET_REQUEST:
     return { ...state, isSaving: true };
   case ADD_MEMBER_TO_SET_SUCCESS:
+    assert(state.members.indexOf(action.payload.newMember) === -1, 'duplicate value should not be added');
     return {
       ...state,
       isSaving: false,
-      members: state.members.indexOf(action.payload.newMember) === -1
-        ? state.members.concat(action.payload.newMember)
-        : state.members
+      members: state.members.concat(action.payload.newMember)
     };
   case ADD_MEMBER_TO_SET_FAILURE:
-    return { ...state, isSaving: false };
-  case UPDATE_SET_MEMBER_REQUEST:
-    return { ...state, isSaving: true };
-  case UPDATE_SET_MEMBER_SUCCESS:
-    {
-      // TODO refactor
-      const { oldValue, newValue } = action.payload;
-      const canReplaceByIndex = state.members.indexOf(newValue) === -1;
-      if (canReplaceByIndex) {
-        const indexToReplace = state.members.indexOf(oldValue);
-        return {
-          ...state,
-          isSaving: false,
-          members: state.members.map((x, index) => index === indexToReplace ? newValue : x)
-        };
-      } else {
-        // remove and update
-        // remove member
-        const newMembers = state.members.slice(0);
-        const indexToRemove = state.members.indexOf(oldValue);
-        assert(indexToRemove > -1);
-        newMembers.splice(indexToRemove, 1);
-
-        // update member
-        const newValueIndex = newMembers.indexOf(newValue);
-        const canUpdateByIndex = newValueIndex > -1;
-        const indexToUpdate = canUpdateByIndex ? newValueIndex : indexToRemove;
-        if (canUpdateByIndex) {
-          newMembers[indexToUpdate] = newValue;
-        } else {
-          newMembers.splice(indexToUpdate, 0, newValue);
-        }
-        return { ...state, isSaving: false, members: newMembers };
-      }
-    }
-  case UPDATE_SET_MEMBER_FAILURE:
     return { ...state, isSaving: false };
   case DELETE_MEMBER_FROM_SET_REQUEST:
     return { ...state, isSaving: true };

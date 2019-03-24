@@ -12,10 +12,10 @@ import connections from './connections';
 import error from './error';
 import errorHandler from './middleware/error-handler';
 
-import { createFacade as createRedisFacade } from '../redis/facade';
+import RedisFacade from '../redis/facade';
 
 /**
- * @typedef {{ redis: import('../redis/facade').Facade }} ThunkDependencies
+ * @typedef {{ redis: import('../redis/facade').default }} ThunkDependencies
  * 
  * @typedef {object} State
  * @prop {import('./set').SetState} set 
@@ -45,7 +45,7 @@ const rootReducer = combineReducers({
 
 const createStoreWithMiddleware = applyMiddleware(
   thunk.withExtraArgument({
-    redis: createRedisFacade()
+    redis: new RedisFacade()
   }),
   errorHandler()
 )(createStore);

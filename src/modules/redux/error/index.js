@@ -1,13 +1,13 @@
 // @ts-check
 import has from 'lodash/has';
+import get from 'lodash/get';
+import { ApplicationError } from '../../errors';
 
 const SHOW_ERROR = 'redis-term/error/SHOW_ERROR';
 const CLEAR_ERROR = 'redis-term/error/CLEAR_ERROR';
 
 const showError = error => {
-  const text = has(error, 'stack')
-    ? error.stack
-    : error.toString();
+  const text = formatError(error);
 
   return {
     type: SHOW_ERROR,
@@ -15,6 +15,16 @@ const showError = error => {
   };
 };
 const clearError = () => ({ type: CLEAR_ERROR });
+
+const formatError = error => {
+  if (ApplicationError.isPrototypeOf(get(error, 'constructor'))) {
+    return error.message;
+  } else if (has(error, 'stack')) {
+    return error.stack;
+  } else {
+    return error.toString();
+  }
+};
 
 /**
  * @typedef {object} ErrorState

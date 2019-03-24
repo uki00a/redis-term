@@ -34,20 +34,19 @@ const filterZsetMembers = (pattern = '') => async (dispatch, getState, { redis }
 };
 
 /**
- * @param {string} oldValue
- * @param {string} newValue
+ * @param {string} member
  * @param {number} newScore
  * @returns {import('../store').Thunk}
  */
-const updateZsetMember = (oldValue, newValue, newScore) => async (dispatch, getState, { redis }) => {
+const updateZsetMember = (member, newScore) => async (dispatch, getState, { redis }) => {
   if (isSaving(getState())) {
     return;
   }
   const selectedKey = getSelectedKey(getState);
   dispatch(updateZsetMemberRequest());
   try {
-    await redis.updateZsetMember(selectedKey, oldValue, newValue, newScore);
-    dispatch(updateZsetMemberSuccess(oldValue, newValue, newScore));
+    await redis.updateZsetMember(selectedKey, member, newScore);
+    dispatch(updateZsetMemberSuccess(member, newScore));
   } catch (error) {
     dispatch(updateZsetMemberFailure(error));
   }
@@ -65,7 +64,7 @@ const addMemberToZset = (newMember, score) => async (dispatch, getState, { redis
   const selectedKey = getSelectedKey(getState);
   dispatch(addMemberToZsetRequest());
   try {
-    await redis.addMemberToZset(selectedKey, newMember, score);
+    await redis.addMemberToZsetIfNotExists(selectedKey, newMember, score);
     dispatch(addMemberToZsetSuccess(newMember, score));
   } catch (error) {
     dispatch(addMemberToZsetFailure(error));
@@ -108,13 +107,12 @@ const filterZsetMembersFailure = error => ({ type: FILTER_ZSET_MEMBERS_FAILURE, 
 
 const updateZsetMemberRequest = () => ({ type: UPDATE_ZSET_MEMBER_REQUEST });
 /**
- * @param {string} oldValue 
- * @param {string} newValue 
+ * @param {string} member
  * @param {number} newScore 
  */
-const updateZsetMemberSuccess = (oldValue, newValue, newScore) => ({
+const updateZsetMemberSuccess = (member, newScore) => ({
   type: UPDATE_ZSET_MEMBER_SUCCESS,
-  payload: { oldValue, newValue, newScore }
+  payload: { member, newScore }
 });
 const updateZsetMemberFailure = error => ({ type: UPDATE_ZSET_MEMBER_FAILURE, error });
 
@@ -193,45 +191,14 @@ export default function reducer(state = initialState, action) {
     return { ...state, isSaving: true };
   case UPDATE_ZSET_MEMBER_SUCCESS:
     {
-      // TODO refactor
-      const { oldValue, newValue, newScore } = action.payload;
-      const canReplaceByIndex = state.members.indexOf(newValue) === -1;
-      if (canReplaceByIndex) {
-        const indexToReplace = state.members.indexOf(oldValue);
-        return {
-          ...state,
-          isSaving: false,
-          scores: state.scores.map((x, index) => index === indexToReplace ? newScore : x),
-          members: state.members.map((x, index) => index === indexToReplace ? newValue : x)
-        };
-      } else {
-        // remove and update
-        // remove member
-        const newMembers = state.members.slice(0);
-        const newScores = state.scores.slice(0);
-        const indexToRemove = state.members.indexOf(oldValue);
-        assert(indexToRemove > -1);
-        newMembers.splice(indexToRemove, 1);
-        newScores.splice(indexToRemove, 1);
-
-        // update member
-        const newValueIndex = newMembers.indexOf(newValue);
-        const canUpateByIndex = newValueIndex > -1;
-        const indexToUpdate = canUpateByIndex ?  newValueIndex : indexToRemove;
-        if (canUpateByIndex) {
-          newMembers[indexToUpdate] = newValue;
-          newScores[indexToUpdate] = newScore;
-        } else {
-          newMembers.splice(indexToUpdate, 0, newValue);
-          newScores.splice(indexToUpdate, 0, newScore);
-        }
-        return {
-          ...state,
-          isSaving: false,
-          scores: newScores,
-          members: newMembers
-        };
-      }
+      const { member, newScore } = action.payload;
+      const indexToUpdate = state.members.indexOf(member);
+      assert(indexToUpdate > -1);
+      return {
+        ...state,
+        isSaving: false,
+        scores: state.scores.map((x, index) => index === indexToUpdate ? newScore : x)
+      };
     }
   case UPDATE_ZSET_MEMBER_FAILURE:
     return { ...state, isSaving: false };

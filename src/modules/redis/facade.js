@@ -1,18 +1,11 @@
 // @ts-check
 import { plistToHash, partitionByParity } from '../utils';
 import connectToRedis from './connect-to-redis';
-
-/**
- * @typedef {'string'|'list'|'hash'|'set'|'zset'} RedisType
- */
+import { DuplicateMemberError } from '../errors';
 
 const DEFAULT_SCORE = 0;
 
-/**
- * @typedef {RedisFacade} Facade
- */
-
-class RedisFacade {
+export default class RedisFacade {
   constructor() {
     this._redis = null;
   }
@@ -175,20 +168,21 @@ class RedisFacade {
    * @param {string} keyName 
    * @param {string} newMember 
    */
-  async addMemberToSet(keyName, newMember) {
-    const redis = this._getRedis();
-    await redis.sadd(keyName, newMember);
+  async addMemberToSetIfNotExists(keyName, newMember) {
+    if (await this.isMemberOfSet(keyName, newMember)) {
+      throw new DuplicateMemberError('set');
+    } else {
+      await this.addMemberToSet(keyName, newMember);
+    }
   }
 
   /**
    * @param {string} keyName 
-   * @param {string} oldMember 
    * @param {string} newMember 
    */
-  async updateSetMemberIfNotExists(keyName, oldMember, newMember) {
-    if (!(await this.isMemberOfSet(keyName, newMember))) {
-      await this.updateSetMember(keyName, oldMember, newMember);
-    }
+  async addMemberToSet(keyName, newMember) {
+    const redis = this._getRedis();
+    await redis.sadd(keyName, newMember);
   }
 
   /**
@@ -199,20 +193,6 @@ class RedisFacade {
   async isMemberOfSet(keyName, member) {
     const redis = this._getRedis();
     return await redis.sismember(keyName, member);
-  }
-
-  /**
-   * @param {string} keyName 
-   * @param {string} oldMember 
-   * @param {string} newMember 
-   */
-  async updateSetMember(keyName, oldMember, newMember) {
-    const redis = this._getRedis();
-    await redis
-      .multi()
-      .srem(keyName, oldMember)
-      .sadd(keyName, newMember)
-      .exec();
   }
 
   /**
@@ -273,6 +253,19 @@ class RedisFacade {
    * @param {string} newMember 
    * @param {number} score 
    */
+  async addMemberToZsetIfNotExists(keyName, newMember, score = DEFAULT_SCORE) {
+    if (await this.isMemberOfZset(keyName, newMember)) {
+      throw new DuplicateMemberError('zset');
+    } else {
+      return this.addMemberToZset(keyName, newMember, score);
+    }
+  }
+
+  /**
+   * @param {string} keyName 
+   * @param {string} newMember 
+   * @param {number} score 
+   */
   async addMemberToZset(keyName, newMember, score = DEFAULT_SCORE) {
     const redis = this._getRedis();
     await redis.zadd(keyName, score, newMember);
@@ -280,16 +273,23 @@ class RedisFacade {
 
   /**
    * @param {string} keyName 
-   * @param {string} oldMember 
-   * @param {string} newMember 
+   * @param {string} member 
    * @param {number} newScore 
    */
-  async updateZsetMember(keyName, oldMember, newMember, newScore = DEFAULT_SCORE) {
+  async updateZsetMember(keyName, member, newScore = DEFAULT_SCORE) {
     const redis = this._getRedis();
-    await redis.multi()
-      .zrem(keyName, oldMember)
-      .zadd(keyName, newScore, newMember)
-      .exec();
+    await redis.zadd(keyName, newScore, member);
+  }
+
+  /**
+   * @param {string} keyName 
+   * @param {string} member 
+   * @returns {Promise<boolean>}
+   */
+  async isMemberOfZset(keyName, member) {
+    const redis = this._getRedis();    
+    const score = await redis.zscore(keyName, member);
+    return score != null;
   }
 
   /**
@@ -340,7 +340,3 @@ class RedisFacade {
     return this._redis;
   }
 }
-
-export const createFacade = () => {
-  return new RedisFacade();
-};

@@ -1,0 +1,15 @@
+export class ApplicationError extends Error {
+  constructor(message) {
+    super(message);
+  }
+}
+
+export class DuplicateMemberError extends ApplicationError {
+  /**
+   * 
+   * @param {'set'|'zset'} type 
+   */
+  constructor(type) {
+    super(`The value already exists in ${type}`);
+  }
+}

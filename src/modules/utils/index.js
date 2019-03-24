@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @template T
+ * @param {Array<T>} array 
+ * @returns {Array<Array<T>, Array<T>>}
+ */
 export const partitionByParity = array => [
   array.filter((_, index) => isEven(index)),
   array.filter((_, index) => isOdd(index))

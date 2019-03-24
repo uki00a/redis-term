@@ -14,48 +14,18 @@ describe('zset duck', () => {
 
   it('can handle UPDATE_ZSET_MEMBER_SUCCESS', () => {
     {
-      const previousState = { members: ['hoge', 'piyo'], scores: [1, 2] };
-      const action = actions.updateZsetMemberSuccess('piyo', 'FUGA', 40);
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['hoge', 'FUGA']);
-      assert.deepEqual(result.scores, [1, 40]);
-      assert.equal(result.isSaving, false);
-    }
-
-    {
       const previousState = { members: ['a', 'b'], scores: [10, 20] };
-      const action = actions.updateZsetMemberSuccess('b', 'b', 30);
+      const action = actions.updateZsetMemberSuccess('b', 30);
       const result = reducer(previousState, action);
 
-      assert.deepEqual(result.members, ['a', 'b'], 'updating only a score should correctly be handled');
-      assert.deepEqual(result.scores, [10, 30], 'updating only a score should correctly be handled');
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['a', 'b'], scores: [10, 20] };
-      const action = actions.updateZsetMemberSuccess('b', 'a', 10);
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['a'], 'duplicate members should not be added');
-      assert.deepEqual(result.scores, [10], 'duplicate members should not be added');
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['a', 'b', 'c'], scores: [1, 2, 3] };
-      const action = actions.updateZsetMemberSuccess('b', 'b', 2);
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['a', 'b', 'c']);
-      assert.deepEqual(result.scores, [1, 2, 3]);
+      assert.deepEqual(result.members, ['a', 'b']);
+      assert.deepEqual(result.scores, [10, 30]);
       assert.equal(result.isSaving, false);
     }
 
     {
       const previousState = { members: ['a'], scores: [1] };
-      const action = actions.updateZsetMemberSuccess('a', 'a', 2);
+      const action = actions.updateZsetMemberSuccess('a', 2);
       const result = reducer(previousState, action);
 
       assert.deepEqual(result.members, ['a']);

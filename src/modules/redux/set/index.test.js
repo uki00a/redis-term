@@ -12,61 +12,12 @@ describe('set duck', () => {
   });
 
   it('can handle ADD_MEMBER_TO_SET_SUCCESS', () => {
-    {
-      const previousState = { members: ['hoge', 'fuga'] };
-      const action = actions.addMemberToSetSuccess('piyo');
-      const result = reducer(previousState, action);
+    const previousState = { members: ['hoge', 'fuga'] };
+    const action = actions.addMemberToSetSuccess('piyo');
+    const result = reducer(previousState, action);
 
-      assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['hoge', 'fuga'] };
-      const action = actions.addMemberToSetSuccess('fuga');
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['hoge', 'fuga'], 'duplicate members should not be added');
-      assert.equal(result.isSaving, false);
-    }
-  });
-
-  it('can handle UPDATE_SET_MEMBER_SUCCESS', () => {
-    {
-      const previousState = { members: ['hoge', 'piyo' ] };
-      const action = actions.updateSetMemberSuccess('piyo', 'fuga');
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['hoge', 'fuga']);
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['hoge', 'piyo'] };
-      const action = actions.updateSetMemberSuccess('piyo', 'hoge');
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['hoge'], 'duplicate members should not be added');
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['hoge', 'fuga', 'piyo'] };
-      const action = actions.updateSetMemberSuccess('fuga', 'fuga');
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
-      assert.equal(result.isSaving, false);
-    }
-
-    {
-      const previousState = { members: ['fuga'] };
-      const action = actions.updateSetMemberSuccess('fuga', 'fuga');
-      const result = reducer(previousState, action);
-
-      assert.deepEqual(result.members, ['fuga']);
-      assert.equal(result.isSaving, false);
-    }
+    assert.deepEqual(result.members, ['hoge', 'fuga', 'piyo']);
+    assert.equal(result.isSaving, false);
   });
 
   it('can handle DELETE_MEMBER_FROM_SET_SUCCESS', () => {
