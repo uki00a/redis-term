@@ -16,7 +16,7 @@ describe('list duck', () => {
     const action = actions.addElementToListSuccess('piyo');
     const result = reducer(previousState, action);
 
-    assert.deepEqual(result.elements, ['hoge', 'fuga', 'piyo']);
+    assert.deepEqual(result.elements, ['piyo', 'hoge', 'fuga']);
     assert(!result.isSaving);
   });
 

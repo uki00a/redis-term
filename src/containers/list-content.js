@@ -61,6 +61,7 @@ class ListContentContainer extends Component {
     }
     const index = this.state.editingElementIndex;
     const value = this.refs.editor.value();
+    this.refs.box.screen.debug(`${index}: '${this.props.elements[index]}' -> '${value}'`)
     this.props.updateListElement(index, value)
       .then(() => this._focusToElementList());
   };
@@ -85,7 +86,7 @@ class ListContentContainer extends Component {
     }
     
     return (
-      <box style={this.props.theme.box}>
+      <box ref='box' style={this.props.theme.box}>
         <box
           style={this.props.theme.box}
           content={this.props.keyName}

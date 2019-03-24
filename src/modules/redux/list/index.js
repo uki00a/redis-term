@@ -140,7 +140,7 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       isSaving: false,
-      elements: state.elements.concat(action.payload.newElement)
+      elements: [action.payload.newElement].concat(state.elements)
     };
   case ADD_ELEMENT_TO_LIST_FAILURE:
     return { ...state, isSaving: false };
