@@ -192,8 +192,9 @@ class ConnectionForm extends Component {
           style={theme.box}>
           <box position={{ left: 1, top: 1, height: 1, right: 1 }} style={theme.box}>
             <ThemedButton
-              position={{ height: 1, width: 16 }}
-              content=' Save '
+              position={{ height: 1, width: 12 }}
+              content='{center}Save{/center}'
+              tags
               onPress={this._onSaveButtonClicked}>
             </ThemedButton>
           </box>
