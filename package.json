@@ -6,9 +6,11 @@
   "repository": "https://github.com/uki00a/redis-term",
   "author": "uki00a",
   "license": "MIT",
-  "private": null,
   "engines": {
     "node": ">= 8"
+  },
+  "bin": {
+    "redis-term": "./bin/redis-term.js"
   },
   "scripts": {
     "build": "babel src --out-dir lib --ignore './src/**/*.test.js'",
