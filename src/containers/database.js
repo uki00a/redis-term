@@ -55,7 +55,7 @@ class Database extends Component {
     const keyboardBindings = [
       { key: 'f5', handler: this._loadKeys, description: 'Reload Keys' },
       { key: 'C-r', handler: this._loadKeys, description: 'Reload Keys' },
-      { key: 'C-n', handler: this._openAddNewKeyDialog, description: 'Add New Key' },
+      { key: 'a', handler: this._openAddNewKeyDialog, description: 'Add New Key' },
       { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Selected Key' }
     ];
 
@@ -77,6 +77,7 @@ class Database extends Component {
 
   async componentDidMount() {
     this.refs.keyList.focus();
+    this._unselectKey();
     this._loadKeys();
   }
 
