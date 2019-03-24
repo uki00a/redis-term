@@ -12,7 +12,8 @@
     "redis-term": "./bin/redis-term.js"
   },
   "scripts": {
-    "build": "babel src --out-dir lib --ignore './src/**/*.test.js'",
+    "clear": "rm -rf ./lib",
+    "build": "NODE_ENV=production babel src --out-dir lib --ignore './src/**/*.test.js'",
     "watch": "babel src --verbose --watch --out-dir lib --ignore './src/**/*.test.js'",
     "clean": "rm -rf ./lib",
     "test": "mocha -r @babel/register ./src/**/*.test.js",
@@ -43,6 +44,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@babel/plugin-transform-react-jsx": "^7.1.6",
     "@babel/register": "^7.0.0",
+    "babel-plugin-transform-node-env-inline": "^0.4.3",
     "eslint": "^5.15.0",
     "eslint-plugin-react": "^7.12.4",
     "mocha": "^5.2.0",

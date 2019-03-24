@@ -2,6 +2,7 @@
   "plugins": [
     ["@babel/plugin-transform-react-jsx"],
     ["@babel/plugin-transform-modules-commonjs"],
-    ["@babel/plugin-proposal-class-properties"]
+    ["@babel/plugin-proposal-class-properties"],
+    ["transform-node-env-inline"]
   ]
 }
