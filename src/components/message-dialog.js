@@ -19,14 +19,19 @@ class MessageDialog extends Component {
 
   close = () => {
     this.setState({ isOpened: false });
+    this._handleMessageDialogHidden();
   };
 
   _onHide = () => {
     this.setState({ isOpened: false });
+    this._handleMessageDialogHidden();
+  };
+
+  _handleMessageDialogHidden() {
     if (this.props.onHide) {
       this.props.onHide();
     }
-  };
+  }
 
   render() {
     const { text, position = {}, theme, onHide, ...restProps } = this.props;
