@@ -181,7 +181,7 @@ class ZsetContentContainer extends Component {
             ref='valueEditor'
             label='value'
             position={{ top: 5, height: 20, width: '95%' }}
-            defaultValue={editingMember}
+            defaultValue={editingMember + ' '} // FIXME Workaround for last character disappeared
             disabled={true}
             keyable={false}
           />
