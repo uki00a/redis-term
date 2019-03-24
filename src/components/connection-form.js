@@ -14,7 +14,7 @@ class ConnectionForm extends Component {
   };
 
   componentDidMount() {
-    this.refs.form.focusNext();
+    this.refs.form.focus();
   }
 
   _onSaveButtonClicked = () => {
