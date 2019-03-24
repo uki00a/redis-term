@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
+import Button from './button';
 import FileManager from './file-manager';
 import { withTheme } from '../contexts/theme-context';
 
@@ -81,10 +82,11 @@ class ConnectionForm extends Component {
           defaultValue={defaultValue}
           position={{ left: 14, height: 1, width: 16 }}>
         </Textbox>
-        <ThemedButton
+        <Button
+          style={this.props.theme.searchButton}
           position={{ left: 30, height: 1, width: 4 }}
           onPress={() => this._openFileManager(name)}>
-        </ThemedButton>
+        </Button>
       </box>
     );
   }
@@ -112,10 +114,11 @@ class ConnectionForm extends Component {
         {
           withFileManager
             ? (
-              <ThemedButton
+              <Button
+                style={this.props.theme.searchButton}
                 position={{ left: 30, height: 1, width: buttonWidth }}
                 onPress={() => this._openFileManager(name)}>
-              </ThemedButton>
+              </Button>
             )
             : null
         }

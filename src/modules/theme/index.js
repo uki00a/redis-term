@@ -48,6 +48,8 @@ const silver = '#c0c0c0';
  * @prop {{ bg: string, fg: string }} focus
  * @prop {{ bg: string, fg: string }} hover
  * 
+ * @typedef {Partial<ButtonTheme>} SearchButtonTheme
+ * 
  * @typedef {object} DialogTheme
  * @prop {string} fg
  * @prop {string} bg
@@ -71,6 +73,7 @@ const silver = '#c0c0c0';
  * @prop {EditorTheme} editor
  * @prop {ListTheme} list
  * @prop {ButtonTheme} button
+ * @prop {SearchButtonTheme} [searchButton]
  * @prop {DialogTheme} dialog
  * @prop {HeaderTheme} header
  * @prop {MainTheme} main
@@ -122,6 +125,13 @@ const themes = {
       },
       hover: {
         bg: green,
+        fg: black
+      }
+    },
+    searchButton: {
+      bg: cyan,
+      focus: {
+        bg: blue,
         fg: black
       }
     },
@@ -201,5 +211,6 @@ export const initializeTheme = themeName => {
   theme.loader = theme.box;
   theme.editor = theme.editor || theme.box;
   theme.patternInput = theme.box;
+  theme.searchButton = theme.searchButton || theme.button;
   return theme;
 };
