@@ -6,7 +6,7 @@ import TextboxLike from './textbox-like';
 const Editor = forwardRef((props, ref) => (
   <TextboxLike
     ref={ref}
-    style={props.theme.editor}
+    style={Object.assign({}, props.theme.editor, props.disabled ? props.theme.editor.disabled : null)}
     border='line'
     input
     { ...props }>

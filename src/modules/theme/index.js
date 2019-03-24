@@ -9,12 +9,17 @@ const cyan = '#00ffff';
 const black = '#000000';
 const yellow = '#ffff00';
 const lightGray = '#e7e7e7';
+const silver = '#c0c0c0';
 
 /**
+ * @typedef {object} BorderTheme
+ * @prop {string} [fg]
+ * @prop {string} [bg]
+ * 
  * @typedef {object} BoxTheme
  * @prop {string} bg
  * @prop {string} fg
- * @prop {{ fg: string, bg: string }} border
+ * @prop {BorderTheme} [border]
  * @prop {{ bg: string }} scrollbar
  * @prop {{ fg: string, bg: string }} label
  * @prop {{ border: { fg: string } }} focus
@@ -22,6 +27,12 @@ const lightGray = '#e7e7e7';
  * @typedef {object} TextboxTheme
  * @prop {string} [fg]
  * @prop {string} [bg]
+ * 
+ * @typedef {object} EditorTheme
+ * @prop {string} [fg]
+ * @prop {string} [bg]
+ * @prop {{ border: BorderTheme }} [focus]
+ * @prop {EditorTheme} [disabled]
  * 
  * @typedef {object} ListTheme
  * @prop {string} bg
@@ -34,7 +45,7 @@ const lightGray = '#e7e7e7';
  * @typedef {object} ButtonTheme
  * @prop {string} fg
  * @prop {string} bg
- * @prop {{ bg: string, fg: string}} focus
+ * @prop {{ bg: string, fg: string }} focus
  * @prop {{ bg: string, fg: string }} hover
  * 
  * @typedef {object} DialogTheme
@@ -57,12 +68,14 @@ const lightGray = '#e7e7e7';
  * @typedef {object} Theme
  * @prop {BoxTheme} box
  * @prop {TextboxTheme} textbox
+ * @prop {EditorTheme} editor
  * @prop {ListTheme} list
  * @prop {ButtonTheme} button
  * @prop {DialogTheme} dialog
  * @prop {HeaderTheme} header
  * @prop {MainTheme} main
  * @prop {ActiveKeyboardBindingsTheme} activeKeyboardBindings
+ * 
  */
 
 /**
@@ -83,6 +96,12 @@ const themes = {
     textbox: {
       bg: white,
       fg: black
+    },
+    editor: {
+      fg: white,
+      bg: black,
+      focus: { border: { fg: red } },
+      disabled: { fg: white, bg: silver }
     },
     list: {
       bg: black,
@@ -131,6 +150,12 @@ const themes = {
       }
     },
     textbox: {},
+    editor: {
+      bg: blue,
+      fg: yellow,
+      focus: { border: { fg: cyan } },
+      disabled: { fg: white, bg: silver }
+    },
     list: {
       bg: blue,
       fg: yellow,
@@ -174,7 +199,7 @@ const themes = {
 export const initializeTheme = themeName => {
   const theme = clone(themes[themeName || 'dark']);
   theme.loader = theme.box;
-  theme.editor = theme.box;
-  theme.patternInput = theme.editor;
+  theme.editor = theme.editor || theme.box;
+  theme.patternInput = theme.box;
   return theme;
 };

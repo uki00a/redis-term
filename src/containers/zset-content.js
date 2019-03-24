@@ -172,6 +172,7 @@ class ZsetContentContainer extends Component {
             position={{ top: 5, height: 20, width: '95%' }}
             defaultValue={editingMember}
             disabled={true}
+            keyable={false}
           />
           <Loader
             text='saving...'
