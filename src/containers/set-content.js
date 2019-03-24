@@ -145,7 +145,7 @@ class SetContentContainer extends Component {
             <Editor
               ref='editor'
               position={{ height: 25, width: '95%' }}
-              defaultValue={this._editingValue()}
+              defaultValue={this._editingValue() + ' '} // FIXME Workaround for lastcharcter disappeared
               disabled={true}
             />
           <Loader
