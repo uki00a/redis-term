@@ -39,6 +39,12 @@ class StringContentContainer extends Component {
     this.props.loadString();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.keyName !== prevProps.keyName) {
+      this.props.loadString();
+    }
+  }
+
   render() {
     if (this.props.isLoading) {
       return <Loader />;

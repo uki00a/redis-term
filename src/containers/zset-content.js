@@ -40,8 +40,11 @@ class ZsetContentContainer extends Component {
 
   _loadZset = () => {
     this._unselectMember();
-    this.props.filterZsetMembers(this.props.pattern)
-      .then(() => this._focusToMemberList());
+    return this.props.filterZsetMembers(this.props.pattern);
+  };
+
+  _reloadZset = () => {
+    this._loadZset().then(() => this._focusToMemberList());
   };
 
   _filterZsetMembers = pattern => {
@@ -112,7 +115,13 @@ class ZsetContentContainer extends Component {
     this.refs.memberList.focus();
   };
 
-  async componentDidMount() {
+  componentDidUpdate(prevProps) {
+    if (this.props.keyName !== prevProps.keyName) {
+      this._loadZset();
+    }
+  }
+
+  componentDidMount() {
     this._loadZset();
   }
 
@@ -126,7 +135,7 @@ class ZsetContentContainer extends Component {
     const editingScore = this._editingScore();
     const memberList = (
       <KeyboardBindings bindings={[
-        { key: 'C-r', handler: this._loadZset, description: 'Reload' },
+        { key: 'C-r', handler: this._reloadZset, description: 'Reload' },
         { key: 'a', handler: this._openAddZsetMemberDialog, description: 'Add Member' },
         { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Member' }
       ]}>

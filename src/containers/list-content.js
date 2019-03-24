@@ -69,7 +69,13 @@ class ListContentContainer extends Component {
     this.refs.elementList.focus();
   }
 
-  async componentDidMount() {
+  componentDidUpdate(prevProps) {
+    if (this.props.keyName !== prevProps.keyName) {
+      this.props.loadListElements();
+    }
+  }
+
+  componentDidMount() {
     this.props.loadListElements();
   }
 

@@ -97,7 +97,13 @@ class SetContentContainer extends Component {
     this.refs.memberList.focus();
   };
 
-  async componentDidMount() {
+  componentDidUpdate(prevProps) {
+    if (this.props.keyName !== prevProps.keyName) {
+      this.props.filterSetMembers();
+    }
+  }
+
+  componentDidMount() {
     this.props.filterSetMembers();
   }
 

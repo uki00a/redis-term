@@ -116,6 +116,12 @@ class HashContentContainer extends Component {
     this.refs.fieldList.focus();
   };
 
+  componentDidUpdate(prevProps) {
+    if (this.props.keyName !== prevProps.keyName) {
+      this.prps.filterHashFields();
+    }
+  }
+
   componentDidMount() {
     this.props.filterHashFields();
   }
