@@ -15,7 +15,7 @@ class ConnectionForm extends Component {
   };
 
   componentDidMount() {
-    this.refs.form.focus();
+    this.refs.name.focus();
   }
 
   _onSaveButtonClicked = () => {
@@ -57,6 +57,7 @@ class ConnectionForm extends Component {
         <Textbox
           style={this.props.theme.textbox}
           censor={secure}
+          ref={name}
           name={name}
           value={initialValue}
           position={{ left: 13, height: 1, width: 16 }}>
@@ -133,7 +134,6 @@ class ConnectionForm extends Component {
 
     return (
       <form
-        keys
         ref='form'
         border='line'
         shadow

@@ -13,16 +13,29 @@ class TextboxLike extends Component {
     if (this.props.disabled) {
       return;
     }
-    setImmediate(() => {
-      if (this.refs.textbox) { // TypeError: Cannot read property 'readInput' of undefined
-        this.refs.textbox.readInput();
-      }
 
-      if (this.props.onFocus) {
-        this.props.onFocus();
-      }
-    });
+    this.refs.textbox.readInput();
+    
+
+    if (this.props.onFocus) {
+      this.props.onFocus();
+    }
   };
+
+  _onBlur = () => {
+    if (this.props.onBlur) {
+      this.props.onBlur();
+    }
+  };
+
+  _onKeypress = (ch, key) => {
+    if (key.full === 'tab') {
+      this.refs.textbox.screen.focusNext();
+      this.refs.textbox.cancel();
+    } else {
+      return false;
+    }
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.defaultValue !== this.props.defaultValue) {
@@ -40,12 +53,6 @@ class TextboxLike extends Component {
       // `<textarea ... value={this.state.value} />`
       this.setValue(this.props.defaultValue);
     }
-
-    this.refs.textbox.on('keypress', (ch, key) => {
-      if (key.full === 'tab') {
-        this.refs.textbox.screen.focusNext();
-      }
-    });
   }
 
   componentWillUnmount() {
@@ -67,15 +74,17 @@ class TextboxLike extends Component {
   }
 
   render() {
-    const { onFocus, children, disabled, style, ...restProps } = this.props;
+    const { onFocus, onBlur, onKeypress, children, disabled, style, ...restProps } = this.props;
 
     const props = ({
       style: Object.assign({ transparent: Boolean(disabled) }, style),
       keyable: true,
-      clickable: false, // FIXME when set this to true, `TypeError: done is not a function` occurred
+      clickable: false,
       keys: !disabled,
       mouse: true,
       onFocus: this._onFocus,
+      onBlur: this._onBlur,
+      onKeypress: this._onKeypress,
       ref: 'textbox',
       ...restProps
     });
