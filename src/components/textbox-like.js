@@ -5,7 +5,8 @@ class TextboxLike extends Component {
   static propTypes = { 
     defaultValue: PropTypes.string,
     children: PropTypes.func.isRequired,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    onKeypress: PropTypes.func
   };
   // FIXME: Workaround for TypeError when inputOnFocus is set.
   // `TypeError: done is not a function`
@@ -32,6 +33,8 @@ class TextboxLike extends Component {
     if (key.full === 'tab') {
       this.refs.textbox.screen.focusNext();
       this.refs.textbox.cancel();
+    } else if (this.props.onKeypress) {
+      return this.props.onKeypress(ch, key); 
     } else {
       return false;
     }
