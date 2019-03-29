@@ -18,10 +18,6 @@ const setupScreen = () => {
     process.exit(0);
   });
 
-  screen.key(['tab'], (ch, key) => {
-    screen.focusNext();
-  });
-
   return screen;
 };
 

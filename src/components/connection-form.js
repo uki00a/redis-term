@@ -5,6 +5,7 @@ import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import Button from './button';
 import FileManager from './file-manager';
+import Form from './form';
 import { withTheme } from '../contexts/theme-context';
 
 class ConnectionForm extends Component {
@@ -133,7 +134,7 @@ class ConnectionForm extends Component {
     const boxStyle = Object.assign({}, theme.box, theme.box.focus);
 
     return (
-      <form
+      <Form
         ref='form'
         border='line'
         shadow
@@ -206,7 +207,7 @@ class ConnectionForm extends Component {
             </ThemedButton>
           </box>
         </box>
-      </form>
+      </Form>
     );
   }
 }

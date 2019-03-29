@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
+import Form from './form';
 
 class Dialog extends Component {
   static propTypes = {
@@ -11,12 +12,17 @@ class Dialog extends Component {
   };
 
   focus() {
-    setImmediate(() => this.refs.dialog.focusNext());
+    //setImmediate(() => this.refs.dialog.focusNext());
+    this.refs.dialog.focusNext();
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.isOpened) {
+      this.refs.dialog.setFront();
+      this.refs.dialog.setIndex(2000);
       this.focus();
+    } else {
+      this.refs.dialog.setBack();
     }
   }
 
@@ -36,22 +42,19 @@ class Dialog extends Component {
     } = this.props;
 
     return (
-      <form
+      <Form
         onKeypress={this._handleKeypress}
         ref='dialog'
         hidden={!isOpened}
         style={theme.dialog}
         content={title}
         border='line'
-        draggable
-        keys
-        keyable
         tags
         {...restProps}>
         {
           children
         }
-      </form>
+      </Form>
     );
   }
 

@@ -14,7 +14,7 @@ class MessageDialog extends Component {
   state = { isOpened: false };
 
   open() {
-    this.setState({ isOpened: true }, () => setImmediate(() => this.refs.okButton.focus()));
+    this.setState({ isOpened: true }, () => this.refs.okButton.focus());
   }
 
   close = () => {
