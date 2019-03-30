@@ -27,9 +27,6 @@ class Database extends Component {
   _handleKeySelect = (item, keyIndex) => {
     const key = this.props.keys[keyIndex];
     this.props.selectKey(key);
-    {
-      //this.refs.keyContent.focus();
-    }
   };
 
   _addNewKeyIfNotExists = (keyName, type) => {
