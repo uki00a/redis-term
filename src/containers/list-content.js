@@ -88,7 +88,7 @@ class ListContentContainer extends Component {
       <box ref='box' style={this.props.theme.box}>
         <box
           style={this.props.theme.box}
-          content={this.props.keyName}
+          content={`LIST: ${this.props.keyName}`}
           position={{ height: 1 }}
           bold
         />

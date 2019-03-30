@@ -152,7 +152,7 @@ class ZsetContentContainer extends Component {
       <box style={this.props.theme.box}>
         <box
           style={this.props.theme.box}
-          content={this.props.keyName}
+          content={`ZSET: ${this.props.keyName}`}
           position={{ height: 1 }}
           bold
         />

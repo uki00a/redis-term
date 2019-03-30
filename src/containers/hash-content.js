@@ -155,7 +155,7 @@ class HashContentContainer extends Component {
       <form style={this.props.theme.box}>
         <box
           style={this.props.theme.box}
-          content={this.props.keyName}
+          content={`HASH: ${this.props.keyName}`}
           position={{ height: 1 }}
           bold
         />
