@@ -8,7 +8,7 @@ import FilterableList from '../components/filterable-list';
 import AddNewKeyDialog from '../components/add-new-key-dialog';
 import ConfirmationDialog from '../components/confirmation-dialog';
 import { operations, actions } from '../modules/redux/keys';
-import { enableTabFocus } from '../modules/utils/blessed';
+import { enableTabFocus } from '../modules/blessed/helpers';
 
 class Database extends Component {
   static propTypes = {

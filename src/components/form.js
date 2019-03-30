@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { enableTabFocus, focusNext } from '../modules/utils/blessed';
+import { enableTabFocus, focusNext } from '../modules/blessed/helpers';
 
 class Form extends Component {
   static propTypes = {
