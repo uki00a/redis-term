@@ -8,6 +8,11 @@
 $ npm install -g redis-term
 ```
 
+## Inspired By
+
+- [sqlectron-term](https://github.com/sqlectron/sqlectron-term)
+- [Medis](https://github.com/luin/medis)
+
 ## TODO
 
 - [ ] Improve error handling
