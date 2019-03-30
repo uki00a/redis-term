@@ -1,6 +1,6 @@
 ## redis-term
 
-![Screenshot](https://user-images.githubusercontent.com/35212662/51267182-867a6080-1a00-11e9-9570-895617adf231.png)
+![Screenshot](https://user-images.githubusercontent.com/35212662/55276211-5b7f8780-5334-11e9-9335-b41b21f64666.png)
 
 ## Install
 
