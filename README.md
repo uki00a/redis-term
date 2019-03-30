@@ -17,5 +17,6 @@ $ npm install -g redis-term
 
 - [ ] Improve error handling
 - [ ] Improve shortcuts
+- [ ] Improve editor
 - [ ] Add more tests
 - [ ] Refactor
