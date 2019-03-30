@@ -3,7 +3,7 @@ import ActiveKeyboardBindings from '../components/active-keyboard-bindings';
 
 const DEFAULT_KEYBORAD_BINDINGS = [
   { key: 'C-c', description: 'Quit' },
-  { key: 'M-left/backspace', description: 'Back' }
+  { key: 'backspace', description: 'Back' }
 ];
 
 const mapStateToProps = ({ keyboardBindings }) => ({
