@@ -12,7 +12,6 @@ class Dialog extends Component {
   };
 
   focus() {
-    //setImmediate(() => this.refs.dialog.focusNext());
     this.refs.dialog.focusNext();
   }
 
