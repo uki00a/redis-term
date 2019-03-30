@@ -18,6 +18,13 @@ const setupScreen = () => {
     process.exit(0);
   });
 
+  screen.key(['tab'], () => {
+    const shouldRewindFocus = screen.focused && !screen.focused.visible;
+    if (shouldRewindFocus) {
+      screen.rewindFocus();
+    }
+  });
+
   return screen;
 };
 
