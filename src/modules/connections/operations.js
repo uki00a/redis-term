@@ -129,13 +129,13 @@ async function resolveConnections(passwordSaver, connections) {
 
 /**
  * @param {Connection} connection 
- * @param {CredentialManager} passwordSaver 
+ * @param {CredentialManager} credentialManager 
  * @returns {Promise}
  */
-function resolveSecretFields(connection, passwordSaver) {
+function resolveSecretFields(connection, credentialManager) {
   const secretFields = extractSecretFields(connection);
   const promises = secretFields.map(async field => {
-    const credential = await passwordSaver.getCredential(connection.id, field); 
+    const credential = await credentialManager.getCredential(connection.id, field); 
     set(connection, field, credential);
   });
   return Promise.all(promises);
