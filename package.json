@@ -11,9 +11,13 @@
   "bin": {
     "redis-term": "./bin/redis-term.js"
   },
+  "files": [
+    "lib",
+    "bin"
+  ],
   "scripts": {
-    "clear": "rm -rf ./lib",
     "build": "NODE_ENV=production babel src --out-dir lib --ignore './src/**/*.test.js'",
+    "rebuild": "yarn run clean && yarn run build",
     "watch": "babel src --verbose --watch --out-dir lib --ignore './src/**/*.test.js'",
     "clean": "rm -rf ./lib",
     "test": "mocha -r @babel/register ./src/**/*.test.js",
