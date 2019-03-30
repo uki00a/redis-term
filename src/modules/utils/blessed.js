@@ -9,7 +9,7 @@ const makeFocusHandler = method => debounce(element => {
 });
 
 const isForm = element => Boolean(element.submit);
-const focusNext = makeFocusHandler('focusNext');
+export const focusNext = makeFocusHandler('focusNext');
 const focusPrevious = makeFocusHandler('focusPrevious');
 
 export const enableTabFocus = element => {

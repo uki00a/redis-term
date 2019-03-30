@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { enableTabFocus } from '../modules/utils/blessed';
+import { enableTabFocus, focusNext } from '../modules/utils/blessed';
 
 class Form extends Component {
   static propTypes = {
@@ -8,7 +8,7 @@ class Form extends Component {
   };
 
   focusNext() {
-    focusNextOf(this.refs.form);
+    focusNext(this.refs.form);
   }
 
   setFront() {
