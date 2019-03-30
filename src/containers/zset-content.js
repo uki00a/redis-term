@@ -183,7 +183,7 @@ class ZsetContentContainer extends Component {
             position={{ top: 5, height: 20, width: '95%' }}
             defaultValue={editingMember + ' '} // FIXME Workaround for last character disappeared
             disabled={true}
-            keyable={false}
+            keyable
           />
           <Loader
             text='saving...'

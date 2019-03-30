@@ -28,6 +28,7 @@ class List extends Component {
         scrollable
         alwaysScroll
         keys
+        keyable
         vi
         border='line'
         items={items}

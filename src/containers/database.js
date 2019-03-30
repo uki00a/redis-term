@@ -8,6 +8,7 @@ import FilterableList from '../components/filterable-list';
 import AddNewKeyDialog from '../components/add-new-key-dialog';
 import ConfirmationDialog from '../components/confirmation-dialog';
 import { operations, actions } from '../modules/redux/keys';
+import { enableTabFocus } from '../modules/utils/blessed';
 
 class Database extends Component {
   static propTypes = {
@@ -26,6 +27,9 @@ class Database extends Component {
   _handleKeySelect = (item, keyIndex) => {
     const key = this.props.keys[keyIndex];
     this.props.selectKey(key);
+    {
+      //this.refs.keyContent.focus();
+    }
   };
 
   _addNewKeyIfNotExists = (keyName, type) => {
@@ -94,12 +98,17 @@ class Database extends Component {
     this._focusToKeyList();
     this._unselectKey();
     this._loadKeys();
+    this._disableTabFocus = enableTabFocus(this.refs.root)
+  }
+
+  componentWillUnmount() {
+    this._disableTabFocus();
   }
 
   render() {
     const keyList = this._renderKeyList();
     return (
-      <box position={{ top: 1, left: 1, bottom: 2, right: 3 }}>
+      <box ref='root' position={{ top: 1, left: 1, bottom: 2, right: 3 }}>
         <FilterableList 
           position={{left: 0, top: 0, bottom: 0, width: 30}}
           List={keyList}

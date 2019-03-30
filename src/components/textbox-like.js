@@ -32,6 +32,7 @@ class TextboxLike extends Component {
   _onKeypress = (ch, key) => {
     if (key.full === 'tab') {
       this.refs.textbox.cancel();
+      return false;
     } else if (this.props.onKeypress) {
       return this.props.onKeypress(ch, key); 
     } else {
