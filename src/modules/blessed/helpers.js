@@ -6,7 +6,7 @@ const makeFocusHandler = method => debounce(element => {
   } else {
     element.screen[method]();
   }
-});
+}, 20);
 
 const isForm = element => Boolean(element.submit);
 export const focusNext = makeFocusHandler('focusNext');
