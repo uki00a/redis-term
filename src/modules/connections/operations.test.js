@@ -1,8 +1,8 @@
 import assert from 'assert';
 import td from 'testdouble';
-import { addConnection, updateConnection, deleteConnection, loadConnections } from './connections';
+import { addConnection, updateConnection, deleteConnection, loadConnections } from './operations';
 
-describe('/modules/connections/connections', () => {
+describe('/modules/connections/operations', () => {
   describe('addConnection(connection, connectionsStore, credentialManager)', () => {
     let connectionId;
     let connectionsStore;

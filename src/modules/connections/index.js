@@ -1,10 +1,10 @@
 // @ts-check
-import * as connections from './connections';
+import * as connections from './operations';
 import CredentialManager from './credential-manager';
 import ConnectionsStore from './connections-store';
 
 /**
- * @typedef {import('./connections').Connection} Connection
+ * @typedef {import('./operations').Connection} Connection
  */
 
 /**
