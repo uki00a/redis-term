@@ -7,7 +7,6 @@ import Prompt from '../components/prompt';
 import Editor from '../components/editor';
 import List from '../components/list';
 import ScrollableBox from '../components/scrollable-box';
-import ThemedButton from '../components/themed-button';
 import KeyboardBindings from './keyboard-bindings';
 import { withTheme } from '../contexts/theme-context';
 import { operations } from '../modules/redux/list';

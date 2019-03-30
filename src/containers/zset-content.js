@@ -9,7 +9,6 @@ import List from '../components/list';
 import ScrollableBox from '../components/scrollable-box';
 import AddZsetMemberDialog from '../components/add-zset-member-dialog';
 import FilterableList from '../components/filterable-list';
-import ThemedButton from '../components/themed-button';
 import ConfirmationDialog from '../components/confirmation-dialog';
 import { operations } from '../modules/redux/zset';
 import { withTheme } from '../contexts/theme-context';
