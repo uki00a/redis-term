@@ -17,10 +17,10 @@ export const enableTabFocus = element => {
     switch (key.full) {
     case 'tab':
       focusNext(element);
-      break;
+      return false;
     case 'S-tab':
       focusPrevious(element);
-      break;
+      return false;
     }
   };
   const removeListener = () => {
