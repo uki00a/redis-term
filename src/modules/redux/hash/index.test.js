@@ -2,9 +2,9 @@ import reducer, { actions } from './index';
 import assert from 'assert';
 
 describe('hash duck', () => {
-  it('can handle FILTER_HASH_FIELDS_SUCCESS', () => {
+  it('can handle GET_HASH_FIELDS_SUCCESS', () => {
     const previousState = { isLoading: true, value: {} }; 
-    const action = actions.filterHashFieldsSuccess({ a: 1 });
+    const action = actions.getHashFieldsSuccess({ a: 1 });
     const result = reducer(previousState, action);
 
     assert.equal(result.isLoading, false);

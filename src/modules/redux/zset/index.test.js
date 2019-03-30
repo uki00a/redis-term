@@ -2,9 +2,9 @@ import reducer, { actions } from './index';
 import assert from 'assert';
 
 describe('zset duck', () => {
-  it('can handle FILTER_ZSET_MEMBERS_SUCCESS', () => {
+  it('can handle GET_ZSET_MEMBERS_SUCCESS', () => {
     const previousState = { isLoading: true };
-    const action = actions.filterZsetMembersSuccess(['hoge', 'fuga'], [1, 2]);
+    const action = actions.getZsetMembersSuccess(['hoge', 'fuga'], [1, 2]);
     const result = reducer(previousState, action);
 
     assert.equal(result.isLoading, false);

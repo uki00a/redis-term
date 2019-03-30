@@ -2,9 +2,9 @@
 export const ADD_NEW_KEY_REQUEST = 'redis-term/keys/ADD_NEW_KEY_REQUEST';
 export const ADD_NEW_KEY_SUCCESS = 'redis-term/keys/ADD_NEW_KEY_SUCCESS';
 export const ADD_NEW_KEY_FAILURE = 'redis-term/keys/ADD_NEW_KEY_FAILURE';
-export const FILTER_KEYS_STARTED = 'redis-term/keys/FILTER_KEYS_STARTED';
-export const FILTER_KEYS_SUCCESS = 'redis-term/keys/FILTER_KEYS_SUCCESS';
-export const FILTER_KEYS_FAILURED = 'redis-term/keys/FILTER_KEYS_FAILURED';
+export const GET_KEYS_STARTED = 'redis-term/keys/GET_KEYS_STARTED';
+export const GET_KEYS_SUCCESS = 'redis-term/keys/GET_KEYS_SUCCESS';
+export const GET_KEYS_FAILURED = 'redis-term/keys/GET_KEYS_FAILURED';
 export const DELETE_KEY_REQUEST = 'redis-term/keys/DELETE_KEY_REQUEST';
 export const DELETE_KEY_SUCCESS = 'redis-term/keys/DELETE_KEY_SUCCESS';
 export const DELETE_KEY_FAILURE = 'redis-term/keys/DELETE_KEY_FAILURE';
@@ -68,14 +68,14 @@ const addNewKeyIfNotExists = (keyName, type) => async (dispatch, getState, { red
 /**
  * @returns {import('../store').Thunk}
  */
-const filterKeys = (pattern = '*') => async (dispatch, getState, { redis }) => {
+const getKeys = (pattern = '*') => async (dispatch, getState, { redis }) => {
   if (isLoading(getState())) return;
-  dispatch(filterKeysStarted(pattern));
+  dispatch(getKeysStarted(pattern));
   try {
-    const keys = await redis.filterKeysStartWith(pattern);
-    dispatch(filterKeysSuccess(keys));
+    const keys = await redis.getKeysStartWith(pattern);
+    dispatch(getKeysSuccess(keys));
   } catch (error) {
-    dispatch(filterKeysFailured(error));
+    dispatch(getKeysFailured(error));
   }
 };
 
@@ -105,17 +105,17 @@ const addNewKeySuccess = key => ({
 
 const addNewKeyFailure = error => ({ type: ADD_NEW_KEY_FAILURE, error });
 
-const filterKeysStarted = pattern => ({
-  type: FILTER_KEYS_STARTED,
+const getKeysStarted = pattern => ({
+  type: GET_KEYS_STARTED,
   payload: { pattern }
 });
 
-const filterKeysSuccess = keys => ({
-  type: FILTER_KEYS_SUCCESS,
+const getKeysSuccess = keys => ({
+  type: GET_KEYS_SUCCESS,
   payload: { keys }
 });
 
-const filterKeysFailured = error => ({ type: FILTER_KEYS_FAILURED, error });
+const getKeysFailured = error => ({ type: GET_KEYS_FAILURED, error });
 
 const deleteKeyRequest = () => ({ type: DELETE_KEY_REQUEST });
 
@@ -127,7 +127,7 @@ const deleteKeySuccess = key => ({
 const deleteKeyFailure = error => ({ type: DELETE_KEY_FAILURE, error });
 
 export const operations = {
-  filterKeys,
+  getKeys,
   addNewKeyIfNotExists,
   deleteKey,
   selectKey
@@ -136,8 +136,8 @@ export const operations = {
 export const actions = {
   unselectKey,
   addNewKeySuccess,
-  filterKeysStarted,
-  filterKeysSuccess,
+  getKeysStarted,
+  getKeysSuccess,
   deleteKeySuccess,
   selectKeySuccess
 };
@@ -196,15 +196,15 @@ export default function reducer(state = initialState, action) {
       };
     case ADD_NEW_KEY_FAILURE:
       return { ...state, isSaving: false };
-    case FILTER_KEYS_STARTED:
+    case GET_KEYS_STARTED:
       return { ...state, pattern: action.payload.pattern, isLoading: true };
-    case FILTER_KEYS_SUCCESS:
+    case GET_KEYS_SUCCESS:
       return {
         ...state,
         list: action.payload.keys,
         isLoading: false
       };
-    case FILTER_KEYS_FAILURED:
+    case GET_KEYS_FAILURED:
       return { ...state, isLoading: false };
     case DELETE_KEY_REQUEST:
       return { ...state, isSaving: true };

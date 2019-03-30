@@ -2,9 +2,9 @@
 import { getSelectedKey } from '../shared';
 import assert from 'assert';
 
-const FILTER_ZSET_MEMBERS_REQUEST = 'redis-term/zset/FILTER_ZSET_MEMBERS_REQUEST';
-const FILTER_ZSET_MEMBERS_SUCCESS = 'redis-term/zset/FILTER_ZSET_MEMBERS_SUCCESS';
-const FILTER_ZSET_MEMBERS_FAILURE = 'redis-term/zset/FILTER_ZSET_MEMBERS_FAILURE';
+const GET_ZSET_MEMBERS_REQUEST = 'redis-term/zset/GET_ZSET_MEMBERS_REQUEST';
+const GET_ZSET_MEMBERS_SUCCESS = 'redis-term/zset/GET_ZSET_MEMBERS_SUCCESS';
+const GET_ZSET_MEMBERS_FAILURE = 'redis-term/zset/GET_ZSET_MEMBERS_FAILURE';
 const UPDATE_ZSET_MEMBER_REQUEST = 'redis-term/zset/UPDATE_ZSET_MEMBER_REQUEST';
 const UPDATE_ZSET_MEMBER_SUCCESS = 'redis-term/zset/UPDATE_ZSET_MEMBER_SUCCESS';
 const UPDATE_ZSET_MEMBER_FAILURE = 'redis-term/zset/UPDATE_ZSET_MEMBER_FAILURE';
@@ -19,17 +19,17 @@ const DELETE_MEMBER_FROM_ZSET_FAILURE = 'redis-term/zset/DELETE_MEMBER_FROM_ZSET
  * @param {string} pattern 
  * @returns {import('../store').Thunk}
  */
-const filterZsetMembers = (pattern = '') => async (dispatch, getState, { redis }) => {
+const getZsetMembers = (pattern = '') => async (dispatch, getState, { redis }) => {
   if (isLoading(getState())) {
     return;
   }
   const selectedKey = getSelectedKey(getState);
-  dispatch(filterZsetMembersRequest(pattern));
+  dispatch(getZsetMembersRequest(pattern));
   try {
-    const [members, scores] = await redis.filterZsetMembersStartWithPattern(selectedKey, pattern);
-    dispatch(filterZsetMembersSuccess(members, scores));
+    const [members, scores] = await redis.getZsetMembersStartWithPattern(selectedKey, pattern);
+    dispatch(getZsetMembersSuccess(members, scores));
   } catch (error) {
-    dispatch(filterZsetMembersFailure(error));
+    dispatch(getZsetMembersFailure(error));
   }
 };
 
@@ -89,8 +89,8 @@ const deleteMemberFromZset = memberToDelete => async (dispatch, getState, { redi
   }
 };
 
-const filterZsetMembersRequest = pattern => ({
-  type: FILTER_ZSET_MEMBERS_REQUEST,
+const getZsetMembersRequest = pattern => ({
+  type: GET_ZSET_MEMBERS_REQUEST,
   payload: { pattern }
 });
 
@@ -98,12 +98,12 @@ const filterZsetMembersRequest = pattern => ({
  * @param {string[]} members
  * @param {number[]} scores
  */
-const filterZsetMembersSuccess = (members, scores) => ({
-  type: FILTER_ZSET_MEMBERS_SUCCESS,
+const getZsetMembersSuccess = (members, scores) => ({
+  type: GET_ZSET_MEMBERS_SUCCESS,
   payload: { members, scores }
 });
 
-const filterZsetMembersFailure = error => ({ type: FILTER_ZSET_MEMBERS_FAILURE, error });
+const getZsetMembersFailure = error => ({ type: GET_ZSET_MEMBERS_FAILURE, error });
 
 const updateZsetMemberRequest = () => ({ type: UPDATE_ZSET_MEMBER_REQUEST });
 /**
@@ -151,15 +151,15 @@ const initialState = {
 };
 
 export const operations = {
-  filterZsetMembers,
+  getZsetMembers,
   updateZsetMember,
   addMemberToZset,
   deleteMemberFromZset
 };
 
 export const actions = {
-  filterZsetMembersRequest,
-  filterZsetMembersSuccess,
+  getZsetMembersRequest,
+  getZsetMembersSuccess,
   updateZsetMemberSuccess,
   addMemberToZsetSuccess,
   deleteMemberFromZsetSuccess
@@ -172,20 +172,20 @@ export const actions = {
  */
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-  case FILTER_ZSET_MEMBERS_REQUEST:
+  case GET_ZSET_MEMBERS_REQUEST:
     return {
       ...state,
       isLoading: true,
       pattern: action.payload.pattern
     };
-  case FILTER_ZSET_MEMBERS_SUCCESS:
+  case GET_ZSET_MEMBERS_SUCCESS:
     return {
       ...state,
       isLoading: false,
       members: action.payload.members,
       scores: action.payload.scores
     };
-  case FILTER_ZSET_MEMBERS_FAILURE:
+  case GET_ZSET_MEMBERS_FAILURE:
     return { ...state, isLoading: false };
   case UPDATE_ZSET_MEMBER_REQUEST:
     return { ...state, isSaving: true };

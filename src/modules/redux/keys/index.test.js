@@ -18,9 +18,9 @@ describe('keys duck', () => {
     assert.deepEqual(result.list, ['a', 'b']);
   });
 
-  it('can handle FILTER_KEYS_SUCCESS', () => {
+  it('can handle GET_KEYS_SUCCESS', () => {
     const previousState = initialState({ isLoading: true });
-    const action = actions.filterKeysSuccess(['hoge', 'piyo']);
+    const action = actions.getKeysSuccess(['hoge', 'piyo']);
     const result = reducer(previousState, action);
 
     assert.deepEqual(result.list, ['hoge', 'piyo']);

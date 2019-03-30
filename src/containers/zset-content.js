@@ -24,7 +24,7 @@ class ZsetContentContainer extends Component {
     updateZsetMember: PropTypes.func.isRequired,
     addMemberToZset: PropTypes.func.isRequired,
     deleteMemberFromZset: PropTypes.func.isRequired,
-    filterZsetMembers: PropTypes.func.isRequired
+    getZsetMembers: PropTypes.func.isRequired
   };
 
   state = { editingMemberIndex: null };
@@ -39,16 +39,16 @@ class ZsetContentContainer extends Component {
 
   _loadZset = pattern => {
     this._unselectMember();
-    return this.props.filterZsetMembers(pattern);
+    return this.props.getZsetMembers(pattern);
   };
 
   _reloadZset = () => {
     this._loadZset(this.props.pattern).then(() => this._focusToMemberList());
   };
 
-  _filterZsetMembers = pattern => {
+  _getZsetMembers = pattern => {
     this._unselectMember();
-    this.props.filterZsetMembers(pattern)
+    this.props.getZsetMembers(pattern)
       .then(() => this._focusToMemberList());
   };
 
@@ -158,7 +158,7 @@ class ZsetContentContainer extends Component {
         />
         <FilterableList
           List={memberList}
-          filterList={this._filterZsetMembers}
+          filterList={this._getZsetMembers}
           defaultPattern={this.props.pattern}
           position={{ width: '50%', top: 1 }}         
         />
@@ -209,7 +209,7 @@ class ZsetContentContainer extends Component {
 
 const mapStateToProps = ({ zset }) => zset;
 const mapDispatchToProps = {
-  filterZsetMembers: operations.filterZsetMembers,
+  getZsetMembers: operations.getZsetMembers,
   updateZsetMember: operations.updateZsetMember,
   addMemberToZset: operations.addMemberToZset,
   deleteMemberFromZset: operations.deleteMemberFromZset

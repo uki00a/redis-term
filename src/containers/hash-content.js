@@ -24,7 +24,7 @@ class HashContentContainer extends Component {
     addFieldToHash: PropTypes.func.isRequired,
     setHashField: PropTypes.func.isRequired,
     deleteFieldFromHash: PropTypes.func.isRequired,
-    filterHashFields: PropTypes.func.isRequired
+    getHashFields: PropTypes.func.isRequired
   };
 
   state = { editingFieldIndex: null };
@@ -105,13 +105,13 @@ class HashContentContainer extends Component {
 
   _loadHash = () => {
     this._unselectField();
-    this.props.filterHashFields(this.props.pattern)
+    this.props.getHashFields(this.props.pattern)
       .then(() => this._focusToFieldList());
   };
 
-  _filterHash = pattern => {
+  _getHash = pattern => {
     this._unselectField();
-    this.props.filterHashFields(pattern)
+    this.props.getHashFields(pattern)
       .then(() => this._focusToFieldList());
   }
 
@@ -121,12 +121,12 @@ class HashContentContainer extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.keyName !== prevProps.keyName) {
-      this.props.filterHashFields('');
+      this.props.getHashFields('');
     }
   }
 
   componentDidMount() {
-    this.props.filterHashFields('');
+    this.props.getHashFields('');
   }
 
   render() {
@@ -161,7 +161,7 @@ class HashContentContainer extends Component {
         />
         <FilterableList
           List={fieldsList}
-          filterList={this._filterHash}
+          filterList={this._getHash}
           position={{ width: '50%', top: 1 }}
           defaultPattern={this.props.pattern}
         />
@@ -210,7 +210,7 @@ const mapStateToProps = ({ hash }) => ({
 
 const mapDispatchToProps = {
   deleteFieldFromHash: operations.deleteFieldFromHash,
-  filterHashFields: operations.filterHashFields,
+  getHashFields: operations.getHashFields,
   addFieldToHash: operations.addFieldToHash,
   setHashField: operations.setHashField
 };

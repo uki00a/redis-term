@@ -21,7 +21,7 @@ class SetContentContainer extends Component {
     isSaving: PropTypes.bool.isRequired,
     addMemberToSet: PropTypes.func.isRequired,
     deleteMemberFromSet: PropTypes.func.isRequired,
-    filterSetMembers: PropTypes.func.isRequired
+    getSetMembers: PropTypes.func.isRequired
   };
 
   state = { editingMemberIndex: null };
@@ -48,12 +48,12 @@ class SetContentContainer extends Component {
 
   _reload = () => {
     this._unselectMember();
-    this.props.filterSetMembers(this.props.pattern).then(() => this._focusToMemberList());
+    this.props.getSetMembers(this.props.pattern).then(() => this._focusToMemberList());
   };
 
-  _filterSetMembers = pattern => {
+  _getSetMembers = pattern => {
     this._unselectMember();
-    this.props.filterSetMembers(pattern).then(() => this._focusToMemberList());
+    this.props.getSetMembers(pattern).then(() => this._focusToMemberList());
   };
 
   _removeHoveredMember = () => {
@@ -98,12 +98,12 @@ class SetContentContainer extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.keyName !== prevProps.keyName) {
-      this.props.filterSetMembers('');
+      this.props.getSetMembers('');
     }
   }
 
   componentDidMount() {
-    this.props.filterSetMembers('');
+    this.props.getSetMembers('');
   }
 
   render() {
@@ -136,7 +136,7 @@ class SetContentContainer extends Component {
         <FilterableList
           position={{ width: '50%', top: 1 }}
           List={memberList}
-          filterList={this._filterSetMembers}
+          filterList={this._getSetMembers}
           defaultPattern={this.props.pattern}
         />
         <ScrollableBox
@@ -176,7 +176,7 @@ const mapStateToProps = ({ set }) => set;
 const mapDispatchToProps = {
   addMemberToSet: operations.addMemberToSet,
   deleteMemberFromSet: operations.deleteMemberFromSet,
-  filterSetMembers: operations.filterSetMembers
+  getSetMembers: operations.getSetMembers
 };
 
 export default connect(

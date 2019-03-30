@@ -21,7 +21,7 @@ class Database extends Component {
     unselectKey: PropTypes.func.isRequired,
     addKey: PropTypes.func.isRequired,
     deleteKey: PropTypes.func.isRequired,
-    filterKeys: PropTypes.func.isRequired
+    getKeys: PropTypes.func.isRequired
   };
 
   _handleKeySelect = (item, keyIndex) => {
@@ -50,15 +50,15 @@ class Database extends Component {
   }
 
   _loadKeys = () => {
-    this.props.filterKeys('*');
+    this.props.getKeys('*');
   };
 
   _reloadKeys = () => {
-    this.props.filterKeys(this.props.pattern);
+    this.props.getKeys(this.props.pattern);
   };
 
-  _filterKeys = pattern => {
-    this.props.filterKeys(pattern).then(() => this._focusToKeyList());
+  _getKeys = pattern => {
+    this.props.getKeys(pattern).then(() => this._focusToKeyList());
   };
 
   _renderKeyList() {
@@ -109,7 +109,7 @@ class Database extends Component {
         <FilterableList 
           position={{left: 0, top: 0, bottom: 0, width: 30}}
           List={keyList}
-          filterList={this._filterKeys}
+          filterList={this._getKeys}
           { ...this.props }
         />
         <box position={{ left: 30, top: 0, right: 0 }}>
@@ -145,7 +145,7 @@ const mapStateToProps = ({ keys }) => {
 };
 
 const mapDispatchToProps = {
-  filterKeys: operations.filterKeys,
+  getKeys: operations.getKeys,
   selectKey: operations.selectKey,
   unselectKey: actions.unselectKey,
   addKey: operations.addNewKeyIfNotExists,

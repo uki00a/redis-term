@@ -2,9 +2,9 @@
 import assert from 'assert';
 import { getSelectedKey } from '../shared';
 
-const FILTER_SET_MEMBERS_REQUEST = 'redis-term/set/FILTER_SET_MEMBERS_REQUEST';
-const FILTER_SET_MEMBERS_SUCCESS = 'redis-term/set/FILTER_SET_MEMBERS_SUCCESS';
-const FILTER_SET_MEMBERS_FAILURE = 'redis-term/set/FILTER_SET_MEMBERS_FAILURE';
+const GET_SET_MEMBERS_REQUEST = 'redis-term/set/GET_SET_MEMBERS_REQUEST';
+const GET_SET_MEMBERS_SUCCESS = 'redis-term/set/GET_SET_MEMBERS_SUCCESS';
+const GET_SET_MEMBERS_FAILURE = 'redis-term/set/GET_SET_MEMBERS_FAILURE';
 const ADD_MEMBER_TO_SET_REQUEST = 'redis-term/set/ADD_MEMBER_TO_SET_REQUEST';
 const ADD_MEMBER_TO_SET_SUCCESS = 'redis-term/set/ADD_MEMBER_TO_SET_SUCCESS';
 const ADD_MEMBER_TO_SET_FAILURE = 'redis-term/set/ADD_MEMBER_TO_SET_FAILURE';
@@ -16,17 +16,17 @@ const DELETE_MEMBER_FROM_SET_FAILURE = 'redis-term/set/DELETE_MEMBER_FROM_SET_FA
  * @param {string} pattern 
  * @returns {import('../store').Thunk}
  */
-const filterSetMembers = (pattern = '') => async (dispatch, getState, { redis }) => {
+const getSetMembers = (pattern = '') => async (dispatch, getState, { redis }) => {
   if (isLoading(getState())) {
     return;
   }
   const selectedKey = getSelectedKey(getState);
-  dispatch(filterSetMembersRequest(pattern));
+  dispatch(getSetMembersRequest(pattern));
   try {
-    const members = await redis.filterSetMembersStartWithPattern(selectedKey, pattern);
-    dispatch(filterSetMembersSuccess(members));
+    const members = await redis.getSetMembersStartWithPattern(selectedKey, pattern);
+    dispatch(getSetMembersSuccess(members));
   } catch (error) {
-    dispatch(filterSetMembersFailure(error));
+    dispatch(getSetMembersFailure(error));
   }
 };
 
@@ -66,15 +66,15 @@ const deleteMemberFromSet = memberToDelete => async (dispatch, getState, { redis
   }
 };
 
-const filterSetMembersRequest = pattern => ({
-  type: FILTER_SET_MEMBERS_REQUEST,
+const getSetMembersRequest = pattern => ({
+  type: GET_SET_MEMBERS_REQUEST,
   payload: { pattern }
 });
-const filterSetMembersSuccess = members => ({
-  type: FILTER_SET_MEMBERS_SUCCESS,
+const getSetMembersSuccess = members => ({
+  type: GET_SET_MEMBERS_SUCCESS,
   payload: { members }
 });
-const filterSetMembersFailure = error => ({ type: FILTER_SET_MEMBERS_FAILURE, error });
+const getSetMembersFailure = error => ({ type: GET_SET_MEMBERS_FAILURE, error });
 
 const addMemberToSetRequest = () => ({ type: ADD_MEMBER_TO_SET_REQUEST });
 const addMemberToSetSuccess = newMember => ({
@@ -107,12 +107,12 @@ const initialState = {
 export const operations = {
   addMemberToSet,
   deleteMemberFromSet,
-  filterSetMembers
+  getSetMembers
 };
 
 export const actions = {
-  filterSetMembersRequest,
-  filterSetMembersSuccess,
+  getSetMembersRequest,
+  getSetMembersSuccess,
   addMemberToSetSuccess,
   deleteMemberFromSetSuccess
 };
@@ -124,20 +124,20 @@ export const actions = {
  */
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-  case FILTER_SET_MEMBERS_REQUEST:
+  case GET_SET_MEMBERS_REQUEST:
     return {
       ...state,
       pattern: action.payload.pattern,
       isLoading: true,
       members: []
     };
-  case FILTER_SET_MEMBERS_SUCCESS:
+  case GET_SET_MEMBERS_SUCCESS:
     return {
       ...state,
       isLoading: false,
       members: action.payload.members
     };
-  case FILTER_SET_MEMBERS_FAILURE:
+  case GET_SET_MEMBERS_FAILURE:
     return { ...state, isLoading: false };
   case ADD_MEMBER_TO_SET_REQUEST:
     return { ...state, isSaving: true };

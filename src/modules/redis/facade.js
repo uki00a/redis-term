@@ -78,11 +78,11 @@ export default class RedisFacade {
     return await redis.type(keyName);
   }
 
-  async filterKeysStartWith(pattern = '*') {
-    return await this.filterKeys(pattern.endsWith('*') ? pattern : `${pattern}*`);
+  async getKeysStartWith(pattern = '*') {
+    return await this.getKeys(pattern.endsWith('*') ? pattern : `${pattern}*`);
   }
 
-  async filterKeys(pattern = '*') {
+  async getKeys(pattern = '*') {
     const redis = this._getRedis();
     const cursor = 0;
     const count = 1000;
@@ -136,14 +136,14 @@ export default class RedisFacade {
    * @param {string} keyName 
    * @param {string} pattern 
    */
-  async filterHashFieldsStartWithPattern(keyName, pattern = '*') {
-    return this.filterHashFields(
+  async getHashFieldsStartWithPattern(keyName, pattern = '*') {
+    return this.getHashFields(
       keyName,
       pattern.endsWith('*') ? pattern : `${pattern}*`
     );
   }
 
-  async filterHashFields(keyName, pattern = '*') {
+  async getHashFields(keyName, pattern = '*') {
     const redis = this._getRedis();
     const cursor = 0;
     const count = 1000;
@@ -231,8 +231,8 @@ export default class RedisFacade {
    * @param {string} keyName 
    * @param {string} pattern 
    */
-  async filterSetMembersStartWithPattern(keyName, pattern = '') {
-    return this.filterSetMembers(
+  async getSetMembersStartWithPattern(keyName, pattern = '') {
+    return this.getSetMembers(
       keyName,
       pattern.endsWith('*') ? pattern : `${pattern}*`
     );
@@ -242,7 +242,7 @@ export default class RedisFacade {
    * @param {string} keyName 
    * @param {string} pattern 
    */
-  async filterSetMembers(keyName, pattern = '*') {
+  async getSetMembers(keyName, pattern = '*') {
     const redis = this._getRedis();
     const cursor = 0;
     const count = 1000;
@@ -329,8 +329,8 @@ export default class RedisFacade {
    * @param {string} pattern 
    * @returns {Promise<[string[], number[]]>}
    */
-  filterZsetMembersStartWithPattern(keyName, pattern = '*') {
-    return this.filterZsetMembers(
+  getZsetMembersStartWithPattern(keyName, pattern = '*') {
+    return this.getZsetMembers(
       keyName,
       pattern.endsWith('*') ? pattern : `${pattern}*`
     );
@@ -340,7 +340,7 @@ export default class RedisFacade {
    * @param {string} pattern 
    * @returns {Promise<[string[], number[]]>}
    */
-  async filterZsetMembers(keyName, pattern = '*') {
+  async getZsetMembers(keyName, pattern = '*') {
     const redis = this._getRedis();
     const cursor = 0;
     const count = 1000;

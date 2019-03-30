@@ -2,9 +2,9 @@ import reducer, { actions } from './index';
 import assert from 'assert';
 
 describe('set duck', () => {
-  it('can handle FILTER_SET_MEMBERS_SUCCESS', () => {
+  it('can handle GET_SET_MEMBERS_SUCCESS', () => {
     const previousState = { isLoading: true };
-    const action = actions.filterSetMembersSuccess(['hoge', 'piyo']);
+    const action = actions.getSetMembersSuccess(['hoge', 'piyo']);
     const result = reducer(previousState, action);
 
     assert.equal(result.isLoading, false);
