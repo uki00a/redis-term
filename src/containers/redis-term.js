@@ -39,10 +39,8 @@ class RedisTerm extends Component {
   }
 
   componentDidMount() {
-    setImmediate(() => {
-      this.refs.redisTerm.screen.key(['M-left', 'backspace'], () => {
-        this._goToPreviousViewIfPossible();
-      });
+    this.refs.redisTerm.screen.key(['M-left', 'backspace'], () => {
+      this._goToPreviousViewIfPossible();
     });
 
     process.on('unhandledRejection', this._handleError);
