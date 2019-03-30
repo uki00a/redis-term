@@ -11,6 +11,11 @@
   "bin": {
     "redis-term": "./bin/redis-term.js"
   },
+  "keywords": [
+    "redis",
+    "blessed",
+    "react-blessed"
+  ],
   "files": [
     "lib",
     "bin"
