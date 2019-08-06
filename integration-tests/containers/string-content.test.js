@@ -14,7 +14,7 @@ import {
 import assert from 'assert';
 
 describe('<StringContentContainer>', () => {
-  context('when save button clicked', () => {
+  context('when C-s pressed', () => {
     /** @type {import('../../src/modules/redis/facade').default} */
     let redis;
 
