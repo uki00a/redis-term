@@ -34,6 +34,9 @@ describe('<StringContentContainer>', () => {
 
       const subject = await renderSubject({ keyName });
       const textarea = findTextarea(subject);
+
+      assert.strictEqual(textarea.instance.getValue(), initialValue);
+
       fireEvent.focus(textarea);
       await nextTick();
 

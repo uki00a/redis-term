@@ -83,6 +83,9 @@ class NodeMock extends EventEmitter {
   get type() {
     return this._element.type;
   }
+  getValue() {
+    return this.value;
+  }
   setValue(value) {
     this.value = value;
   }
