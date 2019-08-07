@@ -59,7 +59,7 @@
     "eslint-plugin-react": "^7.12.4",
     "faker": "^4.1.0",
     "mocha": "^5.2.0",
-    "react-test-renderer": "^16.8.1",
+    "stream-buffers": "^3.0.2",
     "testdouble": "^3.11.0"
   }
 }

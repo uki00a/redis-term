@@ -1,12 +1,13 @@
 import React from 'react';
-import { render as renderComponent } from './react-blessed';
 import { Provider as StoreProvider } from 'react-redux';
 import { applyMiddleware } from 'redux';
 import configureStore from '../../src/modules/redux/store';
+import { createBlessedRenderer } from 'react-blessed';
+import blessed from 'neo-blessed';
 import thunk from 'redux-thunk';
 
 export * from './redis';
-export * from './react-blessed';
+export * from './blessed';
 
 import { ThemeProvider } from '../../src/contexts/theme-context';
 
@@ -24,21 +25,53 @@ export const createStore = ({ state, extraArgument }) => {
   return configureStore(state, extraArgument);
 };
 
-/**
- * @param {*} component 
- */
 export const render = (
   component,
-  store
+  screen,
+  {
+    store
+  }
 ) => {
-  return renderComponent(
+  const renderer = createBlessedRenderer(blessed);
+  renderer(
     <StoreProvider store={store}>
       <ThemeProvider>
         { component }
       </ThemeProvider>
-    </StoreProvider>
+    </StoreProvider>,
+    screen
   );
+  return createGetters(screen);
 };
+
+const createGetters = screen => ({
+  getByType: getByType(screen)
+});
+const getByType = screen => type =>  {
+  const found = findBy(screen, x => x.type === type);
+  if (found == null) {
+    throw new Error(`getByType(${type}): no element was found`);
+  }
+  return found;
+}
+
+function findBy(screen, predicate) {
+  const queue = [screen];
+  const seen = new Set();
+  while (queue.length > 0) {
+    const node = queue.pop();
+    if (seen.has(node)) {
+      throw new Error('invalid screen');
+    }
+    seen.add(node);
+    if (predicate(node)) {
+      return node;
+    }
+    for (const child of node.children) {
+      queue.push(child);
+    }
+  }
+}
 
 export const nextTick = () => new Promise(resolve => setImmediate(resolve));
 export const wait = ms => new Promise(resolve => setTimeout(resolve));

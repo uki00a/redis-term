@@ -6,10 +6,9 @@ import {
   createStore,
   render,
   waitForElement,
-  fireEvent,
-  simulateInput,
   nextTick,
-  wait
+  wait,
+  createScreen
 } from '../helpers';
 import assert from 'assert';
 import faker from 'faker';
@@ -18,13 +17,16 @@ describe('<StringContentContainer>', () => {
   context('when C-s pressed', () => {
     /** @type {import('../../src/modules/redis/facade').default} */
     let redis;
+    let screen;
 
     before(async () => {
       redis = await connectToRedis();
+      screen = createScreen();
     });
 
     after(async () => {
       await cleanupRedisConnection(redis);
+      screen.destroy();
     });
 
     it('should save input value to redis', async () => {
@@ -32,22 +34,23 @@ describe('<StringContentContainer>', () => {
       const initialValue = faker.random.word();
       await saveString(keyName, initialValue);
 
-      const subject = await renderSubject({ keyName });
-      const textarea = findTextarea(subject);
+      const {getByType} = await renderSubject({ keyName });
+      const textarea = getByType('textarea');
 
-      assert.strictEqual(textarea.instance.getValue(), initialValue);
+      assert.strictEqual(textarea.getValue(), initialValue);
 
-      fireEvent.focus(textarea);
+      textarea.focus();
       await nextTick();
 
       const newValue = faker.random.word();
-      simulateInput(textarea, newValue);
-      fireEvent.keypress(textarea, null, { full: 'C-s' });
+      textarea.setValue(newValue);
+      textarea.emit('keypress', null, { full: 'C-s' });
       await wait(100); // TODO wait for loader
 
       const expected = newValue;
       const actual = await redis.loadString(keyName);
       assert.strictEqual(actual, expected);
+      assert.strictEqual(textarea.getValue(), expected);
     });
 
     const renderSubject = async ({ keyName }) => {
@@ -57,12 +60,12 @@ describe('<StringContentContainer>', () => {
       });
       const subject = render(
         <StringContentContainer keyName={keyName} />,
-        store
+        screen,
+        { store }
       );
-      await waitForElement(() => subject.getAllByType('textarea'));
+      await waitForElement(() => subject.getByType('textarea'));
       return subject;
     };
-    const findTextarea = subject => subject.getAllByType('textarea')[0];
     const saveString = (key, value) => redis.saveString(key, value);
   });
 });
