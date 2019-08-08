@@ -45,7 +45,8 @@ export const render = (
 };
 
 const createGetters = screen => ({
-  getByType: getByType(screen)
+  getByType: getByType(screen),
+  getByContent: getByContent(screen)
 });
 const getByType = screen => type =>  {
   const found = findBy(screen, x => x.type === type);
@@ -54,6 +55,17 @@ const getByType = screen => type =>  {
   }
   return found;
 }
+
+const getByContent = screen => content => {
+  const predicate = content instanceof RegExp
+    ? x => x.getContent && content.test(x.getContent())
+    : x => x.getContent && x.getContent() === content;
+  const found = findBy(screen, predicate);
+  if (found === null) {
+    throw new Error(`getByContent(${content}): no element was found`);
+  }
+  return found;
+};
 
 function findBy(screen, predicate) {
   const queue = [screen];
