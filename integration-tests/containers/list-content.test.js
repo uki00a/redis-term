@@ -40,8 +40,6 @@ describe('<ListContentContainer>', () => {
       const list = getByType('list');
       const newValue = faker.random.word();
 
-      assert(textarea);
-      assert(list)
       assert.deepEqual(list.ritems, initialList);
 
       list.select(1);
@@ -97,8 +95,6 @@ describe('<ListContentContainer>', () => {
 
       const textbox = getByType('textbox');
       const okButton = getByContent(/OK/);
-      assert(textbox);
-      assert(okButton);
       textbox.focus();
       await nextTick();
       textbox.setValue(newValue);
