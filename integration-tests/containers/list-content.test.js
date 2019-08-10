@@ -80,12 +80,9 @@ describe('<ListContentContainer>', () => {
       await saveList(redis, keyName, initialList);
 
       const { getByType, getByContent } = await renderSubject({ screen, keyName, redis });
-      const textarea = getByType('textarea');
       const list = getByType('list');
       const newValue = faker.random.word();
 
-      assert(textarea);
-      assert(list)
       assert.deepEqual(list.ritems, initialList);
 
       list.focus();
