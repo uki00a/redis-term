@@ -5,9 +5,8 @@ import {
   cleanupRedisConnection,
   createStore,
   render,
-  waitForElement,
+  waitFor,
   nextTick,
-  wait,
   createScreen
 } from '../helpers';
 import assert from 'assert';
@@ -38,7 +37,7 @@ describe('<HashContentContainer>', () => {
       const fields = Object.keys(initialHash);
       await saveHashToRedis(keyName, initialHash);
 
-      const { getByType } = await renderSubject({ keyName });
+      const { queryBy, getByType } = await renderSubject({ keyName });
       const textarea = getByType('textarea');
       const list = getByType('list');
 
@@ -57,7 +56,7 @@ describe('<HashContentContainer>', () => {
       const newValueOfSecondField = faker.address.city();
       textarea.setValue(newValueOfSecondField);
       textarea.emit('keypress', null, { full: 'C-s' });
-      await wait(100); // TODO wait for loader
+      await waitFor(() => queryBy(x => x.name === 'loader') == null);
 
       const expected = { ...initialHash, [list.ritems[1]]: newValueOfSecondField };
       assert(fields.every(field => list.ritems.includes(field)))
@@ -75,7 +74,7 @@ describe('<HashContentContainer>', () => {
       screen,
       { store }
     );
-    await waitForElement(() => subject.getByType('textarea'));
+    await waitFor(() => subject.getByType('textarea'));
     return subject;
   }
 

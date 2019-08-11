@@ -20,10 +20,12 @@ export function createScreen() {
   return screen;
 }
 
-export const waitForElement = (
+export const waitFor = (
   test,
-  timeout = 500,
-  interval = 50
+  {
+    timeout = 500,
+    interval = 50
+  } = {}
 ) => {
   const startTime = Date.now();
   return new Promise((resolve, reject) => {

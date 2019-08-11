@@ -5,9 +5,8 @@ import {
   cleanupRedisConnection,
   createStore,
   render,
-  waitForElement,
+  waitFor,
   nextTick,
-  wait,
   createScreen
 } from '../helpers';
 import assert from 'assert';
@@ -34,7 +33,7 @@ describe('<StringContentContainer>', () => {
       const initialValue = faker.random.word();
       await saveString(keyName, initialValue);
 
-      const {getByType} = await renderSubject({ keyName });
+      const {getByType, queryBy} = await renderSubject({ keyName });
       const textarea = getByType('textarea');
 
       assert.strictEqual(textarea.getValue(), initialValue);
@@ -45,7 +44,7 @@ describe('<StringContentContainer>', () => {
       const newValue = faker.random.word();
       textarea.setValue(newValue);
       textarea.emit('keypress', null, { full: 'C-s' });
-      await wait(100); // TODO wait for loader
+      await waitFor(() => queryBy(x => x.name === 'loader') == null);
 
       const expected = newValue;
       const actual = await redis.loadString(keyName);
@@ -63,7 +62,7 @@ describe('<StringContentContainer>', () => {
         screen,
         { store }
       );
-      await waitForElement(() => subject.getByType('textarea'));
+      await waitFor(() => subject.getByType('textarea'));
       return subject;
     };
     const saveString = (key, value) => redis.saveString(key, value);

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
-import { applyMiddleware } from 'redux';
 import configureStore from '../../src/modules/redux/store';
 import { createBlessedRenderer } from 'react-blessed';
 import blessed from 'neo-blessed';
-import thunk from 'redux-thunk';
 
 export * from './redis';
 export * from './blessed';
@@ -45,29 +43,32 @@ export const render = (
 };
 
 const createGetters = screen => ({
-  getByType: getByType(screen),
-  getByContent: getByContent(screen)
+  queryBy: predicate => getBy(screen, predicate),
+  getBy: predicate => getBy(screen, predicate),
+  getByType: type => getByType(screen, type),
+  getByContent: content => getByContent(screen, content)
 });
-const getByType = screen => type =>  {
-  const found = findBy(screen, x => x.type === type);
-  if (found == null) {
-    throw new Error(`getByType(${type}): no element was found`);
-  }
-  return found;
-}
 
-const getByContent = screen => content => {
+const getByType = (screen, type) => {
+  return getBy(screen, x => x.type === type);
+};
+
+const getByContent = (screen, content) => {
   const predicate = content instanceof RegExp
     ? x => x.getContent && content.test(x.getContent())
     : x => x.getContent && x.getContent() === content;
-  const found = findBy(screen, predicate);
-  if (found === null) {
-    throw new Error(`getByContent(${content}): no element was found`);
+  return getBy(screen, predicate);
+};
+
+const getBy = (screen, predicate) => {
+  const found = queryBy(screen, predicate);
+  if (found == null) {
+    throw new Error(`no element was found`);
   }
   return found;
 };
 
-function findBy(screen, predicate) {
+function queryBy(screen, predicate) {
   const queue = [screen];
   const seen = new Set();
   while (queue.length > 0) {

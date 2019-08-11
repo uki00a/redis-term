@@ -5,9 +5,8 @@ import {
   cleanupRedisConnection,
   createStore,
   render,
-  waitForElement,
+  waitFor,
   nextTick,
-  wait,
   createScreen
 } from '../helpers';
 import assert from 'assert';
@@ -35,7 +34,7 @@ describe('<ListContentContainer>', () => {
       const [value1, value2, value3] = initialList;
       await saveList(redis, keyName, initialList);
 
-      const { getByType } = await renderSubject({ screen, keyName, redis });
+      const { queryBy, getByType } = await renderSubject({ screen, keyName, redis });
       const textarea = getByType('textarea');
       const list = getByType('list');
       const newValue = faker.random.word();
@@ -50,7 +49,7 @@ describe('<ListContentContainer>', () => {
       assert.strictEqual(textarea.getValue(), value2);
       textarea.setValue(newValue);
       textarea.emit('keypress', null, { full: 'C-s' });
-      await wait(100); // TODO wait for loader
+      await waitFor(() => queryBy(x => x.name === 'loader') == null);
 
       const expected = [value1, newValue, value3];
       assert.deepEqual(list.ritems, expected);
@@ -79,7 +78,7 @@ describe('<ListContentContainer>', () => {
       const [value1, value2] = initialList;
       await saveList(redis, keyName, initialList);
 
-      const { getByType, getByContent } = await renderSubject({ screen, keyName, redis });
+      const { getByType, getByContent, queryBy } = await renderSubject({ screen, keyName, redis });
       const list = getByType('list');
       const newValue = faker.random.word();
 
@@ -96,7 +95,7 @@ describe('<ListContentContainer>', () => {
       await nextTick();
       textbox.setValue(newValue);
       okButton.emit('click');
-      await wait(100); // TODO wait for loader
+      await waitFor(() => queryBy(x => x.name === 'loader') == null);
 
       const expected = [newValue, value1, value2];
       assert.deepEqual(await redis.loadListElements(keyName), expected);
@@ -114,7 +113,7 @@ describe('<ListContentContainer>', () => {
       screen,
       { store }
     );
-    await waitForElement(() => subject.getByType('textarea'));
+    await waitFor(() => subject.getByType('textarea'));
     return subject;
   }
 
