@@ -64,6 +64,47 @@ describe('<HashContentContainer>', () => {
     });
   });
 
+  context('when "d" key pressed on field list', () => {
+    beforeEach(async () => {
+      redis = await connectToRedis();
+      screen = createScreen();
+    });
+
+    afterEach(async () => {
+      await cleanupRedisConnection(redis);
+      screen.destroy();
+    });
+
+    it('should delete a selected field', async () => {
+      const keyName = faker.random.word();
+      const initialHash = {
+        [faker.random.word()]: faker.random.word(),
+        [faker.name.title()]: faker.name.title()
+      };
+      await saveHashToRedis(keyName, initialHash);
+
+      const { getByType, getByContent, getBy } = await renderSubject({ keyName });
+      const fieldList = getByType('list');
+      const initialFields = [...fieldList.ritems];
+
+      assert(Object.keys(initialHash).every(field => initialFields.includes(field)));
+
+      fieldList.focus();
+      fieldList.select(1);
+      fieldList.emit('keypress', null, { name: 'enter', full: 'enter' });
+      fieldList.emit('keypress', null, { name: 'd', full: 'd' });
+
+      const okButton = getByContent(/OK/i);
+      okButton.emit('click');
+
+      await waitFor(() => getBy(x => x.name === 'loader') == null);
+
+      const expected = { [initialFields[0]]: initialHash[initialFields[0]] };
+      assert.deepEqual(await redis.getHashFields(keyName), expected, 'selected field should be deleted from redis');
+      assert.deepEqual(fieldList.ritems, [initialFields[0]]);
+    });
+  });
+
   describe('adding a new field to hash', () => {
     beforeEach(async () => {
       redis = await connectToRedis();
