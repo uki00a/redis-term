@@ -118,7 +118,7 @@ describe('<HashContentContainer>', () => {
 
     it('can add a new field to hash', async () => {
       const keyName = faker.random.word();
-      const initialHash = { [faker.random.word()]: faker.random.word() };
+      const initialHash = { [faker.random.uuid()]: faker.random.word() };
       const initialFields = Object.keys(initialHash);
       await saveHashToRedis(keyName, initialHash);
 
@@ -134,7 +134,7 @@ describe('<HashContentContainer>', () => {
       const keyInput = getBy(x => x.name === 'keyInput');
       const valueInput = getBy(x => x.name === 'valueInput');
       const okButton = getByContent(/OK/i);
-      const newKey = faker.name.title();
+      const newKey = faker.random.uuid();
       const newValue = faker.name.jobTitle();
 
       keyInput.setValue(newKey);
@@ -143,7 +143,7 @@ describe('<HashContentContainer>', () => {
       await waitFor(() => queryBy(x => x.name === 'loader') === null);
 
       const expected = { ...initialHash, [newKey]: newValue };
-      assert.deepEqual(await redis.getHashFields(keyName), expected);
+      assert.deepEqual(await redis.getHashFields(keyName), expected, 'new field should be added');
       assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
     });
   });
