@@ -11,6 +11,7 @@ import {
 } from '../helpers';
 import assert from 'assert';
 import faker from 'faker';
+import fixtures from '../fixtures'
 
 describe('<HashContentContainer>', () => {
   /** @type {import('../../src/modules/redis/facade').default} */
@@ -29,7 +30,7 @@ describe('<HashContentContainer>', () => {
     });
 
     it('should update editing field', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialHash = {
         [faker.random.word()]: faker.random.word(),
         [faker.name.title()]: faker.name.title()
@@ -76,7 +77,7 @@ describe('<HashContentContainer>', () => {
     });
 
     it('should delete a selected field', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialHash = {
         [faker.random.word()]: faker.random.word(),
         [faker.name.title()]: faker.name.title()
@@ -117,7 +118,7 @@ describe('<HashContentContainer>', () => {
     });
 
     it('can add a new field to hash', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialHash = { [faker.random.uuid()]: faker.random.word() };
       const initialFields = Object.keys(initialHash);
       await saveHashToRedis(keyName, initialHash);

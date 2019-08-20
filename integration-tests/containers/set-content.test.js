@@ -11,6 +11,7 @@ import {
 } from '../helpers';
 import assert from 'assert';
 import faker from 'faker';
+import fixtures from '../fixtures';
 
 describe('<SetContentContainer>', () => {
   /** @type {import('../../src/modules/redis/facade').default} */
@@ -29,7 +30,7 @@ describe('<SetContentContainer>', () => {
     });
 
     it('can add a new member to a set', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialSet = [faker.address.city(), faker.address.zipCode()];
       await saveSetToRedis(keyName, initialSet);
 

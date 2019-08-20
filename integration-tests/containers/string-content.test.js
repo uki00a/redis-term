@@ -11,6 +11,7 @@ import {
 } from '../helpers';
 import assert from 'assert';
 import faker from 'faker';
+import fixtures from '../fixtures';
 
 describe('<StringContentContainer>', () => {
   context('when C-s pressed', () => {
@@ -29,7 +30,7 @@ describe('<StringContentContainer>', () => {
     });
 
     it('should save input value to redis', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialValue = faker.random.word();
       await saveString(keyName, initialValue);
 

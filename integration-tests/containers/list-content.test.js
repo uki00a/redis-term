@@ -11,6 +11,7 @@ import {
 } from '../helpers';
 import assert from 'assert';
 import faker from 'faker';
+import fixtures from '../fixtures';
 
 describe('<ListContentContainer>', () => {
   context('when C-s pressed on textarea', () => {
@@ -29,7 +30,7 @@ describe('<ListContentContainer>', () => {
     });
 
     it('should update editing element', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialList = [faker.random.word(), faker.random.word(), faker.random.word()];
       const [value1, value2, value3] = initialList;
       await saveList(redis, keyName, initialList);
@@ -73,7 +74,7 @@ describe('<ListContentContainer>', () => {
     });
 
     it('can add a new element to list', async () => {
-      const keyName = faker.random.word();
+      const keyName = fixtures.redisKey();
       const initialList = [faker.random.word(), faker.random.word()];
       const [value1, value2] = initialList;
       await saveList(redis, keyName, initialList);
