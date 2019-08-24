@@ -10,7 +10,6 @@ import {
   createScreen
 } from '../helpers';
 import assert from 'assert';
-import faker from 'faker';
 import fixtures from '../fixtures';
 
 describe('<StringContentContainer>', () => {
@@ -31,7 +30,7 @@ describe('<StringContentContainer>', () => {
 
     it('should save input value to redis', async () => {
       const keyName = fixtures.redisKey();
-      const initialValue = faker.random.word();
+      const initialValue = fixtures.string();
       await saveString(keyName, initialValue);
 
       const {getByType, queryBy} = await renderSubject({ keyName });
@@ -42,7 +41,7 @@ describe('<StringContentContainer>', () => {
       textarea.focus();
       await nextTick();
 
-      const newValue = faker.random.word();
+      const newValue = fixtures.string();
       textarea.setValue(newValue);
       textarea.emit('keypress', null, { full: 'C-s' });
       await waitFor(() => queryBy(x => x.name === 'loader') == null);

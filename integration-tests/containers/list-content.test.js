@@ -6,11 +6,11 @@ import {
   createStore,
   render,
   waitFor,
+  waitForElementToBeHidden,
   nextTick,
   createScreen
 } from '../helpers';
 import assert from 'assert';
-import faker from 'faker';
 import fixtures from '../fixtures';
 
 describe('<ListContentContainer>', () => {
@@ -29,16 +29,15 @@ describe('<ListContentContainer>', () => {
       screen.destroy();
     });
 
+    // FIXME This test sometimes fail...
     it('should update editing element', async () => {
       const keyName = fixtures.redisKey();
-      const initialList = [faker.random.word(), faker.random.word(), faker.random.word()];
-      const [value1, value2, value3] = initialList;
+      const initialList = ['a', 'b', 'c'];
       await saveList(redis, keyName, initialList);
 
-      const { queryBy, getByType } = await renderSubject({ screen, keyName, redis });
+      const { getBy, getByType } = await renderSubject({ screen, keyName, redis });
       const textarea = getByType('textarea');
       const list = getByType('list');
-      const newValue = faker.random.word();
 
       assert.deepEqual(list.ritems, initialList);
 
@@ -47,12 +46,12 @@ describe('<ListContentContainer>', () => {
       textarea.focus();
 
       await nextTick();
-      assert.strictEqual(textarea.getValue(), value2);
-      textarea.setValue(newValue);
+      assert.strictEqual(textarea.getValue(), 'b');
+      textarea.setValue('hoge');
       textarea.emit('keypress', null, { full: 'C-s' });
-      await waitFor(() => queryBy(x => x.name === 'loader') == null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const expected = [value1, newValue, value3];
+      const expected = ['a', 'hoge', 'c'];
       assert.deepEqual(list.ritems, expected);
       assert.deepEqual(await redis.loadListElements(keyName), expected);
     });
@@ -75,13 +74,12 @@ describe('<ListContentContainer>', () => {
 
     it('can add a new element to list', async () => {
       const keyName = fixtures.redisKey();
-      const initialList = [faker.random.word(), faker.random.word()];
-      const [value1, value2] = initialList;
+      const initialList = ['a', 'b'];
       await saveList(redis, keyName, initialList);
 
-      const { getByType, getByContent, queryBy } = await renderSubject({ screen, keyName, redis });
+      const { getByType, getByContent, getBy } = await renderSubject({ screen, keyName, redis });
       const list = getByType('list');
-      const newValue = faker.random.word();
+      const newValue = 'c';
 
       assert.deepEqual(list.ritems, initialList);
 
@@ -96,9 +94,9 @@ describe('<ListContentContainer>', () => {
       await nextTick();
       textbox.setValue(newValue);
       okButton.emit('click');
-      await waitFor(() => queryBy(x => x.name === 'loader') == null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const expected = [newValue, value1, value2];
+      const expected = ['c', ...initialList];
       assert.deepEqual(await redis.loadListElements(keyName), expected);
       assert.deepEqual(list.ritems, expected);
     });

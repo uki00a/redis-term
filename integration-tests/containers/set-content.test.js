@@ -6,6 +6,7 @@ import {
   createStore,
   render,
   waitFor,
+  waitForElementToBeHidden,
   createScreen
 } from '../helpers';
 import assert from 'assert';
@@ -32,7 +33,7 @@ describe('<SetContentContainer>', () => {
       const initialSet = ['hoge', 'fuga'];
       await saveSetToRedis(keyName, initialSet);
 
-      const { getByType, getByContent, queryBy } = await renderSubject({ keyName });
+      const { getByType, getByContent, getBy } = await renderSubject({ keyName });
       const memberList = getByType('list');
 
       assert.strictEqual(2, memberList.ritems.length);
@@ -47,7 +48,7 @@ describe('<SetContentContainer>', () => {
 
       memberInput.setValue(newMember);
       okButton.emit('click');
-      await waitFor(() => queryBy(x => x.name === 'loader') == null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
       const expected = initialSet.concat(newMember);
       const actual = await redis.getSetMembers(keyName);

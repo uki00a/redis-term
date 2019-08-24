@@ -6,11 +6,11 @@ import {
   createStore,
   render,
   waitFor,
+  waitForElementToBeHidden,
   nextTick,
   createScreen
 } from '../helpers';
 import assert from 'assert';
-import faker from 'faker';
 import fixtures from '../fixtures'
 
 describe('<HashContentContainer>', () => {
@@ -31,14 +31,11 @@ describe('<HashContentContainer>', () => {
 
     it('should update editing field', async () => {
       const keyName = fixtures.redisKey();
-      const initialHash = {
-        [faker.random.word()]: faker.random.word(),
-        [faker.name.title()]: faker.name.title()
-      };
+      const initialHash = { 'a': 'hoge', 'b': 'fuga' };
       const fields = Object.keys(initialHash);
       await saveHashToRedis(keyName, initialHash);
 
-      const { queryBy, getByType } = await renderSubject({ keyName });
+      const { getBy, getByType } = await renderSubject({ keyName });
       const textarea = getByType('textarea');
       const fieldList = getByType('list');
 
@@ -48,18 +45,17 @@ describe('<HashContentContainer>', () => {
       fieldList.focus();
       await nextTick();
 
-      fieldList.select(1); 
+      fieldList.select(1);
       fieldList.emit('keypress', null, { name: 'enter', full: 'enter' });
       textarea.focus();
       await nextTick();
 
-      assert.strictEqual(textarea.getValue(), initialHash[fieldList.ritems[1]]);
-      const newValueOfSecondField = faker.address.city();
-      textarea.setValue(newValueOfSecondField);
+      assert.strictEqual(textarea.getValue(), initialHash['b']);
+      textarea.setValue('piyo');
       textarea.emit('keypress', null, { full: 'C-s' });
-      await waitFor(() => queryBy(x => x.name === 'loader') == null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const expected = { ...initialHash, [fieldList.ritems[1]]: newValueOfSecondField };
+      const expected = { 'a': 'hoge', 'b': 'piyo' };
       assert(fields.every(field => fieldList.ritems.includes(field)))
       assert.deepEqual(await redis.getHashFields(keyName), expected);
     });
@@ -78,15 +74,12 @@ describe('<HashContentContainer>', () => {
 
     it('should delete a selected field', async () => {
       const keyName = fixtures.redisKey();
-      const initialHash = {
-        [faker.random.word()]: faker.random.word(),
-        [faker.name.title()]: faker.name.title()
-      };
+      const initialHash = { 'field': 'a', 'field_that_shoule_be_deleted': 'b' };
       await saveHashToRedis(keyName, initialHash);
 
       const { getByType, getByContent, getBy } = await renderSubject({ keyName });
       const fieldList = getByType('list');
-      const initialFields = [...fieldList.ritems];
+      const initialFields = ['field', 'field_that_shoule_be_deleted'];
 
       assert(Object.keys(initialHash).every(field => initialFields.includes(field)));
 
@@ -98,9 +91,9 @@ describe('<HashContentContainer>', () => {
       const okButton = getByContent(/OK/i);
       okButton.emit('click');
 
-      await waitFor(() => getBy(x => x.name === 'loader') == null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const expected = { [initialFields[0]]: initialHash[initialFields[0]] };
+      const expected = { 'field': 'a' };
       assert.deepEqual(await redis.getHashFields(keyName), expected, 'selected field should be deleted from redis');
       assert.deepEqual(fieldList.ritems, [initialFields[0]]);
     });
@@ -119,11 +112,11 @@ describe('<HashContentContainer>', () => {
 
     it('can add a new field to hash', async () => {
       const keyName = fixtures.redisKey();
-      const initialHash = { [faker.random.uuid()]: faker.random.word() };
+      const initialHash = { 'field-1': 'hoge' };
       const initialFields = Object.keys(initialHash);
       await saveHashToRedis(keyName, initialHash);
 
-      const { queryBy, getBy, getByType, getByContent } = await renderSubject({ keyName });
+      const { getBy, getByType, getByContent } = await renderSubject({ keyName });
       const fieldList = getByType('list');
 
       assert.strictEqual(fieldList.ritems.length, 1);
@@ -135,15 +128,15 @@ describe('<HashContentContainer>', () => {
       const keyInput = getBy(x => x.name === 'keyInput');
       const valueInput = getBy(x => x.name === 'valueInput');
       const okButton = getByContent(/OK/i);
-      const newKey = faker.random.uuid();
-      const newValue = faker.name.jobTitle();
+      const newKey = 'field-2';
+      const newValue = 'fuga';
 
       keyInput.setValue(newKey);
       valueInput.setValue(newValue);
       okButton.emit('click');
-      await waitFor(() => queryBy(x => x.name === 'loader') === null);
+      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const expected = { ...initialHash, [newKey]: newValue };
+      const expected = { 'field-1': 'hoge', 'field-2': 'fuga' };
       assert.deepEqual(await redis.getHashFields(keyName), expected, 'new field should be added');
       assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
     });

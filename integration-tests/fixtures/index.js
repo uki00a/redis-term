@@ -1,9 +1,6 @@
 import faker from 'faker';
 
-function redisKey() {
-  return faker.random.uuid();
-}
-
 export default {
-  redisKey
+  redisKey: faker.random.uuid,
+  string: faker.random.uuid
 };
