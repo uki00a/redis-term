@@ -6,11 +6,9 @@ import {
   createStore,
   render,
   waitFor,
-  nextTick,
   createScreen
 } from '../helpers';
 import assert from 'assert';
-import faker from 'faker';
 import fixtures from '../fixtures';
 
 describe('<SetContentContainer>', () => {
@@ -31,7 +29,7 @@ describe('<SetContentContainer>', () => {
 
     it('can add a new member to a set', async () => {
       const keyName = fixtures.redisKey();
-      const initialSet = [faker.address.city(), faker.address.zipCode()];
+      const initialSet = ['hoge', 'fuga'];
       await saveSetToRedis(keyName, initialSet);
 
       const { getByType, getByContent, queryBy } = await renderSubject({ keyName });
@@ -45,15 +43,17 @@ describe('<SetContentContainer>', () => {
 
       const memberInput = getByType('textbox');
       const okButton = getByContent(/OK/i);
-      const newMember = faker.random.uuid();
+      const newMember = 'piyo';
 
       memberInput.setValue(newMember);
       okButton.emit('click');
       await waitFor(() => queryBy(x => x.name === 'loader') == null);
 
       const expected = initialSet.concat(newMember);
-      assert.strictEqual(3, memberList.ritems.length, 'new member should be added to member list');
-      assert(expected.every(x => memberList.ritems.includes(x)));
+      const actual = await redis.getSetMembers(keyName);
+      // TODO check memberList.ritems
+      assert.strictEqual(3, actual.length);
+      assert(expected.every(x => actual.includes(x)));
     });
   });
 
