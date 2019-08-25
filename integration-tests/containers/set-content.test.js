@@ -52,9 +52,10 @@ describe('<SetContentContainer>', () => {
 
       const expected = initialSet.concat(newMember);
       const actual = await redis.getSetMembers(keyName);
-      // TODO check memberList.ritems
       assert.strictEqual(3, actual.length);
       assert(expected.every(x => actual.includes(x)));
+      assert.strictEqual(3, memberList.ritems.length);
+      assert(expected.every(x => memberList.ritems.includes(x)));
     });
   });
 
