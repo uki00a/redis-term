@@ -110,5 +110,9 @@ function queryBy(screen, predicate) {
 
 export const fireEvent = {
   click: node => node.emit('click'),
-  keypress: (node, key) => node.emit('keypress', null, { name: key, full: key })
+  keypress: (node, ch, key) => node.emit('keypress', ch, key)
+};
+
+export const simulate = {
+  keypress: (node, key) => fireEvent.keypress(node, null, { full: key, name: key })
 };

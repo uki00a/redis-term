@@ -7,7 +7,9 @@ import {
   render,
   waitFor,
   nextTick,
-  createScreen
+  createScreen,
+  simulate,
+  waitForElementToBeHidden
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures';
@@ -30,7 +32,7 @@ describe('<StringContentContainer>', () => {
     const initialValue = fixtures.string();
     await saveString(keyName, initialValue);
 
-    const {getByType, queryBy} = await renderSubject({
+    const {getByType, getBy} = await renderSubject({
       keyName,
       redis,
       screen
@@ -44,8 +46,8 @@ describe('<StringContentContainer>', () => {
 
     const newValue = fixtures.string();
     textarea.setValue(newValue);
-    textarea.emit('keypress', null, { full: 'C-s' });
-    await waitFor(() => queryBy(x => x.name === 'loader') == null);
+    simulate.keypress(textarea, 'C-s');
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = newValue;
     const actual = await redis.loadString(keyName);
