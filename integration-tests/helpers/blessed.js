@@ -114,5 +114,9 @@ export const fireEvent = {
 };
 
 export const simulate = {
-  keypress: (node, key) => fireEvent.keypress(node, null, { full: key, name: key })
+  keypress: (node, key) => fireEvent.keypress(node, null, { full: key, name: key }),
+  select: (list, index) => {
+    list.select(index);
+    return simulate.keypress(list, 'enter');
+  }
 };
