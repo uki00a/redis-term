@@ -8,7 +8,9 @@ import {
   waitFor,
   waitForElementToBeHidden,
   nextTick,
-  createScreen
+  createScreen,
+  simulate,
+  fireEvent
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures'
@@ -18,131 +20,107 @@ describe('<HashContentContainer>', () => {
   let redis;
   let screen;
 
-  context('when C-s pressed on textarea', () => { 
-    before(async () => {
-      redis = await connectToRedis();
-      screen = createScreen();
-    });
+  async function setup() {
+    redis = await connectToRedis();
+    screen = createScreen();
+  }
 
-    after(async () => {
-      await cleanupRedisConnection(redis);
-      screen.destroy();
-    });
+  async function cleanup() {
+    await cleanupRedisConnection(redis);
+    screen.destroy();
+    redis = null;
+  }
 
-    it('should update editing field', async () => {
-      const keyName = fixtures.redisKey();
-      const initialHash = { 'a': 'hoge', 'b': 'fuga' };
-      const fields = Object.keys(initialHash);
-      await saveHashToRedis(keyName, initialHash);
+  beforeEach(setup);
+  afterEach(cleanup);
 
-      const { getBy, getByType } = await renderSubject({ keyName });
-      const textarea = getByType('textarea');
-      const fieldList = getByType('list');
+  it('can save editing field when C-s is pressed on textarea', async () => { 
+    const keyName = fixtures.redisKey();
+    const initialHash = { 'a': 'hoge', 'b': 'fuga' };
+    const fields = Object.keys(initialHash);
+    await saveHashToRedis(keyName, initialHash);
 
-      assert.strictEqual(fieldList.ritems.length, 2);
-      assert(fields.every(field => fieldList.ritems.includes(field)));
+    const { getBy, getByType } = await renderSubject({ redis, screen, keyName });
+    const textarea = getByType('textarea');
+    const fieldList = getByType('list');
 
-      fieldList.focus();
-      await nextTick();
+    assert.strictEqual(fieldList.ritems.length, 2);
+    assert(fields.every(field => fieldList.ritems.includes(field)));
 
-      fieldList.select(1);
-      fieldList.emit('keypress', null, { name: 'enter', full: 'enter' });
-      textarea.focus();
-      await nextTick();
+    fieldList.focus();
+    await nextTick();
 
-      assert.strictEqual(textarea.getValue(), initialHash['b']);
-      textarea.setValue('piyo');
-      textarea.emit('keypress', null, { full: 'C-s' });
-      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+    simulate.select(fieldList, 1);
+    textarea.focus();
+    await nextTick();
 
-      const expected = { 'a': 'hoge', 'b': 'piyo' };
-      assert(fields.every(field => fieldList.ritems.includes(field)))
-      assert.deepEqual(await redis.getHashFields(keyName), expected);
-    });
+    assert.strictEqual(textarea.getValue(), initialHash['b']);
+    textarea.setValue('piyo');
+    simulate.keypress(textarea, 'C-s');
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+
+    const expected = { 'a': 'hoge', 'b': 'piyo' };
+    assert(fields.every(field => fieldList.ritems.includes(field)))
+    assert.deepEqual(await redis.getHashFields(keyName), expected);
   });
 
-  context('when "d" key pressed on field list', () => {
-    beforeEach(async () => {
-      redis = await connectToRedis();
-      screen = createScreen();
-    });
+  it('should delete a selected field when "d" key is pressed on field list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialHash = { 'field': 'a', 'field_that_shoule_be_deleted': 'b' };
+    await saveHashToRedis(keyName, initialHash);
 
-    afterEach(async () => {
-      await cleanupRedisConnection(redis);
-      screen.destroy();
-    });
+    const { getByType, getByContent, getBy } = await renderSubject({ redis, screen, keyName });
+    const fieldList = getByType('list');
+    const initialFields = ['field', 'field_that_shoule_be_deleted'];
 
-    it('should delete a selected field', async () => {
-      const keyName = fixtures.redisKey();
-      const initialHash = { 'field': 'a', 'field_that_shoule_be_deleted': 'b' };
-      await saveHashToRedis(keyName, initialHash);
+    assert(Object.keys(initialHash).every(field => initialFields.includes(field)));
 
-      const { getByType, getByContent, getBy } = await renderSubject({ keyName });
-      const fieldList = getByType('list');
-      const initialFields = ['field', 'field_that_shoule_be_deleted'];
+    fieldList.focus();
+    simulate.select(fieldList, 1);
+    simulate.keypress(fieldList, 'd');
 
-      assert(Object.keys(initialHash).every(field => initialFields.includes(field)));
+    const okButton = getByContent(/OK/i);
+    fireEvent.click(okButton);
 
-      fieldList.focus();
-      fieldList.select(1);
-      fieldList.emit('keypress', null, { name: 'enter', full: 'enter' });
-      fieldList.emit('keypress', null, { name: 'd', full: 'd' });
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const okButton = getByContent(/OK/i);
-      okButton.emit('click');
-
-      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
-
-      const expected = { 'field': 'a' };
-      assert.deepEqual(await redis.getHashFields(keyName), expected, 'selected field should be deleted from redis');
-      assert.deepEqual(fieldList.ritems, [initialFields[0]]);
-    });
+    const expected = { 'field': 'a' };
+    assert.deepEqual(await redis.getHashFields(keyName), expected, 'selected field should be deleted from redis');
+    assert.deepEqual(fieldList.ritems, [initialFields[0]]);
   });
 
-  describe('adding a new field to hash', () => {
-    beforeEach(async () => {
-      redis = await connectToRedis();
-      screen = createScreen();
-    });
+  it('can add a new field to hash', async () => {
+    const keyName = fixtures.redisKey();
+    const initialHash = { 'field-1': 'hoge' };
+    const initialFields = Object.keys(initialHash);
+    await saveHashToRedis(keyName, initialHash);
 
-    afterEach(async () => {
-      await cleanupRedisConnection(redis);
-      screen.destroy();
-    });
+    const { getBy, getByType, getByContent } = await renderSubject({ keyName, redis, screen });
+    const fieldList = getByType('list');
 
-    it('can add a new field to hash', async () => {
-      const keyName = fixtures.redisKey();
-      const initialHash = { 'field-1': 'hoge' };
-      const initialFields = Object.keys(initialHash);
-      await saveHashToRedis(keyName, initialHash);
+    assert.strictEqual(fieldList.ritems.length, 1);
+    assert(initialFields.every(field => fieldList.ritems.includes(field)));
 
-      const { getBy, getByType, getByContent } = await renderSubject({ keyName });
-      const fieldList = getByType('list');
+    fieldList.focus();
+    simulate.keypress(fieldList,  'a');
 
-      assert.strictEqual(fieldList.ritems.length, 1);
-      assert(initialFields.every(field => fieldList.ritems.includes(field)));
+    const keyInput = getBy(x => x.name === 'keyInput');
+    const valueInput = getBy(x => x.name === 'valueInput');
+    const okButton = getByContent(/OK/i);
+    const newKey = 'field-2';
+    const newValue = 'fuga';
 
-      fieldList.focus();
-      fieldList.emit('keypress', null, { name: 'a', full: 'a' });
+    keyInput.setValue(newKey);
+    valueInput.setValue(newValue);
+    fireEvent.click(okButton);
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
-      const keyInput = getBy(x => x.name === 'keyInput');
-      const valueInput = getBy(x => x.name === 'valueInput');
-      const okButton = getByContent(/OK/i);
-      const newKey = 'field-2';
-      const newValue = 'fuga';
-
-      keyInput.setValue(newKey);
-      valueInput.setValue(newValue);
-      okButton.emit('click');
-      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
-
-      const expected = { 'field-1': 'hoge', 'field-2': 'fuga' };
-      assert.deepEqual(await redis.getHashFields(keyName), expected, 'new field should be added');
-      assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
-    });
+    const expected = { 'field-1': 'hoge', 'field-2': 'fuga' };
+    assert.deepEqual(await redis.getHashFields(keyName), expected, 'new field should be added');
+    assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
   });
 
-  async function renderSubject({ keyName }) {
+  async function renderSubject({ redis, screen, keyName }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'hash' } },
       extraArgument: { redis }
