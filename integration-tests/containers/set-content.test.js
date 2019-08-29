@@ -7,7 +7,9 @@ import {
   render,
   waitFor,
   waitForElementToBeHidden,
-  createScreen
+  createScreen,
+  simulate,
+  fireEvent
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures';
@@ -17,49 +19,52 @@ describe('<SetContentContainer>', () => {
   let redis;
   let screen;
 
-  context('when "a" key pressed on member list', () => {
-    beforeEach(async () => {
-      redis = await connectToRedis();
-      screen = createScreen();
-    });
+  async function setup() {
+    redis = await connectToRedis();
+    screen = createScreen();
+  }
 
-    afterEach(async () => {
-      await cleanupRedisConnection(redis);
-      screen.destroy();
-    });
+  async function cleanup() {
+    await cleanupRedisConnection(redis);
+    screen.destroy();
+    redis = null;
+    screen = null;
+  }
 
-    it('can add a new member to a set', async () => {
-      const keyName = fixtures.redisKey();
-      const initialSet = ['hoge', 'fuga'];
-      await saveSetToRedis(keyName, initialSet);
+  beforeEach(setup);
+  afterEach(cleanup);
 
-      const { getByType, getByContent, getBy } = await renderSubject({ keyName });
-      const memberList = getByType('list');
+  it('can add a new member to a set when "a" key is pressed on member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialSet = ['hoge', 'fuga'];
+    await saveSetToRedis(keyName, initialSet);
 
-      assert.strictEqual(2, memberList.ritems.length);
-      assert(initialSet.every(x => memberList.ritems.includes(x)));
+    const { getByType, getByContent, getBy } = await renderSubject({ redis, screen, keyName });
+    const memberList = getByType('list');
 
-      memberList.focus();
-      memberList.emit('keypress', null, { name: 'a', full: 'a' });
+    assert.strictEqual(2, memberList.ritems.length);
+    assert(initialSet.every(x => memberList.ritems.includes(x)));
 
-      const memberInput = getByType('textbox');
-      const okButton = getByContent(/OK/i);
-      const newMember = 'piyo';
+    memberList.focus();
+    simulate.keypress(memberList, 'a');
 
-      memberInput.setValue(newMember);
-      okButton.emit('click');
-      await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+    const memberInput = getByType('textbox');
+    const okButton = getByContent(/OK/i);
+    const newMember = 'piyo';
 
-      const expected = initialSet.concat(newMember);
-      const actual = await redis.getSetMembers(keyName);
-      assert.strictEqual(3, actual.length);
-      assert(expected.every(x => actual.includes(x)));
-      assert.strictEqual(3, memberList.ritems.length);
-      assert(expected.every(x => memberList.ritems.includes(x)));
-    });
+    memberInput.setValue(newMember);
+    fireEvent.click(okButton);
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+
+    const expected = initialSet.concat(newMember);
+    const actual = await redis.getSetMembers(keyName);
+    assert.strictEqual(3, actual.length);
+    assert(expected.every(x => actual.includes(x)));
+    assert.strictEqual(3, memberList.ritems.length);
+    assert(expected.every(x => memberList.ritems.includes(x)));
   });
 
-  async function renderSubject({ keyName }) {
+  async function renderSubject({ redis, screen, keyName }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'set' } },
       extraArgument: { redis }
