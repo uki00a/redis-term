@@ -1,4 +1,5 @@
 {
+   "parser": "babel-eslint",
     "env": {
         "browser": true,
         "es6": true,
@@ -11,14 +12,28 @@
     },
     "parserOptions": {
         "ecmaFeatures": {
-            "jsx": true
+            "jsx": true,
+            "experimentalObjectRestSpread": true
         },
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react",
+        "react-hooks"
     ],
     "rules": {
+        "no-trailing-spaces": "warn",
+        "no-unused-vars": ["error", {
+          "varsIgnorePattern": "createElement"
+        }],
+        "no-warning-comments": ["warn", {
+          "terms": ["todo", "fixme"],
+          "location": "anywhere"
+        }],
+        "react/jsx-uses-vars": "error",
+        "react/jsx-uses-react": [1],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
     }
 }
