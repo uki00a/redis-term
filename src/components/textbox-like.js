@@ -15,7 +15,9 @@ class TextboxLike extends Component {
       return;
     }
 
-    this.refs.textbox.readInput();
+    if (this.refs.textbox) {
+      this.refs.textbox.readInput();
+    }
     
 
     if (this.props.onFocus) {

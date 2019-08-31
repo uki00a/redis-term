@@ -1,14 +1,14 @@
 import React from 'react';
-import { render as renderComponent } from './react-blessed';
 import { Provider as StoreProvider } from 'react-redux';
-import { applyMiddleware } from 'redux';
 import configureStore from '../../src/modules/redux/store';
-import thunk from 'redux-thunk';
+import { createBlessedRenderer } from 'react-blessed';
+import blessed from 'neo-blessed';
 
 export * from './redis';
-export * from './react-blessed';
+export * from './blessed';
 
 import { ThemeProvider } from '../../src/contexts/theme-context';
+import { createGetters, waitFor } from './blessed';
 
 /**
  * @typedef {Partial<import('../../src/modules/redux/store').State>} PartialState
@@ -24,20 +24,24 @@ export const createStore = ({ state, extraArgument }) => {
   return configureStore(state, extraArgument);
 };
 
-/**
- * @param {*} component 
- */
+// FIXME `Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.`
 export const render = (
   component,
-  store
+  screen,
+  {
+    store
+  }
 ) => {
-  return renderComponent(
+  const renderer = createBlessedRenderer(blessed);
+  renderer(
     <StoreProvider store={store}>
       <ThemeProvider>
         { component }
       </ThemeProvider>
-    </StoreProvider>
+    </StoreProvider>,
+    screen
   );
+  return createGetters(screen);
 };
 
 export const nextTick = () => new Promise(resolve => setImmediate(resolve));

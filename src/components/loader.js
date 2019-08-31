@@ -31,6 +31,7 @@ class Loader extends Component {
   render() {
     return (
       <box
+        name='loader'
         width='100%'
         height={2}
         ref='loading'
