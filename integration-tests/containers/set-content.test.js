@@ -43,7 +43,7 @@ describe('<SetContentContainer>', () => {
     const memberList = getByType('list');
 
     assert.strictEqual(2, memberList.ritems.length);
-    assert(initialSet.every(x => memberList.ritems.includes(x)));
+    assert(initialSet.every(member => memberList.ritems.includes(member)));
 
     memberList.focus();
     simulate.keypress(memberList, 'a');
@@ -59,9 +59,42 @@ describe('<SetContentContainer>', () => {
     const expected = initialSet.concat(newMember);
     const actual = await redis.getSetMembers(keyName);
     assert.strictEqual(3, actual.length);
-    assert(expected.every(x => actual.includes(x)));
+    assert(expected.every(member => actual.includes(member)));
     assert.strictEqual(3, memberList.ritems.length);
-    assert(expected.every(x => memberList.ritems.includes(x)));
+    assert(expected.every(member => memberList.ritems.includes(member)));
+  });
+
+  it('can delete a selected member when "d" key is pressed on member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialSet = ['hoge', 'fuga', 'piyo'];
+    await saveSetToRedis(keyName, initialSet);
+
+    const { getByType, getByContent, getBy } = await renderSubject({ redis, screen, keyName });
+    const memberList = getByType('list');
+
+    assert.strictEqual(3, memberList.ritems.length);
+    assert(initialSet.every(member => memberList.ritems.includes(member)));
+
+    const memberToDelete = memberList.ritems[1];
+    memberList.focus();
+    simulate.select(memberList, 1);
+    simulate.keypress(memberList, 'd');
+
+    const okButton = getByContent(/OK/i);
+    fireEvent.click(okButton);
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+
+    const expected = initialSet.filter(member => member !== memberToDelete);
+    {
+      const actual = await redis.getSetMembers(keyName);
+      assert.strictEqual(2, actual.length, 'selected member should be deleted from redis');
+      assert(expected.every(member => actual.includes(member)), 'selected member should be deleted from redis');
+    }
+
+    {
+      assert.strictEqual(2, memberList.ritems.length, 'selected member should be removed from member list');
+      assert(expected.every(member => memberList.ritems.includes(member)), 'selected member should be removed from member list');
+    }
   });
 
   async function renderSubject({ redis, screen, keyName }) {
