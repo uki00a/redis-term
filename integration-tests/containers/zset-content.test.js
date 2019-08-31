@@ -37,13 +37,14 @@ describe('<ZsetContentContainer>', () => {
   it('can add a new member to a zset when "a" key is pressed on member list', async () => {
     const keyName = fixtures.redisKey();
     const initialZset = [['hoge', '1'], ['fuga', '2']];
+    const initialMembers = ['hoge', 'fuga'];
     await saveZsetToRedis(keyName, initialZset);
 
     const { getByType, getByContent, getBy } = await renderSubject({ redis, screen, keyName });
     const memberList = getByType('list');
 
     assert.strictEqual(2, memberList.ritems.length);
-    assert(initialZset.every(([x]) => memberList.ritems.includes(x)));
+    assert(initialMembers.every(member => memberList.ritems.includes(member)));
 
     memberList.focus();
     simulate.keypress(memberList, 'a');
@@ -71,6 +72,40 @@ describe('<ZsetContentContainer>', () => {
 
     assert.strictEqual(3, memberList.ritems.length);
     assert(expectedMembers.every(x => memberList.ritems.includes(x)));
+  });
+
+  it('can delete a selected member when "d" key is pressed on member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialZset = [['hoge', '1'], ['fuga', '2'], ['piyo', '3']];
+    const initialMembers = ['hoge', 'fuga', 'piyo'];
+    await saveZsetToRedis(keyName, initialZset);
+
+    const { getBy, getByType, getByContent } = await renderSubject({ redis, screen, keyName });
+    const memberList = getByType('list');
+
+    assert.strictEqual(3, memberList.ritems.length);
+    assert(initialMembers.every(member => memberList.ritems.includes(member)));
+
+    const memberToDelete = memberList.ritems[1];
+    memberList.focus();
+    simulate.select(memberList, 1);
+    simulate.keypress(memberList, 'd');
+
+    const okButton = getByContent(/OK/i);
+    fireEvent.click(okButton);
+    await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
+
+    const expectedMembers = initialMembers.filter(member => member !== memberToDelete);
+    {
+      const [actualMembers] = await redis.getZsetMembers(keyName);
+      assert.strictEqual(2, actualMembers.length, 'selected member should be deleted from redis');
+      assert(expectedMembers.every(member => actualMembers.includes(member)), 'selected member should be deleted from redis');
+    }
+
+    {
+      assert.strictEqual(2, memberList.ritems.length, 'selected member should be removed from member list');
+      assert(expectedMembers.every(member => memberList.ritems.includes(member)), 'selected member should be removed from member list');
+    }
   });
 
   async function renderSubject({ redis, screen, keyName }) {
