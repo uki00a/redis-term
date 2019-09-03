@@ -10,7 +10,8 @@ import {
   nextTick,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  wait
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures'
@@ -41,7 +42,7 @@ describe('<Database>', () => {
     await redis.saveString('c', 'piyo');
 
     const { getBy } = renderSubject({ redis, screen });
-    const keyList = await waitFor(() => getBy(x => x.type === 'list' && x.ritems.length > 0));
+    const keyList = await waitFor(() => getBy(isKeyList));
 
 
     assert.strictEqual(3, keyList.ritems.length);
@@ -49,6 +50,50 @@ describe('<Database>', () => {
     assert(keyList.ritems.includes('b'));
     assert(keyList.ritems.includes('c'));
   });
+
+  it('should delete a hovered key when "d" pressed on a key list', async () => {
+    await redis.saveString('a', 'hoge');
+    await redis.saveString('b', 'fuga');
+    await redis.saveString('c', 'piyo');
+
+    const { getBy, getByContent } = renderSubject({ redis, screen });
+    const keyList = await waitFor(() => getBy(isKeyList));
+
+    assert.strictEqual(3, keyList.ritems.length);
+
+    const elementToDelete = keyList.ritems[1];
+    keyList.focus();
+    simulate.select(keyList, 1);
+    simulate.keypress(keyList, 'd');
+
+    const okButton = getByContent(/OK/i);
+    fireEvent.click(okButton);
+
+    await wait(200); // FIXME
+
+    // TODO add more assertions
+    {
+      const actual = keyList.ritems;
+      const message = 'a hovered key should be removed from a key list';
+      assert.strictEqual(2, actual.length, message);
+      assert(!actual.includes(elementToDelete), message);
+    }
+
+    {
+      const actual = await keys(redis);
+      const message = 'a hovered key should be deleted from Redis';
+      assert.strictEqual(actual.length, 2, message);
+      assert(!actual.includes(elementToDelete), message);
+    }
+  });
+
+  function keys(redis) {
+    return redis.getKeys();
+  }
+
+  function isKeyList(x) {
+    return x.type === 'list' && x.ritems.length > 0;
+  }
 
   function renderSubject({ redis, screen }) {
     const store = createStore({
