@@ -23,7 +23,7 @@ describe('<ListContentContainer>', () => {
   afterEach(cleanup);
 
   // FIXME This test sometimes fail...
-  it('should update editing element when "C-s" is pressed on textarea', async () => {
+  it('should update editing element when "C-s" is pressed on textarea @unstable', async () => {
     await setup();
     const keyName = fixtures.redisKey();
     const initialList = ['a', 'b', 'c'];
