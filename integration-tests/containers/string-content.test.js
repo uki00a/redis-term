@@ -55,6 +55,33 @@ describe('<StringContentContainer>', () => {
     assert.strictEqual(textarea.getValue(), expected);
   });
 
+  it('should reload value when "C-r" is pressed on textarea', async () => {
+    redis = await connectToRedis();
+    screen = createScreen();
+
+    const keyName = fixtures.redisKey();
+    const initialValue = 'hoge';
+    await saveString(keyName, initialValue);
+
+    const {getByType, getBy} = await renderSubject({
+      keyName,
+      redis,
+      screen
+    });
+
+    assert.strictEqual(getByType('textarea').getValue(), initialValue);
+
+    const newValue = 'fuga';
+    await saveString(keyName, newValue);
+
+    const textarea = getByType('textarea');
+    textarea.focus();
+    simulate.keypress(textarea, 'C-r');
+    await waitFor(() => getByType('textarea'));
+
+    assert.strictEqual(getByType('textarea').getValue(), newValue);
+  });
+
   const renderSubject = async ({ redis, screen, keyName }) => {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'string' } },
