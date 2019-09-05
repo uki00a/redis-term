@@ -16,21 +16,25 @@ import fixtures from '../fixtures';
 
 describe('<StringContentContainer>', () => {
   /** @type {import('../../src/modules/redis/facade').default} */
+  let _redis;
   let redis;
   let screen;
 
+  beforeEach(async () => {
+    _redis = await connectToRedis();
+    redis = _redis._getRedis(); // FIXME
+    screen = createScreen();
+  });
+
   afterEach(async () => {
-    await cleanupRedisConnection(redis);
+    await cleanupRedisConnection(_redis);
     screen.destroy();
   });
 
   it('should save input value to redis when "C-s" pressed on textarea', async () => {
-    redis = await connectToRedis();
-    screen = createScreen();
-
     const keyName = fixtures.redisKey();
     const initialValue = fixtures.string();
-    await saveString(keyName, initialValue);
+    await redis.set(keyName, initialValue);
 
     const {getByType, getBy} = await renderSubject({
       keyName,
@@ -50,18 +54,15 @@ describe('<StringContentContainer>', () => {
     await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = newValue;
-    const actual = await redis.loadString(keyName);
+    const actual = await redis.get(keyName);
     assert.strictEqual(actual, expected);
     assert.strictEqual(textarea.getValue(), expected);
   });
 
   it('should reload value when "C-r" is pressed on textarea', async () => {
-    redis = await connectToRedis();
-    screen = createScreen();
-
     const keyName = fixtures.redisKey();
     const initialValue = 'hoge';
-    await saveString(keyName, initialValue);
+    await redis.set(keyName, initialValue);
 
     const {getByType, getBy} = await renderSubject({
       keyName,
@@ -72,7 +73,7 @@ describe('<StringContentContainer>', () => {
     assert.strictEqual(getByType('textarea').getValue(), initialValue);
 
     const newValue = 'fuga';
-    await saveString(keyName, newValue);
+    await redis.set(keyName, newValue);
 
     const textarea = getByType('textarea');
     textarea.focus();
@@ -83,17 +84,17 @@ describe('<StringContentContainer>', () => {
   });
 
   const renderSubject = async ({ redis, screen, keyName }) => {
+    // TODO remove this
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'string' } },
       extraArgument: { redis }
     });
     const subject = render(
-      <StringContentContainer keyName={keyName} />,
+      <StringContentContainer redis={redis} keyName={keyName} />,
       screen,
       { store }
     );
     await waitFor(() => subject.getByType('textarea'));
     return subject;
   };
-  const saveString = (key, value) => redis.saveString(key, value);
 });
