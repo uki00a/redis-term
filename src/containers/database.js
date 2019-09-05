@@ -21,7 +21,8 @@ class Database extends Component {
     unselectKey: PropTypes.func.isRequired,
     addKey: PropTypes.func.isRequired,
     deleteKey: PropTypes.func.isRequired,
-    getKeys: PropTypes.func.isRequired
+    getKeys: PropTypes.func.isRequired,
+    redis: PropTypes.object // TODO make this required
   };
 
   _handleKeySelect = (item, keyIndex) => {
@@ -114,6 +115,7 @@ class Database extends Component {
         />
         <box position={{ left: 30, top: 0, right: 0 }}>
           <KeyContent
+            redis={this.props.redis}
             keyName={this.props.selectedKey}
             type={this.props.selectedKeyType}>
           </KeyContent>

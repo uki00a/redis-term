@@ -17,7 +17,8 @@ class RedisTerm extends Component {
     theme: PropTypes.object.isRequired,
     errorMessage: PropTypes.string,
     showError: PropTypes.func.isRequired,
-    clearError: PropTypes.func.isRequired
+    clearError: PropTypes.func.isRequired,
+    redis: PropTypes.object.isRequired // TODO remove this
   };
 
   _notifyError() {
@@ -89,7 +90,7 @@ class RedisTerm extends Component {
             render={props => <ConnectionForm {...props} isNew={false} />} />
           <Route
             path='/database'
-            component={Database} />
+            render={props => <Database {...props} redis={this.props.redis._getRedis()} />} />
         </box>
         <ActiveKeyboardBindings />
         <MessageDialog

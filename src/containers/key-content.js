@@ -12,7 +12,8 @@ class KeyContent extends Component {
   static propTypes = {
     keyName: PropTypes.string,
     type: PropTypes.string,
-    theme: PropTypes.object.isRequired
+    theme: PropTypes.object.isRequired,
+    redis: PropTypes.object // TODO make this required
   };
 
   _renderContent() {
@@ -23,7 +24,7 @@ class KeyContent extends Component {
       );
     case 'string':
       return (
-        <StringContent keyName={this.props.keyName} />
+        <StringContent keyName={this.props.keyName} redis={this.props.redis} />
       );
     case 'list':
       return (
