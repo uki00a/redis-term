@@ -120,6 +120,32 @@ describe('<HashContentContainer>', () => {
     assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
   });
 
+  it('should realod a hash value when "C-r" is pressed on a field list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialHash = { 'a': 'hoge' };
+    const initialFields = ['a'];
+    await saveHashToRedis(keyName, initialHash);
+
+    const { getByType } = await renderSubject({ keyName, redis, screen });
+    const fieldList = getByType('list');
+
+    assert.strictEqual(fieldList.ritems.length, 1, 'a hash value should be loaded when mounted');
+    assert(fieldList.ritems.every(field => initialFields.includes(field)), 'a hash value should be loaded when mounted');
+
+    await redis.addFieldToHashIfNotExists(keyName, 'b', 'fuga');
+
+    fieldList.focus();
+    simulate.keypress(fieldList, 'C-r');
+
+    await waitFor(() => getByType('list'))
+    {
+      const fieldList = getByType('list');
+      const expectedFields = [...initialFields, 'b'];
+      assert.strictEqual(2, fieldList.ritems.length, 'a hash value should be reloaded');
+      assert(fieldList.ritems.every(field => expectedFields.includes(field)), 'a hash value should be reloaded');
+    }
+  });
+
   async function renderSubject({ redis, screen, keyName }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'hash' } },
