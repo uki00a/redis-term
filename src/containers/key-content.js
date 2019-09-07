@@ -28,7 +28,7 @@ class KeyContent extends Component {
       );
     case 'list':
       return (
-        <ListContent keyName={this.props.keyName} />
+        <ListContent keyName={this.props.keyName} redis={this.props.redis} />
       );
     case 'set':
       return (

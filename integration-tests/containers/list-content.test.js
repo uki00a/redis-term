@@ -16,6 +16,7 @@ import fixtures from '../fixtures';
 
 describe('<ListContentContainer>', () => {
   /** @type {import('../../src/modules/redis/facade').default} */
+  let _redis;
   let redis;
   let screen;
 
@@ -33,7 +34,7 @@ describe('<ListContentContainer>', () => {
     const textarea = getByType('textarea');
     const list = getByType('list');
 
-    assert.deepEqual(list.ritems, initialList);
+    assert.deepEqual(list.ritems, initialList, 'should load a list when mounted');
 
     simulate.select(list, 1);
     textarea.focus();
@@ -46,10 +47,10 @@ describe('<ListContentContainer>', () => {
 
     const expected = ['a', 'hoge', 'c'];
     assert.deepEqual(list.ritems, expected);
-    assert.deepEqual(await redis.loadListElements(keyName), expected);
+    assert.deepEqual(await redis.lrange(keyName, 0, -1), expected);
   });
 
-  it('can add a new element to list when "a" is pressed on list', async () => {
+  it('can add a new element to list when "a" is pressed on list @unstable', async () => {
     const keyName = fixtures.redisKey();
     const initialList = ['a', 'b'];
     await saveList(redis, keyName, initialList);
@@ -57,13 +58,12 @@ describe('<ListContentContainer>', () => {
     const { getByType, getByContent, getBy } = await renderSubject({ screen, keyName, redis });
     const list = getByType('list');
     const newValue = 'c';
-
-    assert.deepEqual(list.ritems, initialList);
+    assert.deepEqual(list.ritems, initialList, 'should load a list when mounted');
 
     list.focus();
     await nextTick();
 
-    list.emit('keypress', null, { name: 'a', full: 'a' });
+    simulate.keypress(list, 'a');
 
     const textbox = getByType('textbox');
     const okButton = getByContent(/OK/);
@@ -74,18 +74,18 @@ describe('<ListContentContainer>', () => {
     await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = ['c', ...initialList];
-    assert.deepEqual(await redis.loadListElements(keyName), expected);
-    assert.deepEqual(list.ritems, expected);
+    assert.deepEqual(await redis.lrange(keyName, 0, -1), expected, 'a new element should be added to a list');
+    assert.deepEqual(list.ritems, expected, 'a new element should be added to a list');
   });
 
-  it('should reload a list when "C-r" is pressed on a list', async () => {
+  it('should reload a list when "C-r" is pressed on a list @unstable', async () => {
     const keyName = fixtures.redisKey();
     const initialList = ['a', 'b'];
     await saveList(redis, keyName, initialList);
 
     const {getByType} = await renderSubject({ screen, keyName, redis });
     const list = getByType('list');
-    assert.deepEqual(list.ritems, initialList);
+    assert.deepEqual(list.ritems, initialList, 'should load a list when mounted');
 
     const newList = [...initialList, 'C'];
     await saveList(redis, keyName, newList);
@@ -101,34 +101,37 @@ describe('<ListContentContainer>', () => {
   });
 
   async function renderSubject({ screen, keyName, redis }) {
+    // TODO remove this
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'list' } },
       extraArgument: { redis }
     });
     const subject = render(
-      <ListContentContainer keyName={keyName} />,
+      <ListContentContainer keyName={keyName} redis={redis} />,
       screen,
       { store }
     );
-    await waitFor(() => subject.getByType('textarea'));
+    await waitForElementToBeHidden(() => subject.getBy(x => x.name === 'loader'));
     return subject;
   }
 
   async function saveList(redis, key, values) {
-    await redis.deleteKey(key);
+    await redis.del(key);
     for (let i = values.length - 1; i > -1; --i) {
-      await redis.addElementToList(key, values[i]);
+      await redis.lpush(key, values[i]);
     }
   }
 
   async function setup() {
-    redis = await connectToRedis();
+    _redis = await connectToRedis();
+    redis = _redis._getRedis(); // TODO remove this
     screen = createScreen();
   }
 
   async function cleanup() {
-    await cleanupRedisConnection(redis);
+    await cleanupRedisConnection(_redis);
     screen.destroy();
+    _redis = null;
     redis = null;
     screen = null;
   }
