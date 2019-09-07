@@ -20,7 +20,7 @@ class KeyContent extends Component {
     switch (this.props.type) {
     case 'hash':
       return (
-        <HashContent keyName={this.props.keyName} />
+        <HashContent keyName={this.props.keyName} redis={this.props.redis} />
       );
     case 'string':
       return (
