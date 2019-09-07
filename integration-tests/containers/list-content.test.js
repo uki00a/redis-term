@@ -78,6 +78,28 @@ describe('<ListContentContainer>', () => {
     assert.deepEqual(list.ritems, expected);
   });
 
+  it('should reload a list when "C-r" is pressed on a list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialList = ['a', 'b'];
+    await saveList(redis, keyName, initialList);
+
+    const {getByType} = await renderSubject({ screen, keyName, redis });
+    const list = getByType('list');
+    assert.deepEqual(list.ritems, initialList);
+
+    const newList = [...initialList, 'C'];
+    await saveList(redis, keyName, newList);
+
+    list.focus();
+    simulate.keypress(list, 'C-r');
+
+    await waitFor(() => getByType('list'));
+    {
+      const list = getByType('list');
+      assert.deepEqual(list.ritems, newList, 'should reload a list');
+    }
+  });
+
   async function renderSubject({ screen, keyName, redis }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'list' } },
@@ -93,6 +115,7 @@ describe('<ListContentContainer>', () => {
   }
 
   async function saveList(redis, key, values) {
+    await redis.deleteKey(key);
     for (let i = values.length - 1; i > -1; --i) {
       await redis.addElementToList(key, values[i]);
     }
