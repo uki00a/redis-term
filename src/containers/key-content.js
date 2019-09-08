@@ -32,7 +32,7 @@ class KeyContent extends Component {
       );
     case 'set':
       return (
-        <SetContent keyName={this.props.keyName} />
+        <SetContent keyName={this.props.keyName} redis={this.props.redis} />
       );
     case 'zset':
       return (

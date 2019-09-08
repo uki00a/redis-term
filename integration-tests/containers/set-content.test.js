@@ -16,17 +16,20 @@ import fixtures from '../fixtures';
 
 describe('<SetContentContainer>', () => {
   /** @type {import('../../src/modules/redis/facade').default} */
+  let _redis;
   let redis;
   let screen;
 
   async function setup() {
-    redis = await connectToRedis();
+    _redis = await connectToRedis();
+    redis = _redis._getRedis(); // TODO remove this
     screen = createScreen();
   }
 
   async function cleanup() {
-    await cleanupRedisConnection(redis);
+    await cleanupRedisConnection(_redis);
     screen.destroy();
+    _redis = null;
     redis = null;
     screen = null;
   }
@@ -57,7 +60,7 @@ describe('<SetContentContainer>', () => {
     await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = initialSet.concat(newMember);
-    const actual = await redis.getSetMembers(keyName);
+    const actual = await getSetMembers(keyName);
     assert.strictEqual(3, actual.length);
     assert(expected.every(member => actual.includes(member)));
     assert.strictEqual(3, memberList.ritems.length);
@@ -86,7 +89,7 @@ describe('<SetContentContainer>', () => {
 
     const expected = initialSet.filter(member => member !== memberToDelete);
     {
-      const actual = await redis.getSetMembers(keyName);
+      const actual = await getSetMembers(keyName);
       assert.strictEqual(2, actual.length, 'selected member should be deleted from redis');
       assert(expected.every(member => actual.includes(member)), 'selected member should be deleted from redis');
     }
@@ -122,12 +125,13 @@ describe('<SetContentContainer>', () => {
   });
 
   async function renderSubject({ redis, screen, keyName }) {
+    // TODO remove this
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'set' } },
       extraArgument: { redis }
     });
     const subject = render(
-      <SetContentContainer keyName={keyName} />,
+      <SetContentContainer keyName={keyName} redis={redis} />,
       screen,
       { store }
     );
@@ -136,9 +140,23 @@ describe('<SetContentContainer>', () => {
   }
 
   async function saveSetToRedis(keyName, set) {
-    await redis.deleteKey(keyName);
+    await redis.del(keyName);
     for (const x of set) {
-      await redis.addMemberToSet(keyName, x);
+      await redis.sadd(keyName, x);
     }
+  }
+
+  async function getSetMembers(keyName, pattern = '*') {
+    const cursor = 0;
+    const count = 1000;
+    const [_, members] = await redis.sscan( // eslint-disable-line no-unused-vars
+      keyName,
+      cursor,
+      'MATCH',
+      pattern,
+      'COUNT',
+      count
+    );
+    return members;
   }
 });
