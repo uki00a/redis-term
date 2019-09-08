@@ -97,6 +97,30 @@ describe('<SetContentContainer>', () => {
     }
   });
 
+  it('should reload a set when "C-r" is pressed on a member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialSet = ['hoge'];
+    await saveSetToRedis(keyName, initialSet);
+
+    const { getByType } = await renderSubject({ redis, keyName, screen });
+    const memberList = getByType('list');
+    assert.strictEqual(1, memberList.ritems.length, 'should load a set when mounted');
+    assert(initialSet.every(member => memberList.ritems.includes(member)));
+
+    const newSet = [...initialSet, 'piyo'];
+    await saveSetToRedis(keyName, newSet);    
+
+    memberList.focus();
+    simulate.keypress(memberList, 'C-r');
+
+    {
+      await waitFor(() => getByType('list'));
+      const memberList = getByType('list');
+      assert.strictEqual(2, memberList.ritems.length, 'a set should be reloaded');
+      assert(newSet.every(member => memberList.ritems.includes(member)), 'a set should be reloaded');
+    }
+  });
+
   async function renderSubject({ redis, screen, keyName }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'set' } },
@@ -112,6 +136,7 @@ describe('<SetContentContainer>', () => {
   }
 
   async function saveSetToRedis(keyName, set) {
+    await redis.deleteKey(keyName);
     for (const x of set) {
       await redis.addMemberToSet(keyName, x);
     }
