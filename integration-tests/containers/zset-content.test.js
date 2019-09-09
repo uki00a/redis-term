@@ -108,6 +108,32 @@ describe('<ZsetContentContainer>', () => {
     }
   });
 
+  it('should reload members when "C-r" is pressed on a member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialZset = [['hoge', '1']];
+    const initialMembers = ['hoge'];
+    await saveZsetToRedis(keyName, initialZset);
+
+    const { getByType } = await renderSubject({ redis, screen, keyName });
+    const memberList = getByType('list');
+
+    assert.strictEqual(initialMembers.length, memberList.ritems.length, 'should load members when mounted');
+    assert(initialMembers.every(member => memberList.ritems.includes(member)), 'should load members when mounted');
+
+    const newZset = [...initialZset, ['fuga', '2']];
+    await saveZsetToRedis(keyName, newZset);
+
+    memberList.focus();
+    simulate.keypress(memberList, 'C-r');
+    await waitFor(() => getByType('list'));
+    {
+      const memberList = getByType('list');
+      const expectedMembers = ['hoge', 'fuga'];
+      assert.strictEqual(expectedMembers.length, memberList.ritems.length, 'should reload members when "C-r" is pressed on a member list');
+      assert(expectedMembers.every(member => memberList.ritems.includes(member)), 'should reload members when "C-r" is pressed on a member list');
+    }
+  });
+
   async function renderSubject({ redis, screen, keyName }) {
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'zset' } },
@@ -123,6 +149,7 @@ describe('<ZsetContentContainer>', () => {
   }
 
   async function saveZsetToRedis(keyName, zset) {
+    await redis.deleteKey(keyName);
     for (const [x, score] of zset) {
       await redis.addMemberToZset(keyName, x, score);
     }
