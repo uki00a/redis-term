@@ -36,7 +36,7 @@ class KeyContent extends Component {
       );
     case 'zset':
       return (
-        <ZsetContent keyName={this.props.keyName} />
+        <ZsetContent keyName={this.props.keyName} redis={this.props.redis} />
       );
     default:
       return null;

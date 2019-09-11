@@ -11,22 +11,26 @@ import {
   simulate,
   fireEvent
 } from '../helpers';
+import { partitionByParity } from '../../src/modules/utils';
 import assert from 'assert';
 import fixtures from '../fixtures';
 
 describe('<ZsetContentContainer>', () => { 
   /** @type {import('../../src/modules/redis/facade').default} */
+  let _redis; // TODO remove this
   let redis;
   let screen;
 
   async function setup() {
-    redis = await connectToRedis();
+    _redis = await connectToRedis();
+    redis = _redis._getRedis(); // TODO remove this
     screen = createScreen();
   }
 
   async function cleanup() {
-    await cleanupRedisConnection(redis);
+    await cleanupRedisConnection(_redis);
     screen.destroy();
+    _redis = null;
     redis = null;
     screen = null;
   }
@@ -62,7 +66,7 @@ describe('<ZsetContentContainer>', () => {
 
     const expectedMembers = ['hoge', 'fuga', 'piyo'];
     const expectedScores = ['1', '2', '3'];
-    const [actualMembers, actualScores] = await redis.getZsetMembers(keyName);
+    const [actualMembers, actualScores] = await getZsetMembers(redis, keyName);
 
     assert.strictEqual(3, actualMembers.length);
     assert(expectedMembers.every(x => actualMembers.includes(x)));
@@ -97,7 +101,7 @@ describe('<ZsetContentContainer>', () => {
 
     const expectedMembers = initialMembers.filter(member => member !== memberToDelete);
     {
-      const [actualMembers] = await redis.getZsetMembers(keyName);
+      const [actualMembers] = await getZsetMembers(redis, keyName);
       assert.strictEqual(2, actualMembers.length, 'selected member should be deleted from redis');
       assert(expectedMembers.every(member => actualMembers.includes(member)), 'selected member should be deleted from redis');
     }
@@ -135,12 +139,13 @@ describe('<ZsetContentContainer>', () => {
   });
 
   async function renderSubject({ redis, screen, keyName }) {
+    // TODO remove this
     const store = createStore({
       state: { keys: { selectedKeyName: keyName, selectedKeyType: 'zset' } },
       extraArgument: { redis }
     });
     const subject = render(
-      <ZsetContentContainer keyName={keyName} />,
+      <ZsetContentContainer keyName={keyName} redis={redis} />,
       screen,
       { store }
     );
@@ -149,9 +154,23 @@ describe('<ZsetContentContainer>', () => {
   }
 
   async function saveZsetToRedis(keyName, zset) {
-    await redis.deleteKey(keyName);
+    await redis.del(keyName);
     for (const [x, score] of zset) {
-      await redis.addMemberToZset(keyName, x, score);
+      await redis.zadd(keyName, score, x);
     }
+  }
+
+  async function getZsetMembers(redis, keyName, pattern = '*') {
+    const cursor = 0;
+    const count = 1000;
+    const [_, values] = await redis.zscan( // eslint-disable-line no-unused-vars
+      keyName,
+      cursor,
+      'MATCH',
+      pattern,
+      'COUNT',
+      count
+    );
+    return partitionByParity(values);
   }
 });
