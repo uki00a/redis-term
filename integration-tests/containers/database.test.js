@@ -7,6 +7,7 @@ import {
   render,
   waitFor,
   waitForElementToBeHidden,
+  waitForElementToBeRemoved,
   nextTick,
   createScreen,
   simulate,
@@ -51,7 +52,7 @@ describe('<Database>', () => {
     assert(keyList.ritems.includes('c'));
   });
 
-  it('should delete a hovered key when "d" pressed on a key list', async () => {
+  it('should delete a hovered key when "d" is pressed on a key list @unstable', async () => {
     await redis.saveString('a', 'hoge');
     await redis.saveString('b', 'fuga');
     await redis.saveString('c', 'piyo');
@@ -85,6 +86,33 @@ describe('<Database>', () => {
       assert.strictEqual(actual.length, 2, message);
       assert(!actual.includes(elementToDelete), message);
     }
+  });
+
+  it('can add a new key to Redis when "a" is pressed on a key list', async () => {
+    await redis.saveString('a', 'hoge');
+
+    const { getBy, getByContent } = renderSubject({ redis, screen });
+    const keyList = await waitFor(() => getBy(isKeyList));
+
+    assert.strictEqual(1, keyList.ritems.length);
+    assert(keyList.ritems.includes('a'));
+
+    keyList.focus();
+    simulate.keypress(keyList, 'a');
+
+    await waitFor(() => getByContent(/OK/i))
+    const keyNameInput = getBy(x => x.name === 'keyInput');
+    const okButton = getByContent(/OK/i);
+
+    keyNameInput.setValue('b');
+    fireEvent.click(okButton);
+    await waitForElementToBeRemoved(() => getBy(x => x.name === 'keyInput'));
+
+    const actual = await keys(redis);
+    const message = 'a new key should be added to Redis';
+    assert.strictEqual(actual.length, 2, message);
+    assert(actual.includes('a'), message);
+    assert(actual.includes('b'), message);
   });
 
   function keys(redis) {
