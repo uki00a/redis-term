@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import StringContent from './string-content';
@@ -59,13 +58,4 @@ class KeyContent extends Component {
   }
 }
 
-const mapStateToProps = ({ keys }) => {
-  return {
-    keyName: keys.selectedKeyName,
-    type: keys.selectedKeyType
-  };
-};
-
-export default connect(
-  mapStateToProps  
-)(withTheme(KeyContent));
+export default withTheme(KeyContent);

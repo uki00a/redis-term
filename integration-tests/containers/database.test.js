@@ -19,17 +19,20 @@ import fixtures from '../fixtures'
 
 describe('<Database>', () => { 
   /** @type {import('../../src/modules/redis/facade').default} */
+  let _redis;
   let redis;
   let screen;
 
   async function setup() {
-    redis = await connectToRedis();
+    _redis = await connectToRedis();
+    redis = _redis._getRedis(); // TODO remove this
     screen = createScreen();
   }
 
   async function cleanup() {
-    await cleanupRedisConnection(redis);
+    await cleanupRedisConnection(_redis);
     screen.destroy();
+    _redis = null;
     redis = null;
     screen = null;
   }
@@ -38,13 +41,12 @@ describe('<Database>', () => {
   afterEach(cleanup);
 
   it('should display keys when mounted', async () => {
-    await redis.saveString('a', 'hoge');
-    await redis.saveString('b', 'fuga');
-    await redis.saveString('c', 'piyo');
+    await redis.set('a', 'hoge');
+    await redis.set('b', 'fuga');
+    await redis.set('c', 'piyo');
 
     const { getBy } = renderSubject({ redis, screen });
     const keyList = await waitFor(() => getBy(isKeyList));
-
 
     assert.strictEqual(3, keyList.ritems.length);
     assert(keyList.ritems.includes('a'));
@@ -53,9 +55,9 @@ describe('<Database>', () => {
   });
 
   it('should delete a hovered key when "d" is pressed on a key list @unstable', async () => {
-    await redis.saveString('a', 'hoge');
-    await redis.saveString('b', 'fuga');
-    await redis.saveString('c', 'piyo');
+    await redis.set('a', 'hoge');
+    await redis.set('b', 'fuga');
+    await redis.set('c', 'piyo');
 
     const { getBy, getByContent } = renderSubject({ redis, screen });
     const keyList = await waitFor(() => getBy(isKeyList));
@@ -81,7 +83,7 @@ describe('<Database>', () => {
     }
 
     {
-      const actual = await keys(redis);
+      const actual = await redis.keys('*');
       const message = 'a hovered key should be deleted from Redis';
       assert.strictEqual(actual.length, 2, message);
       assert(!actual.includes(elementToDelete), message);
@@ -89,7 +91,7 @@ describe('<Database>', () => {
   });
 
   it('can add a new key to Redis when "a" is pressed on a key list', async () => {
-    await redis.saveString('a', 'hoge');
+    await redis.set('a', 'hoge');
 
     const { getBy, getByContent } = renderSubject({ redis, screen });
     const keyList = await waitFor(() => getBy(isKeyList));
@@ -108,16 +110,12 @@ describe('<Database>', () => {
     fireEvent.click(okButton);
     await waitForElementToBeRemoved(() => getBy(x => x.name === 'keyInput'));
 
-    const actual = await keys(redis);
+    const actual = await redis.keys('*');
     const message = 'a new key should be added to Redis';
     assert.strictEqual(actual.length, 2, message);
     assert(actual.includes('a'), message);
     assert(actual.includes('b'), message);
   });
-
-  function keys(redis) {
-    return redis.getKeys();
-  }
 
   function isKeyList(x) {
     return x.type === 'list' && x.ritems.length > 0;
@@ -128,7 +126,7 @@ describe('<Database>', () => {
       extraArgument: { redis }
     });
     const subject = render(
-      <Database />,
+      <Database redis={redis} />,
       screen,
       { store }
     );
