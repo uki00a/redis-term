@@ -6,13 +6,15 @@ import ThemedButton from './themed-button';
 import Button from './button';
 import FileManager from './file-manager';
 import Form from './form';
+import Loader from './loader';
 import { withTheme } from '../contexts/theme-context';
 
 class ConnectionForm extends Component {
   static propTypes = {
     connection: PropTypes.object,
     theme: PropTypes.object.isRequired,
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    isSaving: PropTypes.bool.isRequired
   };
 
   componentDidMount() {
@@ -206,6 +208,13 @@ class ConnectionForm extends Component {
               onPress={this._onSaveButtonClicked}>
             </ThemedButton>
           </box>
+          <Loader
+            top={1}
+            height={1}
+            left={14}
+            width={12}
+            hidden={!this.props.isSaving}
+            text='saving...' />
         </box>
       </Form>
     );

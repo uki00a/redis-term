@@ -15,6 +15,7 @@ class ConnectionFormContainer extends Component {
     addConnection: PropTypes.func.isRequired,
     updateConnection: PropTypes.func.isRequired,
     connection: PropTypes.object,
+    isSaving: PropTypes.bool.isRequired
   };
 
   _handleSubmit = options => {
@@ -103,6 +104,7 @@ class ConnectionFormContainer extends Component {
     return (
       <ConnectionForm
         connection={this.props.isNew ? {} : this.props.connection}
+        isSaving={this.props.isSaving}
         onSubmit={this._handleSubmit}>
       </ConnectionForm>
     );
@@ -110,7 +112,8 @@ class ConnectionFormContainer extends Component {
 }
 
 const mapStateToProps = ({ connections }) => ({
-  connection: connections.editingConnection
+  connection: connections.editingConnection,
+  isSaving: connections.isSaving
 });
 const mapDispatchToProps = {
   addConnection: operations.addConnection,
