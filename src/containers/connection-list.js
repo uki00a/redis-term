@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import cloneDeep from 'lodash/cloneDeep';
 import ConnectionList from '../components/connection-list';
+import Loader from '../components/loader';
 import KeyboardBindings from './keyboard-bindings';
 import { operations, actions } from '../modules/redux/connections';
 import { noop } from '../modules/utils';
@@ -11,6 +12,7 @@ import { noop } from '../modules/utils';
 class ConnectionListContainer extends Component {
   static propTypes = {
     connections: PropTypes.array.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     loadConnections: PropTypes.func.isRequired,
     editConnection: PropTypes.func.isRequired,
     deleteConnection: PropTypes.func.isRequired,
@@ -18,9 +20,12 @@ class ConnectionListContainer extends Component {
     history: PropTypes.object.isRequired
   };
 
-  componentDidMount() {
-    this._loadConnectionsIfNotLoaded();
-    this.refs.list.focus();
+  async componentDidMount() {
+    try {
+      await this._loadConnectionsIfNotLoaded();
+    } finally {
+      this.refs.list.focus();
+    }
   }
 
   componentDidUpdate() {
@@ -29,7 +34,7 @@ class ConnectionListContainer extends Component {
 
   _loadConnectionsIfNotLoaded() {
     if (this.props.connections.length === 0) {
-      this.props.loadConnections();
+      return this.props.loadConnections();
     }
   }
 
@@ -98,20 +103,25 @@ class ConnectionListContainer extends Component {
     ];
 
     return (
-      <KeyboardBindings bindings={keyboardBindings}>
-        <ConnectionList
-          onSelect={this._handleConnectionSelect}
-          ref='list'
-          connection={this.props.connection}
-          connections={this.props.connections}
-        />
-      </KeyboardBindings>
+      <>
+        <KeyboardBindings bindings={keyboardBindings}>
+          <ConnectionList
+            hidden={this.props.isLoading}
+            onSelect={this._handleConnectionSelect}
+            ref='list'
+            connection={this.props.connection}
+            connections={this.props.connections}
+          />
+        </KeyboardBindings>
+        <Loader text='loading...' hidden={!this.props.isLoading} />
+      </>
     );
   }
 }
 
 const mapStateToProps = ({ connections }) => ({
-  connections: connections.list
+  connections: connections.list,
+  isLoading: connections.isLoading
 });
 const mapDispatchToProps = {
   loadConnections: operations.loadConnections,
