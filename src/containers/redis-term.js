@@ -10,6 +10,7 @@ import ConnectionList from './connection-list';
 import MessageDialog from '../components/message-dialog';
 import ActiveKeyboardBindings from './active-keyboard-bindings';
 import { actions as errorActions } from '../modules/redux/error';
+import connectToRedis from '../modules/redis/connect-to-redis';
 
 class RedisTerm extends Component {
   static propTypes = {
@@ -17,8 +18,44 @@ class RedisTerm extends Component {
     theme: PropTypes.object.isRequired,
     errorMessage: PropTypes.string,
     showError: PropTypes.func.isRequired,
-    clearError: PropTypes.func.isRequired,
-    redis: PropTypes.object.isRequired // TODO remove this
+    clearError: PropTypes.func.isRequired
+  };
+
+  state = {
+    redis: null,
+    isConnecting: false,
+    editingConnection: null
+  };
+
+  _connectToRedis = async options => {
+    if (this.state.isConnecting) {
+      return;
+    }
+    this._disconnectFromRedisIfNeeded();
+    this.setState({ isConnecting: true });
+    try {
+      const redis = await connectToRedis(options);
+      this.setState({ redis });
+    } finally {
+      this.setState({ isConnecting: false });
+    }
+  };
+
+  _disconnectFromRedisIfNeeded() {
+    if (this.state.redis) {
+      this._disconnectFromRedis();
+    }
+  }
+
+  _disconnectFromRedis() {
+    this.state.redis.disconnect();
+    this.setState({ redis: null });
+  }
+
+  _editConnection = connection => {
+    this.setState({ editingConnection: connection }, () => {
+      this.props.history.push(`/connections/${connection.id}/edit`);
+    });
   };
 
   _notifyError() {
@@ -81,16 +118,21 @@ class RedisTerm extends Component {
         <box position={{ top: 1, left: 0, right: 0, bottom: 2 }} style={theme.main}>
           <Route
             path='/connections'
-            component={ConnectionList} />
+            component={props => <ConnectionList
+              {...props}
+              editConnection={this._editConnection}
+              connectToRedis={this._connectToRedis}
+            />}
+          />
           <Route
             path='/connections/new'
             render={props => <ConnectionForm {...props} isNew={true} />} />
           <Route
             path='/connections/:id/edit'
-            render={props => <ConnectionForm {...props} isNew={false} />} />
+            render={props => <ConnectionForm {...props} isNew={false} connection={this.state.editingConnection} />} />
           <Route
             path='/database'
-            render={props => <Database {...props} redis={this.props.redis._getRedis()} />} />
+            render={props => <Database {...props} redis={this.state.redis} />} />
         </box>
         <ActiveKeyboardBindings />
         <MessageDialog

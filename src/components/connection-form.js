@@ -18,7 +18,7 @@ class ConnectionForm extends Component {
   };
 
   componentDidMount() {
-    this.refs.name.focus();
+    setImmediate(() => this.refs.name.focus());
   }
 
   _onSaveButtonClicked = () => {

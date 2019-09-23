@@ -1,5 +1,6 @@
 import React from 'react';
 import ConnectionList from '../../src/containers/connection-list';
+import { ConnectionsContainer } from '../../src/hooks/container'
 import {
   connectToRedis,
   cleanupRedisConnection,
@@ -39,7 +40,9 @@ describe('<ConnectionList>', () => {
     // TODO remove this
     const store = createStore({ state: {} });
     const subject = render(
-      <ConnectionList history={history} />,
+      <ConnectionsContainer.Provider>
+        <ConnectionList history={history} />
+      </ConnectionsContainer.Provider>,
       screen,
       { store }
     );

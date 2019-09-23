@@ -44,6 +44,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "ssh2": "^0.8.2",
+    "unstated-next": "^1.1.0",
     "uuid": "^3.3.2",
     "xdg-basedir": "^3.0.0"
   },

@@ -1,5 +1,6 @@
 import React from 'react';
 import ConnectionForm from '../../src/containers/connection-form';
+import { ConnectionsContainer } from '../../src/hooks/container';
 import {
   createStore,
   render,
@@ -103,7 +104,9 @@ describe('<ConnectionForm>', () => {
       }
     });
     const subject = render(
-      <ConnectionForm history={history} isNew={true} />,
+      <ConnectionsContainer.Provider>
+        <ConnectionForm history={history} isNew={true} />
+      </ConnectionsContainer.Provider>,
       screen,
       { store }
     );

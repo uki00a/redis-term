@@ -4,6 +4,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import PropTypes from 'prop-types';
 import RedisTerm from './redis-term';
 import { ThemeProvider } from '../contexts/theme-context';
+import { ConnectionsContainer } from '../hooks/container';
 import configureStore from '../modules/redux/store';
 import RedisFacade from '../modules/redis/facade';
 
@@ -18,11 +19,13 @@ class App extends Component {
   render() {
     return (
       <StoreProvider store={store}>
-        <ThemeProvider value={this.props.settings.colortheme}>
-          <MemoryRouter initialEntries={['/connections']}>
-            <RedisTerm redis={redis} />
-          </MemoryRouter>
-        </ThemeProvider>
+        <ConnectionsContainer.Provider>
+          <ThemeProvider value={this.props.settings.colortheme}>
+            <MemoryRouter initialEntries={['/connections']}>
+              <RedisTerm redis={redis} />
+            </MemoryRouter>
+          </ThemeProvider>
+        </ConnectionsContainer.Provider>
       </StoreProvider>
     );
   }
