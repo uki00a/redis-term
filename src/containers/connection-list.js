@@ -60,8 +60,7 @@ function ConnectionListContainer({
     const connection = cloneDeep(connections[connectionIndex]);
     resolvePaths(connection);
     connectToRedis(connection)
-      .then(() => history.push('/database'))
-      .catch(noop);
+      .then(() => history.push('/database'));
   };
 
   const keyboardBindings = [
