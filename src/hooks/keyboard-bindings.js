@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 
-export function useKeyboardBindings() {
-  const [keyboardBindings, setKeyboardBindings] = useState([]);
+export function useKeyboardBindings(initialKeyboardBindings = []) {
+  const [keyboardBindings, setKeyboardBindings] = useState(initialKeyboardBindings);
   const enableKeyboardBindings = useCallback(keyboardBindingsToEnable => setKeyboardBindings(
     keyboardBindings.concat(keyboardBindingsToEnable)
   ), [keyboardBindings]);
