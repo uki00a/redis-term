@@ -1,11 +1,9 @@
 import * as fs from 'fs';
 import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import cloneDeep from 'lodash/cloneDeep';
 import ConnectionList from '../components/connection-list';
 import Loader from '../components/loader';
 import KeyboardBindings from './keyboard-bindings';
-import { noop } from '../modules/utils';
 
 import { useContainer, ConnectionsContainer } from '../hooks/container';
 
