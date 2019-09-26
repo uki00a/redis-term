@@ -8,6 +8,7 @@ export * from './redis';
 export * from './blessed';
 
 import { ThemeProvider } from '../../src/contexts/theme-context';
+import { KeyboardBindingsContainer } from '../../src/hooks/container';
 import { createGetters, waitFor } from './blessed';
 
 /**
@@ -35,9 +36,11 @@ export const render = (
   const renderer = createBlessedRenderer(blessed);
   renderer(
     <StoreProvider store={store}>
-      <ThemeProvider>
-        { component }
-      </ThemeProvider>
+      <KeyboardBindingsContainer.Provider>
+        <ThemeProvider>
+          { component }
+        </ThemeProvider>
+      </KeyboardBindingsContainer.Provider>
     </StoreProvider>,
     screen
   );
