@@ -80,6 +80,37 @@ export const waitForElementToBeRemoved = (
   }, options);
 };
 
+export const waitForEvent = (
+  node,
+  event,
+  options = { timeout: 500 }
+) => new Promise((resolve, reject) => {
+  const { timeout = 500 } = options
+
+  let wasTimedout = false;
+
+  const listener = () => {
+    if (!wasTimedout) {
+      clearTimeout(timer);
+      resolve();
+    }
+  };
+
+  const timer = setTimeout(() => {
+    wasTimedout = true;
+    node.removeListener(event, listener);
+    reject(new Error('waitForEvent: timeout'));
+  }, timeout);
+
+  node.once(event, listener);
+});
+
+export const waitForItemsToBeChanged = (list, options) => waitForEvent(
+  list,
+  'set items', // FIXME This is undocumented.
+  options
+);
+
 export const createGetters = screen => ({
   queryBy: predicate => getBy(screen, predicate),
   getBy: predicate => getBy(screen, predicate),

@@ -7,6 +7,7 @@ import {
   waitFor,
   waitForElementToBeHidden,
   waitForElementToBeRemoved,
+  waitForItemsToBeChanged,
   nextTick,
   createScreen,
   simulate,
@@ -50,7 +51,7 @@ describe('<Database>', () => {
     assert(keyList.ritems.includes('c'));
   });
 
-  it('should delete a hovered key when "d" is pressed on a key list @unstable', async () => {
+  it('should delete a hovered key when "d" is pressed on a key list', async () => {
     await redis.set('a', 'hoge');
     await redis.set('b', 'fuga');
     await redis.set('c', 'piyo');
@@ -68,7 +69,7 @@ describe('<Database>', () => {
     const okButton = getByContent(/OK/i);
     fireEvent.click(okButton);
 
-    await wait(200); // FIXME
+    await waitForItemsToBeChanged(keyList);
 
     // TODO add more assertions
     {
