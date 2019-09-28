@@ -14,19 +14,16 @@ import assert from 'assert';
 import fixtures from '../fixtures';
 
 describe('<StringContentContainer>', () => {
-  /** @type {import('../../src/modules/redis/facade').default} */
-  let _redis;
   let redis;
   let screen;
 
   beforeEach(async () => {
-    _redis = await connectToRedis();
-    redis = _redis._getRedis(); // FIXME
+    redis = await connectToRedis();
     screen = createScreen();
   });
 
   afterEach(async () => {
-    await cleanupRedisConnection(_redis);
+    await cleanupRedisConnection(redis);
     screen.destroy();
   });
 

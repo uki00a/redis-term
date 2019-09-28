@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 import RedisTerm from './redis-term';
 import { ThemeProvider } from '../contexts/theme-context';
 import { ConnectionsContainer, KeyboardBindingsContainer } from '../hooks/container';
-import RedisFacade from '../modules/redis/facade';
-
-const redis = new RedisFacade();
 
 class App extends Component {
   static propTypes = {
@@ -19,7 +16,7 @@ class App extends Component {
         <ConnectionsContainer.Provider>
           <ThemeProvider value={this.props.settings.colortheme}>
             <MemoryRouter initialEntries={['/connections']}>
-              <RedisTerm redis={redis} />
+              <RedisTerm />
             </MemoryRouter>
           </ThemeProvider>
         </ConnectionsContainer.Provider>
