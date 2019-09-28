@@ -25,7 +25,7 @@
     "rebuild": "yarn run clean && yarn run build",
     "watch": "babel src --verbose --watch --out-dir lib --ignore './src/**/*.test.js'",
     "clean": "rm -rf ./lib",
-    "test": "mocha -r @babel/register ./src/**/*.test.js",
+    "test": "mocha -r @babel/register './src/**/*.test.js'",
     "integration-tests": "mocha -r @babel/register --exit './integration-tests/**/*.test.js'",
     "prepublish": "yarn run test && yarn run rebuild"
   },
