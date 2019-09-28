@@ -62,8 +62,9 @@
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^2.0.1",
     "faker": "^4.1.0",
+    "ioredis-mock": "^4.16.3",
     "mocha": "^5.2.0",
-    "react-test-renderer": "^16.8.6",
+    "react-test-renderer": "16.8.6",
     "stream-buffers": "^3.0.2",
     "testdouble": "^3.11.0"
   }
