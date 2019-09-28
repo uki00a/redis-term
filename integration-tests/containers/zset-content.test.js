@@ -8,7 +8,8 @@ import {
   waitForElementToBeHidden,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  unmount
 } from '../helpers';
 import { partitionByParity } from '../../src/modules/utils';
 import assert from 'assert';
@@ -25,7 +26,7 @@ describe('<ZsetContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
     screen = null;
   }

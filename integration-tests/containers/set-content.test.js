@@ -8,7 +8,8 @@ import {
   waitForElementToBeHidden,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures';
@@ -24,7 +25,7 @@ describe('<SetContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
     screen = null;
   }

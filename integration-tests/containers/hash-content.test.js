@@ -10,7 +10,8 @@ import {
   nextTick,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures'
@@ -26,7 +27,7 @@ describe('<HashContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
   }
 

@@ -8,7 +8,8 @@ import {
   waitForElementToBeHidden,
   simulate,
   nextTick,
-  createScreen
+  createScreen,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures';
@@ -120,7 +121,7 @@ describe('<ListContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
     screen = null;
   }

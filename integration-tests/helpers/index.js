@@ -1,21 +1,20 @@
 import React from 'react';
-import { createBlessedRenderer } from 'react-blessed';
-import blessed from 'neo-blessed';
 
 export * from './redis';
 export * from './blessed';
+export { unmount } from './react-blessed';
 
 import { ThemeProvider } from '../../src/contexts/theme-context';
 import { KeyboardBindingsContainer } from '../../src/hooks/container';
 import { createGetters, waitFor } from './blessed';
+import { render as doRender } from './react-blessed';
 
 // FIXME `Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.`
 export const render = (
   component,
   screen,
 ) => {
-  const renderer = createBlessedRenderer(blessed);
-  renderer(
+  doRender(
     <KeyboardBindingsContainer.Provider>
       <ThemeProvider>
         { component }

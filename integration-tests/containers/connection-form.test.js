@@ -6,6 +6,7 @@ import {
   fireEvent,
   waitForElementToBeHidden,
   createScreen,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import path from 'path';
@@ -84,7 +85,7 @@ describe('<ConnectionForm>', () => {
 
   async function cleanup() {
     td.reset();
-    screen.destroy();
+    unmount(screen);
 
     const connections = await readJSONFile(pathToConnectionsFile);
     for (const connection of connections) {

@@ -8,7 +8,8 @@ import {
   nextTick,
   createScreen,
   simulate,
-  waitForElementToBeHidden
+  waitForElementToBeHidden,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures';
@@ -24,7 +25,7 @@ describe('<StringContentContainer>', () => {
 
   afterEach(async () => {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
   });
 
   it('should save input value to redis when "C-s" pressed on textarea', async () => {
