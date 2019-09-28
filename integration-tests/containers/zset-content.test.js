@@ -3,19 +3,19 @@ import ZsetContentContainer from '../../src/containers/zset-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  unmount
 } from '../helpers';
+import { partitionByParity } from '../../src/modules/utils';
 import assert from 'assert';
 import fixtures from '../fixtures';
 
 describe('<ZsetContentContainer>', () => { 
-  /** @type {import('../../src/modules/redis/facade').default} */
   let redis;
   let screen;
 
@@ -26,7 +26,7 @@ describe('<ZsetContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
     screen = null;
   }
@@ -62,7 +62,7 @@ describe('<ZsetContentContainer>', () => {
 
     const expectedMembers = ['hoge', 'fuga', 'piyo'];
     const expectedScores = ['1', '2', '3'];
-    const [actualMembers, actualScores] = await redis.getZsetMembers(keyName);
+    const [actualMembers, actualScores] = await getZsetMembers(redis, keyName);
 
     assert.strictEqual(3, actualMembers.length);
     assert(expectedMembers.every(x => actualMembers.includes(x)));
@@ -97,7 +97,7 @@ describe('<ZsetContentContainer>', () => {
 
     const expectedMembers = initialMembers.filter(member => member !== memberToDelete);
     {
-      const [actualMembers] = await redis.getZsetMembers(keyName);
+      const [actualMembers] = await getZsetMembers(redis, keyName);
       assert.strictEqual(2, actualMembers.length, 'selected member should be deleted from redis');
       assert(expectedMembers.every(member => actualMembers.includes(member)), 'selected member should be deleted from redis');
     }
@@ -108,23 +108,60 @@ describe('<ZsetContentContainer>', () => {
     }
   });
 
+  it('should reload members when "C-r" is pressed on a member list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialZset = [['hoge', '1']];
+    const initialMembers = ['hoge'];
+    await saveZsetToRedis(keyName, initialZset);
+
+    const { getByType } = await renderSubject({ redis, screen, keyName });
+    const memberList = getByType('list');
+
+    assert.strictEqual(initialMembers.length, memberList.ritems.length, 'should load members when mounted');
+    assert(initialMembers.every(member => memberList.ritems.includes(member)), 'should load members when mounted');
+
+    const newZset = [...initialZset, ['fuga', '2']];
+    await saveZsetToRedis(keyName, newZset);
+
+    memberList.focus();
+    simulate.keypress(memberList, 'C-r');
+    await waitFor(() => getByType('list'));
+    {
+      const memberList = getByType('list');
+      const expectedMembers = ['hoge', 'fuga'];
+      assert.strictEqual(expectedMembers.length, memberList.ritems.length, 'should reload members when "C-r" is pressed on a member list');
+      assert(expectedMembers.every(member => memberList.ritems.includes(member)), 'should reload members when "C-r" is pressed on a member list');
+    }
+  });
+
   async function renderSubject({ redis, screen, keyName }) {
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'zset' } },
-      extraArgument: { redis }
-    });
+    // TODO remove this
     const subject = render(
-      <ZsetContentContainer keyName={keyName} />,
-      screen,
-      { store }
+      <ZsetContentContainer keyName={keyName} redis={redis} />,
+      screen
     );
     await waitFor(() => subject.getByType('list'));
     return subject;
   }
 
   async function saveZsetToRedis(keyName, zset) {
+    await redis.del(keyName);
     for (const [x, score] of zset) {
-      await redis.addMemberToZset(keyName, x, score);
+      await redis.zadd(keyName, score, x);
     }
+  }
+
+  async function getZsetMembers(redis, keyName, pattern = '*') {
+    const cursor = 0;
+    const count = 1000;
+    const [_, values] = await redis.zscan( // eslint-disable-line no-unused-vars
+      keyName,
+      cursor,
+      'MATCH',
+      pattern,
+      'COUNT',
+      count
+    );
+    return partitionByParity(values);
   }
 });

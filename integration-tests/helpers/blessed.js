@@ -64,6 +64,53 @@ export const waitForElementToBeHidden = (
   }, options);
 };
 
+export const waitForElementToBeRemoved = (
+  test,
+  options = {}
+) => {
+  return waitFor(() => {
+    try {
+      test();
+    } catch (error) {
+      if (error instanceof ElementNotFoundError) {
+        return true;
+      }
+      throw error;
+    }
+  }, options);
+};
+
+export const waitForEvent = (
+  node,
+  event,
+  options = { timeout: 500 }
+) => new Promise((resolve, reject) => {
+  const { timeout = 500 } = options
+
+  let wasTimedout = false;
+
+  const listener = () => {
+    if (!wasTimedout) {
+      clearTimeout(timer);
+      resolve();
+    }
+  };
+
+  const timer = setTimeout(() => {
+    wasTimedout = true;
+    node.removeListener(event, listener);
+    reject(new Error('waitForEvent: timeout'));
+  }, timeout);
+
+  node.once(event, listener);
+});
+
+export const waitForItemsToBeChanged = (list, options) => waitForEvent(
+  list,
+  'set items', // FIXME This is undocumented.
+  options
+);
+
 export const createGetters = screen => ({
   queryBy: predicate => getBy(screen, predicate),
   getBy: predicate => getBy(screen, predicate),
@@ -85,7 +132,7 @@ const getByContent = (screen, content) => {
 const getBy = (screen, predicate) => {
   const found = queryBy(screen, predicate);
   if (found == null) {
-    throw new Error(`no element was found`);
+    throw new ElementNotFoundError(`no element was found`);
   }
   return found;
 };
@@ -107,6 +154,8 @@ function queryBy(screen, predicate) {
     }
   }
 }
+
+class ElementNotFoundError extends Error {}
 
 export const fireEvent = {
   click: node => node.emit('click'),

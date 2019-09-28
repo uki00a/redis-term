@@ -1,7 +1,5 @@
 // @ts-check
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState, useRef } from 'react';
 import isEmpty from 'lodash/isEmpty';
 import KeyboardBindings from './keyboard-bindings';
 import List from '../components/list';
@@ -12,210 +10,161 @@ import FilterableList from '../components/filterable-list';
 import CofnfirmationDialog from '../components/confirmation-dialog';
 import Loader from '../components/loader';
 import { withTheme } from '../contexts/theme-context';
-import { operations } from '../modules/redux/hash';
+import { useHash } from '../hooks/hash';
 
-class HashContentContainer extends Component {
-  static propTypes = {
-    keyName: PropTypes.string.isRequired,
-    hash: PropTypes.object,
-    isLoading: PropTypes.bool.isRequired,
-    isSaving: PropTypes.bool.isRequired,
-    pattern: PropTypes.string.isRequired,
-    addFieldToHash: PropTypes.func.isRequired,
-    setHashField: PropTypes.func.isRequired,
-    deleteFieldFromHash: PropTypes.func.isRequired,
-    getHashFields: PropTypes.func.isRequired
+/**
+ * @this {never}
+ */
+function HashContentContainer({ keyName, redis, theme }) {
+  const {
+    hash,
+    isLoading,
+    isSaving,
+    pattern,
+    loadHash,
+    addFieldToHash,
+    setField,
+    deleteField
+  } = useHash({ keyName, redis });
+  const [editingFieldIndex, setEditingFieldIndex] = useState(null);
+  const fieldList = useRef(null);
+  const addHashFieldDialog = useRef(null);
+  const confirmationDialog = useRef(null);
+  const editor = useRef(null);
+
+  useEffect(() => {
+    loadHash('');
+  }, [keyName]); // eslint-disable-line
+
+  if (isLoading) {
+    return <Loader />;
+  }
+  
+  const fields = Object.keys(hash);
+  const hasEditingField = editingFieldIndex != null;
+  const editingField = fields[editingFieldIndex];
+  const editingFieldValue = hasEditingField ? hash[editingField] : '';
+
+  const focusToFieldList = () => {
+    fieldList.current.focus();
   };
 
-  state = { editingFieldIndex: null };
-
-  _openAddHashFieldDialog = () => {
-    this.refs.addHashFieldDialog.open();
+  const unselectField = () => {
+    setEditingFieldIndex(null);
   };
 
-  _openConfirmationDialog = () => {
-    if (!isEmpty(this.props.hash)) {
-      this.refs.confirmationDialog.open();
+  const reloadHash = async () => {
+    unselectField();
+    await loadHash(pattern);
+    focusToFieldList();
+  };
+
+  const _getHash = async pattern => {
+    unselectField();
+    await loadHash(pattern)
+    focusToFieldList();
+  };
+
+  const openAddHashFieldDialog = () => {
+    addHashFieldDialog.current.open();
+  };
+
+  const openConfirmationDialog = () => {
+    if (!isEmpty(hash)) {
+      confirmationDialog.current.open();
     }
   };
 
-  _onFieldSelected = (item, fieldIndex) => {
-    this.setState({ editingFieldIndex: fieldIndex });
+  const handleFieldSelect = (item, fieldIndex) => {
+    setEditingFieldIndex(fieldIndex);
   };
 
-  _unselectField = () => {
-    this.setState({ editingFieldIndex: null });
-  };
-
-  _hasEditingField() {
-    return this.state.editingFieldIndex != null;
-  }
-
-  _editingField() {
-    const fields = Object.keys(this.props.hash);
-    return fields[this.state.editingFieldIndex];
-  }
-
-  _editingFieldValue() {
-    if (this._hasEditingField()) {
-      const editingField = this._editingField();
-      return this.props.hash[editingField];
-    } else {
-      return '';
-    }
-  }
-
-  _removeHoveredFieldIfExists = () => {
-    const fieldToRemove = this._hoveredField();
-    if (fieldToRemove != null) {
-      this._removeField(fieldToRemove);
-    }
-  };
-
-  _removeField = fieldToRemove => {
-    this._unselectField();
-    this.props.deleteFieldFromHash(fieldToRemove)
-      .then(() => this._focusToFieldList());
-  };
-
-  _hoveredField() {
-    const fields = Object.keys(this.props.hash);
-    const index = this._hoveredFieldIndex();
-    return fields[index];
-  }
-
-  _hoveredFieldIndex() {
-    return this.refs.fieldList.selected();
-  }
-
-  _saveEditingField = () => {
-    if (!this._hasEditingField()) {
+  const saveEditingField = async () => {
+    if (!hasEditingField) {
       return;
     }
 
-    const field = this._editingField();
-    const newValue = this.refs.editor.value();
-    this.props.setHashField(field, newValue)
-      .then(() => this._focusToFieldList());
+    const field = editingField;
+    const newValue = editor.current.value();
+    await setField(field, newValue);
+    focusToFieldList();
   };
 
-  _addFieldToHash = (key, value) => {
-    this.props.addFieldToHash(key, value).then(() => this._focusToFieldList());
+  const doAddFieldToHash = async (key, value) => {
+    await addFieldToHash(key, value);
+    focusToFieldList();
   };
 
-  _loadHash = () => {
-    this._unselectField();
-    this.props.getHashFields(this.props.pattern)
-      .then(() => this._focusToFieldList());
-  };
-
-  _getHash = pattern => {
-    this._unselectField();
-    this.props.getHashFields(pattern)
-      .then(() => this._focusToFieldList());
-  }
-
-  _focusToFieldList = () => {
-    this.refs.fieldList.focus();
-  };
-
-  componentDidUpdate(prevProps) {
-    if (this.props.keyName !== prevProps.keyName) {
-      this.props.getHashFields('');
+  const removeHoveredFieldIfExists = async () => {
+    const fieldToRemove = fields[fieldList.current.selected()];
+    if (fieldToRemove != null) {
+      unselectField();
+      await deleteField(fieldToRemove);
+      focusToFieldList();
     }
-  }
+  };
 
-  componentDidMount() {
-    this.props.getHashFields('');
-  }
+  const fieldsList = (
+    <KeyboardBindings bindings={[
+      { key: 'C-r', handler: reloadHash, description: 'Reload' },
+      { key: 'a', handler: openAddHashFieldDialog, description: 'Add Field' },
+      { key: 'd', handler: openConfirmationDialog, description: 'Delete Field' }
+    ]}>
+      <List
+        ref={fieldList}
+        items={fields}
+        onSelect={handleFieldSelect}
+      />
+    </KeyboardBindings>
+  );
 
-  render() {
-    if (this.props.isLoading) {
-      return <Loader />;
-    }
-    
-    const fields = Object.keys(this.props.hash);
-    const editingFieldValue = this._editingFieldValue();
-    const hasEditingField = this._hasEditingField();
-    const fieldsList = (
-      <KeyboardBindings bindings={[
-        { key: 'C-r', handler: this._loadHash, description: 'Reload' },
-        { key: 'a', handler: this._openAddHashFieldDialog, description: 'Add Field' },
-        { key: 'd', handler: this._openConfirmationDialog, description: 'Delete Field' }
-      ]}>
-        <List
-          ref='fieldList'
-          items={fields}
-          onSelect={this._onFieldSelected}
-        />
-      </KeyboardBindings>
-    );
-
-    return (
-      <form style={this.props.theme.box}>
-        <box
-          style={this.props.theme.box}
-          content={`HASH: ${this.props.keyName}`}
-          position={{ height: 1 }}
-          bold
-        />
-        <FilterableList
-          List={fieldsList}
-          filterList={this._getHash}
-          position={{ width: '50%', top: 1 }}
-          defaultPattern={this.props.pattern}
-        />
-        <ScrollableBox
-          style={this.props.theme.box}
-          position={{ left: '50%', top: 1, height: '90%' }}>
-          <KeyboardBindings bindings={[
-            { key: 'C-s', handler: this._saveEditingField, description: 'Save' }
-          ]}>
-            <Editor
-              ref='editor'
-              position={{ height: 25, width: '95%' }}
-              defaultValue={editingFieldValue}
-              disabled={!hasEditingField}
-            />
-          </KeyboardBindings>
-          <Loader
-            text='saving...' 
-            hidden={!this.props.isSaving}
-            top={25}
+  return (
+    <form style={theme.box}>
+      <box
+        style={theme.box}
+        content={`HASH: ${keyName}`}
+        position={{ height: 1 }}
+        bold
+      />
+      <FilterableList
+        List={fieldsList}
+        filterList={_getHash}
+        position={{ width: '50%', top: 1 }}
+        defaultPattern={pattern}
+      />
+      <ScrollableBox
+        style={theme.box}
+        position={{ left: '50%', top: 1, height: '90%' }}>
+        <KeyboardBindings bindings={[
+          { key: 'C-s', handler: saveEditingField, description: 'Save' }
+        ]}>
+          <Editor
+            ref={editor}
+            position={{ height: 25, width: '95%' }}
+            defaultValue={editingFieldValue}
+            disabled={!hasEditingField}
           />
-        </ScrollableBox>
-        <AddHashFieldDialog
-          position={{ height: 20 }}
-          ref='addHashFieldDialog'
-          onOk={this._addFieldToHash}
-          onCancel={this._focusToFieldList}
+        </KeyboardBindings>
+        <Loader
+          text='saving...' 
+          hidden={!isSaving}
+          top={25}
         />
-        <CofnfirmationDialog
-          text='Are you sure you want to delete this field'
-          onOk={this._removeHoveredFieldIfExists}
-          onCancel={this._focusToFieldList}
-          ref='confirmationDialog' 
-        />
-      </form>
-    );   
-  }
+      </ScrollableBox>
+      <AddHashFieldDialog
+        position={{ height: 20 }}
+        ref={addHashFieldDialog}
+        onOk={doAddFieldToHash}
+        onCancel={focusToFieldList}
+      />
+      <CofnfirmationDialog
+        text='Are you sure you want to delete this field'
+        onOk={removeHoveredFieldIfExists}
+        onCancel={focusToFieldList}
+        ref={confirmationDialog}
+      />
+    </form>
+  );
 }
 
-const mapStateToProps = ({ hash }) => ({
-  hash: hash.value,
-  isLoading: hash.isLoading,
-  isSaving: hash.isSaving,
-  pattern: hash.pattern
-});
-
-const mapDispatchToProps = {
-  deleteFieldFromHash: operations.deleteFieldFromHash,
-  getHashFields: operations.getHashFields,
-  addFieldToHash: operations.addFieldToHash,
-  setHashField: operations.setHashField
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withTheme(HashContentContainer));
+export default withTheme(HashContentContainer);

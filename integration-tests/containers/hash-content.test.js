@@ -1,22 +1,22 @@
 import React from 'react';
 import HashContentContainer from '../../src/containers/hash-content';
+import { plistToHash } from '../../src/modules/utils';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
   nextTick,
   createScreen,
   simulate,
-  fireEvent
+  fireEvent,
+  unmount
 } from '../helpers';
 import assert from 'assert';
 import fixtures from '../fixtures'
 
 describe('<HashContentContainer>', () => {
-  /** @type {import('../../src/modules/redis/facade').default} */
   let redis;
   let screen;
 
@@ -27,7 +27,7 @@ describe('<HashContentContainer>', () => {
 
   async function cleanup() {
     await cleanupRedisConnection(redis);
-    screen.destroy();
+    unmount(screen);
     redis = null;
   }
 
@@ -61,7 +61,7 @@ describe('<HashContentContainer>', () => {
 
     const expected = { 'a': 'hoge', 'b': 'piyo' };
     assert(fields.every(field => fieldList.ritems.includes(field)))
-    assert.deepEqual(await redis.getHashFields(keyName), expected);
+    assert.deepEqual(await getHashFields(redis, keyName), expected);
   });
 
   it('should delete a selected field when "d" key is pressed on field list', async () => {
@@ -85,7 +85,7 @@ describe('<HashContentContainer>', () => {
     await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = { 'field': 'a' };
-    assert.deepEqual(await redis.getHashFields(keyName), expected, 'selected field should be deleted from redis');
+    assert.deepEqual(await getHashFields(redis, keyName), expected, 'selected field should be deleted from redis');
     assert.deepEqual(fieldList.ritems, [initialFields[0]]);
   });
 
@@ -116,19 +116,40 @@ describe('<HashContentContainer>', () => {
     await waitForElementToBeHidden(() => getBy(x => x.name === 'loader'));
 
     const expected = { 'field-1': 'hoge', 'field-2': 'fuga' };
-    assert.deepEqual(await redis.getHashFields(keyName), expected, 'new field should be added');
+    assert.deepEqual(await getHashFields(redis, keyName), expected, 'new field should be added');
     assert(Object.keys(expected).every(field => fieldList.ritems.includes(field)));
   });
 
+  it('should realod a hash value when "C-r" is pressed on a field list', async () => {
+    const keyName = fixtures.redisKey();
+    const initialHash = { 'a': 'hoge' };
+    const initialFields = ['a'];
+    await saveHashToRedis(keyName, initialHash);
+
+    const { getByType } = await renderSubject({ keyName, redis, screen });
+    const fieldList = getByType('list');
+
+    assert.strictEqual(fieldList.ritems.length, 1, 'a hash value should be loaded when mounted');
+    assert(fieldList.ritems.every(field => initialFields.includes(field)), 'a hash value should be loaded when mounted');
+
+    await redis.hset(keyName, 'b', 'fuga');
+
+    fieldList.focus();
+    simulate.keypress(fieldList, 'C-r');
+
+    await waitFor(() => getByType('list'))
+    {
+      const fieldList = getByType('list');
+      const expectedFields = [...initialFields, 'b'];
+      assert.strictEqual(2, fieldList.ritems.length, 'a hash value should be reloaded');
+      assert(fieldList.ritems.every(field => expectedFields.includes(field)), 'a hash value should be reloaded');
+    }
+  });
+
   async function renderSubject({ redis, screen, keyName }) {
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'hash' } },
-      extraArgument: { redis }
-    });
     const subject = render(
-      <HashContentContainer keyName={keyName} />,
-      screen,
-      { store }
+      <HashContentContainer keyName={keyName} redis={redis} />,
+      screen
     );
     await waitFor(() => subject.getByType('textarea'));
     return subject;
@@ -137,8 +158,22 @@ describe('<HashContentContainer>', () => {
   function saveHashToRedis(keyName, hash) {
     const promises = Object.keys(hash).map(field => {
       const value = hash[field];
-      return redis.addFieldToHashIfNotExists(keyName, field, value);
+      return redis.hset(keyName, field, value);
     });
     return Promise.all(promises);
+  }
+
+  async function getHashFields(redis, keyName) {
+    const cursor = 0;
+    const count = 1000;
+    const [_, result] = await redis.hscan( // eslint-disable-line no-unused-vars
+      keyName, 
+      cursor,
+      'MATCH',
+      '*',
+      'COUNT',
+      count
+    );
+    return plistToHash(result);
   }
 });
