@@ -2,7 +2,6 @@ import React from 'react';
 import ConnectionForm from '../../src/containers/connection-form';
 import { ConnectionsContainer } from '../../src/hooks/container';
 import {
-  createStore,
   render,
   fireEvent,
   waitForElementToBeHidden,
@@ -97,18 +96,11 @@ describe('<ConnectionForm>', () => {
   }
 
   async function renderSubject({ screen, history, connection }) {
-    // TODO remove this
-    const store = createStore({
-      state: {
-        connections: { editingConnection: connection, isSaving: false }
-      }
-    });
     const subject = render(
       <ConnectionsContainer.Provider>
         <ConnectionForm history={history} isNew={true} />
       </ConnectionsContainer.Provider>,
-      screen,
-      { store }
+      screen
     );
     return subject;
   }

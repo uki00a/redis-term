@@ -3,7 +3,6 @@ import Database from '../../src/containers/database';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -122,13 +121,9 @@ describe('<Database>', () => {
   }
 
   function renderSubject({ redis, screen }) {
-    const store = createStore({
-      extraArgument: { redis }
-    });
     const subject = render(
       <Database redis={redis} />,
-      screen,
-      { store }
+      screen
     );
     return subject;
   }

@@ -4,7 +4,6 @@ import { plistToHash } from '../../src/modules/utils';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -151,15 +150,9 @@ describe('<HashContentContainer>', () => {
   });
 
   async function renderSubject({ redis, screen, keyName }) {
-    // TODO remove this
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'hash' } },
-      extraArgument: { redis }
-    });
     const subject = render(
       <HashContentContainer keyName={keyName} redis={redis} />,
-      screen,
-      { store }
+      screen
     );
     await waitFor(() => subject.getByType('textarea'));
     return subject;

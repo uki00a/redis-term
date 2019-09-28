@@ -3,7 +3,6 @@ import ZsetContentContainer from '../../src/containers/zset-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -140,14 +139,9 @@ describe('<ZsetContentContainer>', () => {
 
   async function renderSubject({ redis, screen, keyName }) {
     // TODO remove this
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'zset' } },
-      extraArgument: { redis }
-    });
     const subject = render(
       <ZsetContentContainer keyName={keyName} redis={redis} />,
-      screen,
-      { store }
+      screen
     );
     await waitFor(() => subject.getByType('list'));
     return subject;

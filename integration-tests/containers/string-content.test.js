@@ -3,7 +3,6 @@ import StringContentContainer from '../../src/containers/string-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   nextTick,
@@ -84,15 +83,9 @@ describe('<StringContentContainer>', () => {
   });
 
   const renderSubject = async ({ redis, screen, keyName }) => {
-    // TODO remove this
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'string' } },
-      extraArgument: { redis }
-    });
     const subject = render(
       <StringContentContainer redis={redis} keyName={keyName} />,
-      screen,
-      { store }
+      screen
     );
     await waitFor(() => subject.getByType('textarea'));
     return subject;

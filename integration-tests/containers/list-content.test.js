@@ -3,7 +3,6 @@ import ListContentContainer from '../../src/containers/list-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -101,15 +100,9 @@ describe('<ListContentContainer>', () => {
   });
 
   async function renderSubject({ screen, keyName, redis }) {
-    // TODO remove this
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'list' } },
-      extraArgument: { redis }
-    });
     const subject = render(
       <ListContentContainer keyName={keyName} redis={redis} />,
-      screen,
-      { store }
+      screen
     );
     await waitForElementToBeHidden(() => subject.getBy(x => x.name === 'loader'));
     return subject;

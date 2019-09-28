@@ -3,7 +3,6 @@ import SetContentContainer from '../../src/containers/set-content';
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -125,15 +124,9 @@ describe('<SetContentContainer>', () => {
   });
 
   async function renderSubject({ redis, screen, keyName }) {
-    // TODO remove this
-    const store = createStore({
-      state: { keys: { selectedKeyName: keyName, selectedKeyType: 'set' } },
-      extraArgument: { redis }
-    });
     const subject = render(
       <SetContentContainer keyName={keyName} redis={redis} />,
-      screen,
-      { store }
+      screen
     );
     await waitFor(() => subject.getByType('list'));
     return subject;

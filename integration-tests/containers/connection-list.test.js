@@ -4,7 +4,6 @@ import { ConnectionsContainer } from '../../src/hooks/container'
 import {
   connectToRedis,
   cleanupRedisConnection,
-  createStore,
   render,
   waitFor,
   waitForElementToBeHidden,
@@ -37,14 +36,11 @@ describe('<ConnectionList>', () => {
   }
 
   async function renderSubject({ screen, history }) {
-    // TODO remove this
-    const store = createStore({ state: {} });
     const subject = render(
       <ConnectionsContainer.Provider>
         <ConnectionList history={history} />
       </ConnectionsContainer.Provider>,
-      screen,
-      { store }
+      screen
     );
     await waitForElementToBeHidden(() => subject.getBy(x => x.name === 'loader'));
     return subject;
