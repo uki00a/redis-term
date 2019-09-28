@@ -5,7 +5,7 @@ import { ConnectionsContainer, useContainer } from '../hooks/container';
 const TLS_OPTIONS = ['tlskey', 'tlscert', 'tlsca'];
 const SSH_OPTIONS = ['sshhost', 'sshport', 'sshuser', 'sshprivateKeyPath', 'sshpassword'];
 
-function _ConnectionFormContainer({
+function ConnectionFormContainer({
   history,
   isNew,
   connection
@@ -100,4 +100,4 @@ function removeUnnecessaryOptions(options) {
   SSH_OPTIONS.forEach(key => delete options[key]);
 }
 
-export default _ConnectionFormContainer;
+export default ConnectionFormContainer;

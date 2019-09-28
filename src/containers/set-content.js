@@ -15,7 +15,7 @@ import { useSet } from '../hooks/set';
  * @this {never}
  * @param {*} param0 
  */
-function _SetContentContainer({ keyName, redis, theme }) {
+function SetContentContainer({ keyName, redis, theme }) {
   const {
     members,
     isLoading,
@@ -155,4 +155,4 @@ function _SetContentContainer({ keyName, redis, theme }) {
   );
 }
 
-export default withTheme(_SetContentContainer);
+export default withTheme(SetContentContainer);

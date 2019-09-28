@@ -13,7 +13,7 @@ import { useKeys } from '../hooks/keys';
  * @this {never}
  * @param {*} param0 
  */
-function _Database({ redis, ...props }) {
+function Database({ redis, ...props }) {
   const {
     keys,
     pattern,
@@ -124,4 +124,4 @@ function _Database({ redis, ...props }) {
   );
 }
 
-export default _Database;
+export default Database;
