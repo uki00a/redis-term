@@ -1,4 +1,4 @@
-import React, { Component, forwardRef, useState, useRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useState, useRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
@@ -7,8 +7,6 @@ import { withTheme } from '../contexts/theme-context';
 
 /**
  * @this {never}
- * @param {*} param0 
- * @param {*} ref 
  */
 const AddNewKeyDialog = forwardRef(({ theme, onOk, onCancel }, ref) => {
   const [isOpened, setOpened] = useState(false);
