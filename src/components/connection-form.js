@@ -150,9 +150,7 @@ function ConnectionForm(props) {
   };
 
   useEffect(() => {
-    setImmediate(() => {
-      refs.name.current.focus();
-    });
+    form.current.focusNext();
   }, []);
 
   return (
