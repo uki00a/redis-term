@@ -1,42 +1,48 @@
-import React, { forwardRef, Component } from 'react';
+import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 
-class List extends Component {
-  static propTypes = {
-    theme: PropTypes.object.isRequired,
-    items: PropTypes.array
-  };
+/**
+ * @this {never}
+ */
+const List = forwardRef(({
+  items = [],
+  theme,
+  ...restProps
+}, ref) => {
+  const list = useRef(null)
 
-  selected() {
-    return this.refs.list.selected;
-  }
+  useImperativeHandle(ref, () => ({
+    selected() {
+      return list.current.selected;
+    },
+    focus() {
+      list.current.focus();
+    }
+  }));
 
-  focus() {
-    this.refs.list.focus();
-  }
+  return (
+    <list
+      ref={list}
+      clickable
+      mouse
+      scrollbar
+      scrollable
+      alwaysScroll
+      keys
+      keyable
+      vi
+      border='line'
+      items={items}
+      style={theme.list}
+      {...restProps}
+    />
+  );
+});
 
-  render() {
-    const { items = [], theme, ...restProps } = this.props;;
-
-    return (
-      <list
-        ref='list'
-        clickable
-        mouse
-        scrollbar
-        scrollable
-        alwaysScroll
-        keys
-        keyable
-        vi
-        border='line'
-        items={items}
-        style={theme.list}
-        {...restProps}
-      />
-    );
-  }
-}
+List.propTypes = {
+  theme: PropTypes.object.isRequired,
+  items: PropTypes.array
+};
 
 export default withTheme(List);
