@@ -1,112 +1,113 @@
-import React, { Component } from 'react';
+import React, { Component, forwardRef, useState, useRef, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import Textbox from './textbox';
 import ThemedButton from './themed-button';
 import Dialog from './dialog';
 import { withTheme } from '../contexts/theme-context';
 
-class AddNewKeyDialog extends Component {
-  static propTypes = {
-    onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-    theme: PropTypes.object.isRequired
+/**
+ * @this {never}
+ * @param {*} param0 
+ * @param {*} ref 
+ */
+const AddNewKeyDialog = forwardRef(({ theme, onOk, onCancel }, ref) => {
+  const [isOpened, setOpened] = useState(false);
+  const keyInput = useRef(null);
+  const types = useRef(null);
+  const handleOk = () => {
+    const keyName = keyInput.current.value();
+    const type = _checkedType();
+    onOk(keyName, type);
+    close();
   };
 
-  state = { isOpened: false };
-
-  _onOk = () => {
-    const keyName = this.refs.keyInput.value();
-    const type = this._checkedType();
-    this.props.onOk(keyName, type);
-    this.close();
+  const handleCancel = () => {
+    close(() => onCancel());
   };
 
-  _onCancel = () => {
-    this.close(() => this.props.onCancel());
+  const close = (callback) => {
+    setOpened(false);
+    // TODO
+    if (callback) {
+      setImmediate(callback);
+    }
   };
 
-  open() {
-    this.setState({ isOpened: true });
-  }
-
-  close(callback) {
-    this.setState({ isOpened: false }, () => {
-      if (callback) setImmediate(callback);
-    });
-  }
-
-  _checkedType() {
-    const type = this.refs.types.children.find(x => x.checked);
+  const _checkedType = () => {
+    const type = types.current.children.find(x => x.checked);
     return type && type.name;
-  }
+  };
 
-  _renderTypeList() {
-    const types = ['string', 'list', 'hash', 'set', 'zset'];
-    const width = 12;
-    return (
+
+  useImperativeHandle(ref, () => ({
+    open() {
+      setOpened(true);
+    }
+  }));
+
+  return (
+    <Dialog
+      title='Add New Key'
+      isOpened={isOpened}>
+      <text
+        style={theme.box}
+        content='Key:'
+        position={{ top: 3, height: 1, left: 2, right: 2 }}
+      />
+      <Textbox
+        style={theme.textbox}
+        name='keyName'
+        position={{ top: 4, height: 1, left: 2, right: 2 }}
+        name='keyInput'
+        bg='black'
+        hoverBg='blue'
+        ref={keyInput}
+      />
+      <text
+        style={theme.box}
+        content='Type:'
+        position={{ top: 5, height: 1, left: 2, right: 2}}
+      />
       <radioset
-        style={this.props.theme.box}
-        ref='types'
+        style={theme.box}
+        ref={types}
         position={{ top: 6, height: 2, left: 2, right: 2 }}>
         {
-          types.map((type, i) => (
+          ['string', 'list', 'hash', 'set', 'zset'].map((type, i) => (
             <radiobutton 
-              style={this.props.theme.box}
+              style={theme.box}
               key={type}
               keys
               clickable
               mouse
               name={type}
-              position={{ top: 0, left: width * i }}
+              position={{ top: 0, left: 12 * i }}
               checked={i === 0}
               content={type}
             />
           ))
         }
       </radioset>
-    );
-  }
+      <ThemedButton
+        position={{ top: 9, height: 1, left: 2, width: 6 }}
+        content='OK'
+        align='center'
+        onClick={handleOk}
+      />
+      <ThemedButton
+        position={{ top: 9, height: 1, left: 10, width: 8 }}
+        content='Cancel'
+        align='center'
+        onClick={handleCancel}
+      />
+    </Dialog>
+  );
+});
 
-  render() {
-    return (
-      <Dialog
-        title='Add New Key'
-        isOpened={this.state.isOpened}>
-        <text
-          style={this.props.theme.box}
-          content='Key:'
-          position={{ top: 3, height: 1, left: 2, right: 2 }}
-        />
-        <Textbox
-          style={this.props.theme.textbox}
-          name='keyName'
-          position={{ top: 4, height: 1, left: 2, right: 2 }}
-          name='keyInput'
-          bg='black'
-          hoverBg='blue'
-          ref='keyInput'
-        />
-        <text
-          style={this.props.theme.box}
-          content='Type:'
-          position={{ top: 5, height: 1, left: 2, right: 2}}
-        />
-        { this._renderTypeList() }
-        <ThemedButton
-          position={{ top: 9, height: 1, left: 2, width: 6 }}
-          content='OK'
-          align='center'
-          onClick={this._onOk}
-        />
-        <ThemedButton
-          position={{ top: 9, height: 1, left: 10, width: 8 }}
-          content='Cancel'
-          align='center'
-          onClick={this._onCancel}
-        />
-      </Dialog>
-    );
-  }
-}
+AddNewKeyDialog.propTypes = {
+  onOk: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  theme: PropTypes.object.isRequired
+};
 
 export default withTheme(AddNewKeyDialog);
