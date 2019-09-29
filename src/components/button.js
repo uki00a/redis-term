@@ -1,42 +1,50 @@
-import React, { Component } from 'react';
+import React, { useImperativeHandle, useRef, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
-class Button extends Component {
-  static propTypes = { disabled: PropTypes.bool };
+/**
+ * @this {never}
+ */
+const Button = forwardRef(({
+  disabled,
+  onClick,
+  style,
+  ...restProps
+}, ref) => {
+  const props = {
+    keys: true,
+    mouse: true,
+    clickable: true,
+    onClick: disabled ? null : onClick,
+    ...restProps
+  };
 
-  click() {
-    this.refs.button.emit('click');
-  }
+  const button = useRef(null);
 
-  focus() {
-    this.refs.button.focus();
-  }
-
-  _handleKeypress = (ch, key) => {
+  const handleKeypress = (ch, key) => {
     if (key.full === 'enter') {
-      this.click();
+      button.current.emit('click');
     }
   };
 
-  render() {
-    const { disabled, onClick, style, ...restProps } = this.props;
-    const props = {
-      keys: true,
-      mouse: true,
-      clickable: true,
-      onClick: disabled ? null : onClick,
-      ...restProps
-    };
+  useImperativeHandle(ref, () => ({
+    click() {
+      button.current.emit('click');
+    },
+    focus() {
+      button.current.focus();
+    }
+  }));
 
-    return (
-      <button
-        onKeypress={this._handleKeypress}
-        ref='button'
-        style={Object.assign({ transparent: Boolean(disabled) }, style)}
-        {...props}
-      />
-    );
-  }
-}
+  return (
+    <button
+      onKeypress={handleKeypress}
+      ref={button}
+      style={Object.assign({ transparent: Boolean(disabled) }, style)}
+      {...props}
+    />
+  );
+});
+
+Button.propTypes = { disabled: PropTypes.bool };
 
 export default Button;

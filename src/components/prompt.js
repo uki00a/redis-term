@@ -1,73 +1,81 @@
-import React, {Component} from 'react';
+import React, { useImperativeHandle, useState, useRef, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from './dialog';
 import ThemedButton from './themed-button';
 import Textbox from './textbox';
 import { withTheme } from '../contexts/theme-context';
 
-class Prompt extends Component {
-  static propTypes = {
-    title: PropTypes.string,
-    onOk: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-    theme: PropTypes.object.isRequired
+/**
+ * @this {never}
+ */
+const Prompt = forwardRef(({
+  title,
+  onOk,
+  onCancel,
+  theme,
+  ...restProps
+}, ref) => {
+  const [isOpened, setOpened] = useState(false);
+  const input = useRef(null);
+
+  const handleOk = () => {
+    const value = input.current.value();
+
+    onOk(value);
+    close();
   };
 
-  state = {
-    isOpened: false
+  const handleCancel = () => {
+    close(() => onCancel());
   };
 
-  _onOk = () => {
-    const value = this.refs.input.value();
-
-    this.props.onOk(value);
-    this.close();
+  const open = () => {
+    setOpened(true);
   };
 
-  _onCancel = () => {
-    this.close(() => this.props.onCancel());
+  const close = callback => {
+    setOpened(false);
+    if (callback) setImmediate(callback);
   };
 
-  open() {
-    this.setState({ isOpened: true });
-  }
+  useImperativeHandle(ref, () => ({
+    open,
+    close
+  }));
 
-  close(callback) {
-    this.setState({ isOpened: false }, () => {
-      if (callback) setImmediate(callback);
-    });
-  }
+  return (
+    <Dialog
+      isOpened={isOpened}
+      title={title}
+      { ...restProps }>
+      <Textbox
+        style={theme.textbox}
+        position={{ top: 3, height: 1, left: 2, right: 2 }}
+        bg='black'
+        hoverBg='blue'
+        ref={input}
+      />
+      <ThemedButton
+        position={{ top: 5, height: 1, left: 2, width: 6 }}
+        content='OK'
+        align='center'
+        onClick={handleOk}
+      />
+      <ThemedButton
+        position={{ top: 5, height: 1, left: 10, width: 8 }}
+        content='Cancel'
+        align='center'
+        onClick={handleCancel}
+      />
+    </Dialog>
+  );
+});
 
-  render() {
-    const { title, onOk, onCancel, theme, ...restProps } = this.props;
-
-    return (
-      <Dialog
-        isOpened={this.state.isOpened}
-        title={title}
-        { ...restProps }>
-        <Textbox
-          style={theme.textbox}
-          position={{ top: 3, height: 1, left: 2, right: 2 }}
-          bg='black'
-          hoverBg='blue'
-          ref='input'
-        />
-        <ThemedButton
-          position={{ top: 5, height: 1, left: 2, width: 6 }}
-          content='OK'
-          align='center'
-          onClick={this._onOk}
-        />
-        <ThemedButton
-          position={{ top: 5, height: 1, left: 10, width: 8 }}
-          content='Cancel'
-          align='center'
-          onClick={this._onCancel}
-        />
-      </Dialog>
-    );
-  }
-}
+Prompt.propTypes = {
+  title: PropTypes.string,
+  onOk: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  theme: PropTypes.object.isRequired
+};
 
 export default withTheme(Prompt);

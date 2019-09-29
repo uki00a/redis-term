@@ -1,69 +1,85 @@
-import React, { Component } from 'react';
+import React, { useState, useRef, useImperativeHandle, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 
-class FileManager extends Component {
-  static propTypes = {
-    theme: PropTypes.object.isRequired,
-    cwd: PropTypes.string,
-    onFile: PropTypes.func.isRequired
+/**
+ * @this {never}
+ */
+const FileManager = forwardRef((props, ref) => {
+  const [isOpened, setOpened] = useState(false);
+  const fileManager = useRef(null);
+ 
+  const onFile = file => {
+    props.onFile(file);
+    close();
   };
 
-  state = { isOpened: false };
-
-  _onFile = file => {
-    this.props.onFile(file);
-    this.close();
+  const prepareFileManager = () => {
+    fileManager.current.refresh(() => {
+      fileManager.current.setFront();
+      fileManager.current.focus();
+    });
   };
 
-  open() {
-    this.setState({ isOpened: true }, () => this._prepareFileManager());
-  }
+  const open = () => {
+    setOpened(true);
+    setImmediate(prepareFileManager);
+  };
 
-  close() {
-    this.setState({ isOpened: false }, () => {
-      this.refs.fileManager.setBack(); 
+  const close = () => {
+    setOpened(false);
+    setImmediate(() => {
+      fileManager.current.setBack(); 
 
       // FIXME Workaround for onHide does not work
-      if (this.props.onHide) {
-        this.props.onHide();
+      if (props.onHide) {
+        props.onHide();
       }
     });
-  }
+  };
 
-  _prepareFileManager() {
-    this.refs.fileManager.refresh(() => {
-      this.refs.fileManager.setFront();
-      this.refs.fileManager.focus();
-    });
-  }
+  useImperativeHandle(ref, () => ({
+    open,
+    close
+  }));
 
-  componentDidMount() {
-    this.refs.fileManager.on('keypress', (ch, key) => {
+  useEffect(() => {
+    const handleKeypress = (ch, key) => {
       if (key.full === 'escape') {
-        this.close();
+        close();
       }
       return false;
-    });
-  }
+    };
 
-  render() {
-    return (
-      <filemanager
-        border='line'
-        style={this.props.theme.box}
-        { ...this.props }
-        keys
-        clickable
-        keyable
-        mouse
-        vi
-        onFile={this._onFile}
-        hidden={!this.state.isOpened}
-        ref='fileManager' 
-      />
-    );
-  }
-}
+    const fm = fileManager.current;
+    fm.on('keypress', handleKeypress);
+
+    return () => {
+      fm.removeListener('keypress', handleKeypress);
+    };
+  }, []); // eslint-disable-line
+
+  return (
+    <filemanager
+      border='line'
+      style={props.theme.box}
+      { ...props }
+      keys
+      clickable
+      keyable
+      mouse
+      vi
+      onFile={onFile}
+      hidden={!isOpened}
+      ref={fileManager} 
+    />
+  );
+});
+
+FileManager.propTypes = {
+  theme: PropTypes.object.isRequired,
+  cwd: PropTypes.string,
+  onFile: PropTypes.func.isRequired
+};
 
 export default withTheme(FileManager);
