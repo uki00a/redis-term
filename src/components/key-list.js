@@ -1,35 +1,41 @@
-import React, { Component } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import List from './list';
 
-class KeyList extends Component {
-  static propTypes = {
-    keys: PropTypes.array.isRequired,
-    theme: PropTypes.object.isRequired,
-    onSelect: PropTypes.func.isRequired
-  };
+/**
+ * @this {never}
+ */
+const KeyList = forwardRef(({
+  keys,
+  onSelect,
+  ...restProps
+}, ref) => {
+  const keyList = useRef(null);
 
-  selected() {
-    return this.refs.keyList.selected();
-  }
+  useImperativeHandle(ref, () => ({
+    selected() {
+      return keyList.current.selected();
+    },
+    focus() {
+      keyList.current.focus();
+    }
+  }));
 
-  focus() {
-    this.refs.keyList.focus();
-  }
+  return (
+    <List
+      ref={keyList}
+      items={keys}
+      onSelect={onSelect}
+      {...restProps}
+    />
+  );
+});
 
-  render() {
-    const { keys, theme, onSelect, ...restProps } = this.props;
-
-    return (
-      <List
-        ref='keyList'
-        items={keys}
-        onSelect={onSelect}
-        {...restProps}
-      />
-    );
-  }
-}
+KeyList.propTypes = {
+  keys: PropTypes.array.isRequired,
+  theme: PropTypes.object.isRequired,
+  onSelect: PropTypes.func.isRequired
+};
 
 export default withTheme(KeyList);
