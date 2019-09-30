@@ -9,6 +9,9 @@ const Form = forwardRef((props, ref) => {
   const form = useRef(null);
 
   useImperativeHandle(ref, () => ({
+    get screen() {
+      return form.current.screen;
+    },
     focusNext() {
       focusNext(form.current);
     },
