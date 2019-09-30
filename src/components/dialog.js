@@ -34,12 +34,31 @@ const Dialog = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({ focus }));
 
+  // FIXME Workaround for focus problem
+  const lastFocused = useRef(null);
+
+  const saveFocus = () => {
+    if (lastFocused.current == null) {
+      lastFocused.current = dialog.current.screen.focused;
+    }
+  };
+
+  const restoreFocus = () => {
+    if (lastFocused.current) {
+      const ref = lastFocused.current;
+      lastFocused.current = null;
+      setImmediate(() => ref.focus());
+    }
+  };
+
   useEffect(() => {
     if (isOpened) {
+      saveFocus();
       dialog.current.setFront();
       dialog.current.setIndex(2000);
       focusFirstElement();
     } else {
+      restoreFocus();
       dialog.current.setBack();
     }
   }, [isOpened]);
