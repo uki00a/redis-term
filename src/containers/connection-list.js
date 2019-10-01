@@ -19,6 +19,7 @@ function ConnectionListContainer({
     connections,
     isLoading,
     loadConnectionsIfNotLoaded,
+    loadConnections,
     deleteConnection
   } = useContainer(ConnectionsContainer); 
   const list = useRef(null);
@@ -64,7 +65,8 @@ function ConnectionListContainer({
   const keyboardBindings = [
     { key: 'a', description: 'Add', handler: addConnection },
     { key: 'e', description: 'Edit', handler: editSelectedConnection },
-    { key: 'd', description: 'Delete', handler: deleteSelectedConnection }
+    { key: 'd', description: 'Delete', handler: deleteSelectedConnection },
+    { key: 'C-r', description: 'Reload', handler: loadConnections }
   ];
 
   return (
