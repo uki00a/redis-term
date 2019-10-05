@@ -1,13 +1,20 @@
-import { connect } from 'react-redux';
+import React from 'react';
 import ActiveKeyboardBindings from '../components/active-keyboard-bindings';
+import { KeyboardBindingsContainer, useContainer } from '../hooks/container';
 
 const DEFAULT_KEYBORAD_BINDINGS = [
   { key: 'C-c', description: 'Quit' },
   { key: 'backspace', description: 'Back' }
 ];
 
-const mapStateToProps = ({ keyboardBindings }) => ({
-  keyboardBindings: DEFAULT_KEYBORAD_BINDINGS.concat(keyboardBindings)
-});
+function ActiveKeyboardBindingsContainer() {
+  const { keyboardBindings } = useContainer(KeyboardBindingsContainer);
 
-export default connect(mapStateToProps)(ActiveKeyboardBindings);
+  return (
+    <ActiveKeyboardBindings
+      keyboardBindings={DEFAULT_KEYBORAD_BINDINGS.concat(keyboardBindings)}
+    />
+  );
+}
+
+export default ActiveKeyboardBindingsContainer;

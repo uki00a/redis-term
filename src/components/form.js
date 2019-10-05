@@ -1,57 +1,55 @@
-import React, { Component } from 'react';
+import React, { useRef, useImperativeHandle, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { enableTabFocus, focusNext } from '../modules/blessed/helpers';
 
-class Form extends Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired
-  };
+/**
+ * @this {never}
+ */
+const Form = forwardRef((props, ref) => {
+  const form = useRef(null);
 
-  focusNext() {
-    focusNext(this.refs.form);
-  }
+  useImperativeHandle(ref, () => ({
+    get screen() {
+      return form.current.screen;
+    },
+    focusNext() {
+      focusNext(form.current);
+    },
+    setFront() {
+      form.current.setFront();
+    },
+    setIndex(index) {
+      form.current.setIndex(index);
+    },
+    setBack() {
+      form.current.setBack();
+    },
+    submit() {
+      form.current.submit();
+    },
+    focus() {
+      form.current.focus();
+    }
+  }))
 
-  setFront() {
-    this.refs.form.setFront();
-  }
+  useEffect(() => {
+    const disableTabFocus = enableTabFocus(form.current);
+    return () => {
+      disableTabFocus();
+    };
+  });
 
-  setIndex(index) {
-    this.refs.form.setIndex(index);
-  }
+  return (
+    <form
+      ref={form}
+      {...props}>
+      {props.children}
+    </form>
+  );
+});
 
-  setBack() {
-    this.refs.form.setBack();
-  }
-
-  submit() {
-    this.refs.form.submit();
-  }
-
-  focus() {
-    this.refs.form.focus();
-  }
-
-  componentDidMount() {
-    this._listenToKeypress();
-  }
-
-  componentWillUnmount() {
-    this._disableTabFocus();
-  }
-
-  _listenToKeypress() {
-    this._disableTabFocus = enableTabFocus(this.refs.form);
-  }
-
-  render() {
-    return (
-      <form
-        ref='form'
-        {...this.props}>
-        {this.props.children}
-      </form>
-    );
-  }
-}
+Form.propTypes = {
+  children: PropTypes.node.isRequired
+};
 
 export default Form;

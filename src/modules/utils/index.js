@@ -31,3 +31,17 @@ export const isBlank = string => string == null || string.trim().length === 0;
 
 export const noop = () => {};
 
+/**
+ * @template T
+ * @param {T[]} array 
+ * @param {T} x 
+ * @returns {T[]}
+ */
+export const remove = (array, x) => {
+  const copy = array.slice(0);
+  const index = copy.indexOf(x);
+  if (index > -1) {
+    copy.splice(index, 1);
+  } 
+  return copy;
+}

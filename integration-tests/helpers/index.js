@@ -1,43 +1,28 @@
 import React from 'react';
-import { render as renderComponent } from './react-blessed';
-import { Provider as StoreProvider } from 'react-redux';
-import { applyMiddleware } from 'redux';
-import configureStore from '../../src/modules/redux/store';
-import thunk from 'redux-thunk';
 
 export * from './redis';
-export * from './react-blessed';
+export * from './blessed';
+export { unmount } from './react-blessed';
 
 import { ThemeProvider } from '../../src/contexts/theme-context';
+import { KeyboardBindingsContainer } from '../../src/hooks/container';
+import { createGetters, waitFor } from './blessed';
+import { render as doRender } from './react-blessed';
 
-/**
- * @typedef {Partial<import('../../src/modules/redux/store').State>} PartialState
- * @typedef {import('../../src/modules/redis/facade').Facade} RedisFacade
- */
-
-/**
- * @param {object} param0 
- * @param {PartialState} param0.state
- * @param {{ redis: RedisFacade }} param0.extraArgument
- */
-export const createStore = ({ state, extraArgument }) => {
-  return configureStore(state, extraArgument);
-};
-
-/**
- * @param {*} component 
- */
+// FIXME `Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.`
 export const render = (
   component,
-  store
+  screen,
 ) => {
-  return renderComponent(
-    <StoreProvider store={store}>
+  doRender(
+    <KeyboardBindingsContainer.Provider>
       <ThemeProvider>
         { component }
       </ThemeProvider>
-    </StoreProvider>
+    </KeyboardBindingsContainer.Provider>,
+    screen
   );
+  return createGetters(screen);
 };
 
 export const nextTick = () => new Promise(resolve => setImmediate(resolve));

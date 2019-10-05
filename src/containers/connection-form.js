@@ -1,123 +1,103 @@
-import * as fs from 'fs';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React from 'react';
 import ConnectionForm from '../components/connection-form';
-import { operations } from '../modules/redux/connections';
+import { ConnectionsContainer, useContainer } from '../hooks/container';
 
 const TLS_OPTIONS = ['tlskey', 'tlscert', 'tlsca'];
 const SSH_OPTIONS = ['sshhost', 'sshport', 'sshuser', 'sshprivateKeyPath', 'sshpassword'];
 
-class ConnectionFormContainer extends Component {
-  static propTypes = {
-    history: PropTypes.object.isRequired,
-    isNew: PropTypes.bool.isRequired,
-    addConnection: PropTypes.func.isRequired,
-    updateConnection: PropTypes.func.isRequired,
-    connection: PropTypes.object,
+function ConnectionFormContainer({
+  history,
+  isNew,
+  connection
+}) {
+  const {
+    addConnection, 
+    updateConnection,
+    isSaving
+  } = useContainer(ConnectionsContainer);
+
+  const handleSubmit = options => {
+    const normalizedOptions = normalizeOptions(options);
+    addOrUpdateConnection(normalizedOptions)
+      .then(() => history.push('/connections'));
   };
 
-  _handleSubmit = options => {
-    const normalizedOptions = this._normalizeOptions(options);
-    this._addOrUpdateConnection(normalizedOptions)
-      .then(() => this.props.history.push('/connections'));
-  };
-
-  _addOrUpdateConnection = options => {
-    if (this.props.isNew) {
-      return this.props.addConnection(options);
+  const addOrUpdateConnection = options => {
+    if (isNew) {
+      return addConnection(options);
     } else {
-      return this.props.updateConnection(options);
+      return updateConnection(options);
     }
   };
 
-  _normalizeOptions(options) {
-    const normalizedOptions = this._normalizeSSHOptions(this._normalizeTLSOptions(options));
-    this._removeUnnecessaryOptions(normalizedOptions);
-    normalizedOptions.id = this.props.connection && this.props.connection.id;
-    normalizedOptions.name = normalizedOptions.name || `${normalizedOptions.host}:${normalizedOptions.port}`;
-    
+  const normalizeOptions = options => {
+    const normalizedOptions = normalizeSSHOptions(normalizeTLSOptions(options));
+    removeUnnecessaryOptions(normalizedOptions);
+    normalizedOptions.id = connection && connection.id;
+    normalizedOptions.name = normalizedOptions.name || `${normalizedOptions.host}:${normalizedOptions.port}`;    
     return normalizedOptions;
-  }
+  };
 
-  _removeUnnecessaryOptions(options) {
-    TLS_OPTIONS.forEach(key => delete options[key]);
-    SSH_OPTIONS.forEach(key => delete options[key]);
-  }
+  return (
+    <ConnectionForm
+      connection={isNew ? {} : connection}
+      isSaving={isSaving}
+      onSubmit={handleSubmit}>
+    </ConnectionForm>
+  );
+}
 
-  _normalizeTLSOptions(options) {
-    if (this._containsTLSOptions(options)) {
-      // TODO cleanup
-      const { tlskey, tlscert, tlsca, ...restOptions } = options;
-      restOptions.tls = {};
-      restOptions.tls.key = tlskey;
-      restOptions.tls.cert = tlscert;
-      restOptions.tls.ca = tlsca;
-      return restOptions;
-    } else {
-      return options;
-    }
-  }
-
-  _containsTLSOptions(options) {
-    return TLS_OPTIONS.some(option => options[option]);
-  }
-
-  _normalizeSSHOptions(options) {
-    if (this._containsSSHOptions(options)) {
-      // TODO cleanup
-      const {
-        sshhost,
-        sshport,
-        sshusername,
-        sshprivateKey,
-        sshpassword,
-        sshpassphrase,
-        ...restOptions
-      } = options;
-      restOptions.ssh = {
-        host: sshhost,
-        port: sshport,
-        username: sshusername,
-        privateKey: sshprivateKey,
-        passphrase: sshpassphrase,
-        password: sshpassword
-      };
-      return restOptions;
-    } else  {
-      return options;
-    }
-  }
-
-  _containsSSHOptions(options) {
-    return SSH_OPTIONS.some(option => options[option]);
-  }
-
-  _readIfExists(path) {
-    if (fs.existsSync(path)) {
-      return fs.readFileSync(path, { encoding: 'utf-8' });
-    }
-  }
-
-  render() {
-    return (
-      <ConnectionForm
-        connection={this.props.isNew ? {} : this.props.connection}
-        onSubmit={this._handleSubmit}>
-      </ConnectionForm>
-    );
+function normalizeTLSOptions(options) {
+  if (containsTLSOptions(options)) {
+    // TODO cleanup
+    const { tlskey, tlscert, tlsca, ...restOptions } = options;
+    restOptions.tls = {};
+    restOptions.tls.key = tlskey;
+    restOptions.tls.cert = tlscert;
+    restOptions.tls.ca = tlsca;
+    return restOptions;
+  } else {
+    return options;
   }
 }
 
-const mapStateToProps = ({ connections }) => ({
-  connection: connections.editingConnection
-});
-const mapDispatchToProps = {
-  addConnection: operations.addConnection,
-  updateConnection: operations.updateConnection
-};
+function normalizeSSHOptions(options) {
+  if (containsSSHOptions(options)) {
+    // TODO cleanup
+    const {
+      sshhost,
+      sshport,
+      sshusername,
+      sshprivateKey,
+      sshpassword,
+      sshpassphrase,
+      ...restOptions
+    } = options;
+    restOptions.ssh = {
+      host: sshhost,
+      port: sshport,
+      username: sshusername,
+      privateKey: sshprivateKey,
+      passphrase: sshpassphrase,
+      password: sshpassword
+    };
+    return restOptions;
+  } else  {
+    return options;
+  }
+}
 
-export default connect(
-  mapStateToProps,  
-  mapDispatchToProps
-)(ConnectionFormContainer);
+function containsTLSOptions(options) {
+  return TLS_OPTIONS.some(option => options[option]);
+}
+
+function containsSSHOptions(options) {
+  return SSH_OPTIONS.some(option => options[option]);
+}
+
+function removeUnnecessaryOptions(options) {
+  TLS_OPTIONS.forEach(key => delete options[key]);
+  SSH_OPTIONS.forEach(key => delete options[key]);
+}
+
+export default ConnectionFormContainer;

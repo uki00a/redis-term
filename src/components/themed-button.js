@@ -1,30 +1,35 @@
-import React, { Component } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { withTheme } from '../contexts/theme-context';
 import Button from './button';
 
-class ThemedButton extends Component {
-  static propTypes = { theme: PropTypes.object.isRequired }
+/** @this {never} */
+const ThemedButton = forwardRef(({
+  theme,
+  ...restProps
+}, ref) => {
+  const button = useRef(null);
 
-  click() {
-    this.refs.button.press();
-  }
+  useImperativeHandle(ref, () => ({
+    click() {
+      button.current.press();
+    },
+    focus() {
+      button.current.focus();
+    }
+  }));
 
-  focus() {
-    this.refs.button.focus();
-  }
+  return (
+    <Button
+      ref={button}
+      style={theme.button}
+      {...restProps}
+    />
+  );
+});
 
-  render () {
-    const { theme, ...restProps } = this.props;
-
-    return (
-      <Button
-        ref='button'
-        style={theme.button}
-        {...restProps}
-      />
-    );
-  }
-}
+ThemedButton.propTypes = {
+  theme: PropTypes.object.isRequired
+};
 
 export default withTheme(ThemedButton);

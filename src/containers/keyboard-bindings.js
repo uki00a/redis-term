@@ -1,72 +1,53 @@
-import React, { Component, cloneElement } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { cloneElement, useEffect, useCallback } from 'react';
 import { noop } from '../modules/utils';
-import { actions } from '../modules/redux/keyboard-bindings';
+import { useContainer, KeyboardBindingsContainer } from '../hooks/container';
 
-class KeyboardBindings extends Component {
-  static propTypes = {
-    bindings: PropTypes.arrayOf(PropTypes.shape({
-      key: PropTypes.string.isRequired, 
-      handler: PropTypes.func.isRequired
-    })).isRequired,
-    children: PropTypes.node,
-    enableKeyboardBindings: PropTypes.func.isRequired,
-    disableKeyboardBindings: PropTypes.func.isRequired
-  };
+/**
+ * @this {never}
+ */
+function KeyboardBindings({
+  bindings,
+  children
+}) {
+  const { enableKeyboardBindings, disableKeyboardBindings } = useContainer(KeyboardBindingsContainer);
 
-  componentWillUnmount() {
-    if (this._focused) {
-      this._disableKeyboardBindings();
-    }
-    this._focused = false;
-  }
+  useEffect(() => {
+    return () => {
+        doDisableKeyboardBindings();
+    };
+  }, []); // eslint-disable-line
 
-  _handleFocus = () => {
-    this._focused = true;
-    this.props.enableKeyboardBindings(this.props.bindings);
-  };
+  const doDisableKeyboardBindings = useCallback(() => {
+    disableKeyboardBindings(bindings);
+  }, [bindings, disableKeyboardBindings]);
 
-  _handleBlur = () => {
-    this._focused = false;
-    this._disableKeyboardBindings();
-  };
+  const handleFocus = useCallback(() => {
+    enableKeyboardBindings(bindings);
+  }, [enableKeyboardBindings, bindings]);
 
-  _disableKeyboardBindings() {
-    this.props.disableKeyboardBindings(this.props.bindings);
-  }
+  const handleBlur = useCallback(() => {
+    doDisableKeyboardBindings();
+  }, [doDisableKeyboardBindings]);
 
-  _handleKeypressIfFocused = (ch, key) => {
-    if (!this._focused) return;
-    this._handleKeypress(ch, key);
-  };
+  const doHandleKeypress =  useCallback((ch, key) => {
+    handleKeypress(bindings, key);
+  }, [bindings]);
 
-  _handleKeypress(ch, key) {
-    const handler = this._findHandlerFor(key) || noop;
-    handler();
-  }
-
-  _findHandlerFor(key) {
-    const found = this.props.bindings.find(binding => key.full === binding.key);   
-    return found && found.handler;
-  }
-
-  render() {
-    return cloneElement(this.props.children, {
-      onFocus: this._handleFocus,
-      onBlur: this._handleBlur,
-      onKeypress: this._handleKeypressIfFocused
-    });
-  }
+  return cloneElement(children, {
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    onKeypress: doHandleKeypress
+  });
 }
 
-const mapStateToProps = (state) => ({});
-const mapDispatchToProps = {
-  enableKeyboardBindings: actions.enableKeyboardBindings,
-  disableKeyboardBindings: actions.disableKeyboardBindings
-};
+function handleKeypress(bindings, key) {
+  const handler = _findHandlerFor(bindings, key) || noop;
+  handler();
+}
 
-export default connect(
-  mapStateToProps, 
-  mapDispatchToProps
-)(KeyboardBindings);
+function _findHandlerFor(bindings, key) {
+  const found = bindings.find(binding => key.full === binding.key);   
+  return found && found.handler;
+}
+
+export default KeyboardBindings;

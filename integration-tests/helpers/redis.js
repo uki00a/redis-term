@@ -1,27 +1,23 @@
-import RedisFacade from '../../src/modules/redis/facade';
+import connect from '../../src/modules/redis/connect-to-redis'
 
 const getHost = () => process.env.REDIS_HOST || 'localhost';
 const getDb = () => process.env.REDIS_DB || 15;
 const getPort = () => process.env.REDIS_PORT || 6379;
 
-/**
- * @returns {import('../../src/modules/redis/facade').default}
- */
+let redis;
 export const connectToRedis = async () => {
-  const facade = new RedisFacade();
-  await facade.connect({
+  if (redis) {
+    return redis;
+  }
+
+  redis = await connect({
     host: getHost(),
     port: getPort(),
     db: getDb()
   });
-  return facade;
+  return redis;
 };
 
-/**
- * 
- * @param {import('../../src/modules/redis/facade').default} facade 
- */
-export const cleanupRedisConnection = async facade => {
-  await facade.flushdb();
-  await facade.disconnect();
+export const cleanupRedisConnection = async redis => {
+  await redis.flushdb();
 };

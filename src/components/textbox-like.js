@@ -1,99 +1,108 @@
-import React, { Component, forwardRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-class TextboxLike extends Component {
-  static propTypes = { 
-    defaultValue: PropTypes.string,
-    children: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-    onKeypress: PropTypes.func
-  };
+/**
+ * @this {never}
+ */
+const TextboxLike = forwardRef(({
+  onFocus,
+  onBlur,
+  onKeypress,
+  children,
+  disabled,
+  style,
+  defaultValue,
+  ...restProps
+}, ref) => {
+  const textbox = useRef(null);
+
   // FIXME: Workaround for TypeError when inputOnFocus is set.
   // `TypeError: done is not a function`
-  _onFocus = () => {
-    if (this.props.disabled) {
+  const handleFocus = () => {
+    if (disabled) {
       return;
     }
 
-    this.refs.textbox.readInput();
-    
+    if (textbox.current) {
+      textbox.current.readInput();
+    }
 
-    if (this.props.onFocus) {
-      this.props.onFocus();
+    if (onFocus) {
+      onFocus();
     }
   };
 
-  _onBlur = () => {
-    if (this.props.onBlur) {
-      this.props.onBlur();
+  const handleBlur = () => {
+    if (onBlur) {
+      onBlur();
     }
   };
 
-  _onKeypress = (ch, key) => {
+  const handleKeypress = (ch, key) => {
     if (key.full === 'tab') {
-      this.refs.textbox.cancel();
+      textbox.current.cancel();
       return false;
-    } else if (this.props.onKeypress) {
-      return this.props.onKeypress(ch, key); 
+    } else if (onKeypress) {
+      return onKeypress(ch, key); 
     } else {
       return false;
     }
-  }
+  };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.defaultValue !== this.props.defaultValue) {
+  const setValue = value => {
+    if (textbox.current) {
+      textbox.current.setValue(value);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      textbox.current.focus();
+    },
+    setValue,
+    value() {
+      return textbox.current.value;
+    }
+  }))
+
+  useEffect(() => {
+    if (defaultValue) {
       // FIXME
       // Workaround for: `TypeError: Cannot read property 'height' of null`
       // `<textarea ... value={this.state.value} />`
-      this.setValue(this.props.defaultValue);
+      setValue(defaultValue);
     }
-  }
+  }, [defaultValue]);
 
-  componentDidMount() {
-    if (this.props.defaultValue) {
-      // FIXME
-      // Workaround for: `TypeError: Cannot read property 'height' of null`
-      // `<textarea ... value={this.state.value} />`
-      this.setValue(this.props.defaultValue);
-    }
-  }
+  useEffect(() => {
+    const ref = textbox.current;
 
-  componentWillUnmount() {
-    this.refs.textbox.removeAllListeners('keypress');
-  }
+    return () => {
+      ref.removeAllListeners('keypress');
+    };
+  }, []);
 
-  focus() {
-    this.refs.textbox.focus();
-  }
+  const props = ({
+    style: Object.assign({ transparent: Boolean(disabled) }, style),
+    keyable: true,
+    clickable: false,
+    keys: !disabled,
+    mouse: true,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    onKeypress: handleKeypress,
+    ref: textbox,
+    ...restProps
+  });
 
-  setValue(value) {
-    if (this.refs.textbox) {
-      this.refs.textbox.setValue(value);
-    }
-  }
+  return children(props);
+});
 
-  value() {
-    return this.refs.textbox.value;
-  }
-
-  render() {
-    const { onFocus, onBlur, onKeypress, children, disabled, style, ...restProps } = this.props;
-
-    const props = ({
-      style: Object.assign({ transparent: Boolean(disabled) }, style),
-      keyable: true,
-      clickable: false,
-      keys: !disabled,
-      mouse: true,
-      onFocus: this._onFocus,
-      onBlur: this._onBlur,
-      onKeypress: this._onKeypress,
-      ref: 'textbox',
-      ...restProps
-    });
-
-    return children(props);
-  }
-}
+TextboxLike.propTypes = { 
+  defaultValue: PropTypes.string,
+  children: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  onKeypress: PropTypes.func
+};
 
 export default TextboxLike;
