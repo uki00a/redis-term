@@ -1,6 +1,6 @@
 {
   "name": "redis-term",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "a terminal client for Redis",
   "repository": "https://github.com/uki00a/redis-term",
   "author": "uki00a",
